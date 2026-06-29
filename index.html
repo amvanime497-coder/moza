@@ -4,1083 +4,119 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Ular Tangga - Multiplayer</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js">
+    </script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            background: #0a0a1a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            padding: 6px;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-            overflow: hidden;
-        }
-        #app {
-            width: 100%;
-            max-width: 700px;
-            position: relative;
-            z-index: 1;
-        }
+        *{margin:0;padding:0;box-sizing:border-box}body{background:#0a0a1a;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Segoe UI',Arial,sans-serif;padding:6px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;overflow:hidden}#app{width:100%;max-width:700px;position:relative;z-index:1}
+        #space-bg{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;overflow:hidden;background:#0a0a1a}
+        .star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--duration) ease-in-out infinite}
+        @keyframes twinkle{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1.3)}}
+        .moon-bg{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f5f5dc,#ddd8c4);box-shadow:0 0 80px rgba(255,255,200,0.1),0 0 200px rgba(255,255,200,0.03);animation:moonFloat 10s ease-in-out infinite}
+        @keyframes moonFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-25px) rotate(5deg)}}
+        .ufo-bg{position:absolute;font-size:40px;animation:ufoFly linear infinite;filter:drop-shadow(0 0 30px rgba(0,255,200,0.1));opacity:.6}
+        @keyframes ufoFly{0%{transform:translateX(-100px) translateY(0) scale(1)}25%{transform:translateX(25vw) translateY(-20px) scale(1.05)}50%{transform:translateX(55vw) translateY(15px) scale(.95)}75%{transform:translateX(85vw) translateY(-10px) scale(1.04)}100%{transform:translateX(110vw) translateY(0) scale(1)}}
+        .rocket-bg{position:absolute;font-size:30px;animation:rocketFly linear infinite;filter:drop-shadow(0 0 30px rgba(255,200,50,0.1));opacity:.5}
+        @keyframes rocketFly{0%{transform:translateX(-80px) translateY(0) rotate(-5deg)}30%{transform:translateX(30vw) translateY(-30px) rotate(8deg)}60%{transform:translateX(65vw) translateY(20px) rotate(-3deg)}100%{transform:translateX(120vw) translateY(0) rotate(-5deg)}}
+        .space-snake{position:absolute;font-size:35px;animation:spaceSnakeFly linear infinite;filter:drop-shadow(0 0 30px rgba(50,255,50,0.15));opacity:.4}
+        @keyframes spaceSnakeFly{0%{transform:translateX(-120px) translateY(0) rotate(0)}20%{transform:translateX(20vw) translateY(-40px) rotate(10deg)}40%{transform:translateX(45vw) translateY(30px) rotate(-15deg)}60%{transform:translateX(70vw) translateY(-20px) rotate(8deg)}80%{transform:translateX(95vw) translateY(25px) rotate(-5deg)}100%{transform:translateX(130vw) translateY(0) rotate(0)}}
+        .shooting-star-bg{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:shootingStar linear infinite;box-shadow:0 0 15px rgba(255,255,255,0.3)}
+        .shooting-star-bg::after{content:'';position:absolute;top:0;right:0;width:60px;height:1px;background:linear-gradient(to left,rgba(255,255,255,0.3),transparent);transform:rotate(-45deg);transform-origin:right center}
+        @keyframes shootingStar{0%{transform:translate(0,0) rotate(-45deg);opacity:0}10%{opacity:1}30%{opacity:1}50%{transform:translate(-300px,300px) rotate(-45deg);opacity:0}100%{opacity:0}}
 
-        /* SPACE BACKGROUND */
-        #space-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            overflow: hidden;
-            background: #0a0a1a;
-        }
-        .star {
-            position: absolute;
-            border-radius: 50%;
-            background: #fff;
-            animation: twinkle var(--duration) ease-in-out infinite;
-        }
-        @keyframes twinkle {
-            0%,
-            100% {
-                opacity: 0.2;
-                transform: scale(0.8);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.3);
-            }
-        }
-        .moon-bg {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle at 35% 35%, #f5f5dc, #ddd8c4);
-            box-shadow: 0 0 80px rgba(255, 255, 200, 0.1), 0 0 200px rgba(255, 255, 200, 0.03);
-            animation: moonFloat 10s ease-in-out infinite;
-        }
-        @keyframes moonFloat {
-            0%,
-            100% {
-                transform: translateY(0) rotate(0deg);
-            }
-            50% {
-                transform: translateY(-25px) rotate(5deg);
-            }
-        }
-        .ufo-bg {
-            position: absolute;
-            font-size: 40px;
-            animation: ufoFly linear infinite;
-            filter: drop-shadow(0 0 30px rgba(0, 255, 200, 0.1));
-            opacity: 0.6;
-        }
-        @keyframes ufoFly {
-            0% {
-                transform: translateX(-100px) translateY(0) scale(1);
-            }
-            25% {
-                transform: translateX(25vw) translateY(-20px) scale(1.05);
-            }
-            50% {
-                transform: translateX(55vw) translateY(15px) scale(0.95);
-            }
-            75% {
-                transform: translateX(85vw) translateY(-10px) scale(1.04);
-            }
-            100% {
-                transform: translateX(110vw) translateY(0) scale(1);
-            }
-        }
-        .rocket-bg {
-            position: absolute;
-            font-size: 30px;
-            animation: rocketFly linear infinite;
-            filter: drop-shadow(0 0 30px rgba(255, 200, 50, 0.1));
-            opacity: 0.5;
-        }
-        @keyframes rocketFly {
-            0% {
-                transform: translateX(-80px) translateY(0) rotate(-5deg);
-            }
-            30% {
-                transform: translateX(30vw) translateY(-30px) rotate(8deg);
-            }
-            60% {
-                transform: translateX(65vw) translateY(20px) rotate(-3deg);
-            }
-            100% {
-                transform: translateX(120vw) translateY(0) rotate(-5deg);
-            }
-        }
-        .space-snake {
-            position: absolute;
-            font-size: 35px;
-            animation: spaceSnakeFly linear infinite;
-            filter: drop-shadow(0 0 30px rgba(50, 255, 50, 0.15));
-            opacity: 0.4;
-        }
-        @keyframes spaceSnakeFly {
-            0% {
-                transform: translateX(-120px) translateY(0) rotate(0deg);
-            }
-            20% {
-                transform: translateX(20vw) translateY(-40px) rotate(10deg);
-            }
-            40% {
-                transform: translateX(45vw) translateY(30px) rotate(-15deg);
-            }
-            60% {
-                transform: translateX(70vw) translateY(-20px) rotate(8deg);
-            }
-            80% {
-                transform: translateX(95vw) translateY(25px) rotate(-5deg);
-            }
-            100% {
-                transform: translateX(130vw) translateY(0) rotate(0deg);
-            }
-        }
-        .shooting-star-bg {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: #fff;
-            border-radius: 50%;
-            animation: shootingStar linear infinite;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
-        }
-        .shooting-star-bg::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 60px;
-            height: 1px;
-            background: linear-gradient(to left, rgba(255, 255, 255, 0.3), transparent);
-            transform: rotate(-45deg);
-            transform-origin: right center;
-        }
-        @keyframes shootingStar {
-            0% {
-                transform: translate(0, 0) rotate(-45deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            30% {
-                opacity: 1;
-            }
-            50% {
-                transform: translate(-300px, 300px) rotate(-45deg);
-                opacity: 0;
-            }
-            100% {
-                opacity: 0;
-            }
-        }
+        #landing-page{background:rgba(10,10,30,0.75);backdrop-filter:blur(15px);border-radius:24px;padding:35px 25px;border:2px solid rgba(255,215,0,0.12);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.6);min-height:75vh;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative;z-index:2}
+        #landing-page .logo{font-size:65px;margin-bottom:8px;animation:bounce 2s infinite;filter:drop-shadow(0 0 40px rgba(255,215,0,0.15))}
+        @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+        #landing-page h1{color:#ffd700;font-size:34px;text-shadow:0 0 40px rgba(255,215,0,0.15);margin-bottom:8px;letter-spacing:2px}
+        #landing-page .desc{color:rgba(255,255,255,0.5);font-size:13px;line-height:1.9;max-width:400px;margin:0 auto 25px}
+        #landing-page .desc span{color:#ffd700}
+        .btn-landing{background:linear-gradient(135deg,#ffd700,#f0a500);border:none;color:#0a0a1a;padding:15px 55px;border-radius:16px;font-size:18px;font-weight:700;cursor:pointer;transition:all .3s ease;box-shadow:0 8px 35px rgba(255,215,0,0.15);width:100%;max-width:300px;touch-action:manipulation}
+        .btn-landing:active{transform:scale(.95)}
+        #landing-page .footer-text{color:rgba(255,255,255,0.1);font-size:10px;margin-top:25px;letter-spacing:2px}
 
-        /* LANDING PAGE */
-        #landing-page {
-            background: rgba(10, 10, 30, 0.75);
-            backdrop-filter: blur(15px);
-            border-radius: 24px;
-            padding: 35px 25px;
-            border: 2px solid rgba(255, 215, 0, 0.12);
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-            min-height: 75vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            z-index: 2;
-        }
-        #landing-page .logo {
-            font-size: 65px;
-            margin-bottom: 8px;
-            animation: bounce 2s infinite;
-            filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.15));
-        }
-        @keyframes bounce {
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-15px);
-            }
-        }
-        #landing-page h1 {
-            color: #ffd700;
-            font-size: 34px;
-            text-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
-            margin-bottom: 8px;
-            letter-spacing: 2px;
-        }
-        #landing-page .desc {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 13px;
-            line-height: 1.9;
-            max-width: 400px;
-            margin: 0 auto 25px;
-        }
-        #landing-page .desc span {
-            color: #ffd700;
-        }
-        .btn-landing {
-            background: linear-gradient(135deg, #ffd700, #f0a500);
-            border: none;
-            color: #0a0a1a;
-            padding: 15px 55px;
-            border-radius: 16px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all .3s ease;
-            box-shadow: 0 8px 35px rgba(255, 215, 0, 0.15);
-            width: 100%;
-            max-width: 300px;
-            touch-action: manipulation;
-        }
-        .btn-landing:active {
-            transform: scale(0.95);
-        }
-        #landing-page .footer-text {
-            color: rgba(255, 255, 255, 0.1);
-            font-size: 10px;
-            margin-top: 25px;
-            letter-spacing: 2px;
-        }
+        #lobby-screen{display:none;background:rgba(10,10,30,0.75);backdrop-filter:blur(15px);border-radius:20px;padding:20px 15px;border:2px solid rgba(255,215,0,0.1);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.5);position:relative;z-index:2}
+        #lobby-screen .back-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.25);padding:6px 16px;border-radius:8px;font-size:11px;cursor:pointer;transition:all .3s ease;margin-top:12px;touch-action:manipulation}
+        #lobby-screen .back-btn:active{transform:scale(.95)}
+        #lobby-screen h2{color:#ffd700;font-size:24px;margin-bottom:4px}
+        #lobby-screen .subtitle2{color:rgba(255,255,255,0.2);font-size:10px;letter-spacing:3px;margin-bottom:15px}
+        .mode-selector{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px}
+        .mode-btn{padding:12px 8px;border-radius:12px;border:2px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5);font-size:13px;font-weight:700;cursor:pointer;transition:all .3s ease;touch-action:manipulation}
+        .mode-btn:active{transform:scale(.95)}
+        .mode-btn.active{border-color:#ffd700;background:rgba(255,215,0,0.08);color:#ffd700}
+        .mode-btn .icon{font-size:20px;display:block;margin-bottom:2px}
+        .mode-btn .desc{font-size:9px;font-weight:400;color:rgba(255,255,255,0.25)}
+        .lobby-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .lobby-box{background:rgba(255,255,255,0.04);border-radius:12px;padding:12px 10px;border:1px solid rgba(255,255,255,0.05)}
+        .lobby-box h3{color:rgba(255,255,255,0.35);font-size:10px;letter-spacing:2px;margin-bottom:6px}
+        .lobby-box input{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.3);color:#fff;font-size:13px;text-align:center;outline:none;transition:border-color .3s}
+        .lobby-box input:focus{border-color:#ffd700}
+        .lobby-box .btn{width:100%;padding:9px;margin-top:6px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer;color:#fff;transition:all .3s ease;touch-action:manipulation}
+        .lobby-box .btn:active{transform:scale(.95)}
+        .lobby-box .btn:disabled{opacity:.5;cursor:not-allowed}
+        .btn-create{background:linear-gradient(135deg,#7a5af0,#5a3ad0)}
+        .btn-join{background:linear-gradient(135deg,#44ddff,#22bbdd);color:#000}
+        .btn-bot{background:linear-gradient(135deg,#ff6b6b,#ee5a24);width:100%;padding:12px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;color:#fff;transition:all .3s ease;margin-top:8px;touch-action:manipulation}
+        .btn-bot:active{transform:scale(.95)}
+        #lobbyStatus{color:rgba(255,255,255,0.3);font-size:11px;margin-top:10px;padding:6px;border-radius:8px;background:rgba(0,0,0,0.2);min-height:30px;transition:all .3s ease}
+        #lobbyStatus.error{color:#ff4444;background:rgba(255,68,68,0.08);border:1px solid rgba(255,68,68,0.15)}
+        #lobbyStatus.success{color:#44ff88;background:rgba(68,255,136,0.05);border:1px solid rgba(68,255,136,0.1)}
+        #lobbyStatus.info{color:#44ddff;background:rgba(68,221,255,0.05);border:1px solid rgba(68,221,255,0.1)}
+        #lobbyStatus.warning{color:#ffaa44;background:rgba(255,170,68,0.05);border:1px solid rgba(255,170,68,0.1)}
+        #loadingSpinner{display:none;width:20px;height:20px;border:2px solid rgba(255,255,255,0.1);border-top:2px solid #ffd700;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 8px}
+        @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
 
-        /* LOBBY */
-        #lobby-screen {
-            display: none;
-            background: rgba(10, 10, 30, 0.75);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            padding: 20px 15px;
-            border: 2px solid rgba(255, 215, 0, 0.1);
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            position: relative;
-            z-index: 2;
-        }
-        #lobby-screen .back-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: rgba(255, 255, 255, 0.25);
-            padding: 6px 16px;
-            border-radius: 8px;
-            font-size: 11px;
-            cursor: pointer;
-            transition: all .3s ease;
-            margin-top: 12px;
-            touch-action: manipulation;
-        }
-        #lobby-screen .back-btn:active {
-            transform: scale(0.95);
-        }
-        #lobby-screen h2 {
-            color: #ffd700;
-            font-size: 24px;
-            margin-bottom: 4px;
-        }
-        #lobby-screen .subtitle2 {
-            color: rgba(255, 255, 255, 0.2);
-            font-size: 10px;
-            letter-spacing: 3px;
-            margin-bottom: 15px;
-        }
-        .mode-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .mode-btn {
-            padding: 12px 8px;
-            border-radius: 12px;
-            border: 2px solid rgba(255, 255, 255, 0.06);
-            background: rgba(255, 255, 255, 0.04);
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all .3s ease;
-            touch-action: manipulation;
-        }
-        .mode-btn:active {
-            transform: scale(0.95);
-        }
-        .mode-btn.active {
-            border-color: #ffd700;
-            background: rgba(255, 215, 0, 0.08);
-            color: #ffd700;
-        }
-        .mode-btn .icon {
-            font-size: 20px;
-            display: block;
-            margin-bottom: 2px;
-        }
-        .mode-btn .desc {
-            font-size: 9px;
-            font-weight: 400;
-            color: rgba(255, 255, 255, 0.25);
-        }
-        .lobby-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .lobby-box {
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 12px;
-            padding: 12px 10px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .lobby-box h3 {
-            color: rgba(255, 255, 255, 0.35);
-            font-size: 10px;
-            letter-spacing: 2px;
-            margin-bottom: 6px;
-        }
-        .lobby-box input {
-            width: 100%;
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            background: rgba(0, 0, 0, 0.3);
-            color: #fff;
-            font-size: 13px;
-            text-align: center;
-            outline: none;
-            transition: border-color .3s;
-        }
-        .lobby-box input:focus {
-            border-color: #ffd700;
-        }
-        .lobby-box .btn {
-            width: 100%;
-            padding: 9px;
-            margin-top: 6px;
-            border-radius: 8px;
-            border: none;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            color: #fff;
-            transition: all .3s ease;
-            touch-action: manipulation;
-        }
-        .lobby-box .btn:active {
-            transform: scale(0.95);
-        }
-        .lobby-box .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .btn-create {
-            background: linear-gradient(135deg, #7a5af0, #5a3ad0);
-        }
-        .btn-join {
-            background: linear-gradient(135deg, #44ddff, #22bbdd);
-            color: #000;
-        }
-        .btn-bot {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: none;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            color: #fff;
-            transition: all .3s ease;
-            margin-top: 8px;
-            touch-action: manipulation;
-        }
-        .btn-bot:active {
-            transform: scale(0.95);
-        }
-        #lobbyStatus {
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 11px;
-            margin-top: 10px;
-            padding: 6px;
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.2);
-            min-height: 30px;
-            transition: all .3s ease;
-        }
-        #lobbyStatus.error {
-            color: #ff4444;
-            background: rgba(255, 68, 68, 0.08);
-            border: 1px solid rgba(255, 68, 68, 0.15);
-        }
-        #lobbyStatus.success {
-            color: #44ff88;
-            background: rgba(68, 255, 136, 0.05);
-            border: 1px solid rgba(68, 255, 136, 0.1);
-        }
-        #lobbyStatus.info {
-            color: #44ddff;
-            background: rgba(68, 221, 255, 0.05);
-            border: 1px solid rgba(68, 221, 255, 0.1);
-        }
-        #lobbyStatus.warning {
-            color: #ffaa44;
-            background: rgba(255, 170, 68, 0.05);
-            border: 1px solid rgba(255, 170, 68, 0.1);
-        }
-        #loadingSpinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-top: 2px solid #ffd700;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 8px;
-        }
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
+        #game-screen{display:none;background:rgba(10,10,30,0.75);backdrop-filter:blur(15px);border-radius:20px;padding:8px;border:2px solid rgba(255,215,0,0.08);box-shadow:0 20px 60px rgba(0,0,0,0.5);position:relative;z-index:2}
+        #game-screen.active{display:block}
+        .game-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.04);flex-wrap:wrap;gap:4px}
+        .game-header .room-id{color:rgba(255,255,255,0.15);font-size:9px;letter-spacing:1px}
+        .game-header .turn-indicator{color:#ffd700;font-size:11px;font-weight:700}
+        .game-header .turn-indicator span{color:#44ff88}
+        .game-header .btn{padding:4px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.05);background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.25);font-size:10px;cursor:pointer;touch-action:manipulation}
+        .game-header .btn:active{transform:scale(.95)}
+        .players-status{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;padding:4px 0}
+        .player-status{background:rgba(255,255,255,0.04);padding:2px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);font-size:8px;color:rgba(255,255,255,0.3);display:flex;align-items:center;gap:4px}
+        .player-status .color-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+        .player-status .pos{color:rgba(255,255,255,0.15);font-size:6px}
+        .player-status.active{border-color:#ffd700;background:rgba(255,215,0,0.06);color:#fff}
+        .player-status.bot{border-color:rgba(255,107,107,0.2);background:rgba(255,107,107,0.04)}
+        .board-wrapper{position:relative;width:100%;max-width:560px;margin:4px auto;aspect-ratio:1;background:rgba(0,0,0,0.3);border-radius:10px;padding:2px;border:2px solid rgba(255,215,0,0.05);box-shadow:0 0 30px rgba(0,0,0,0.3);overflow:hidden;touch-action:none}
+        canvas#board{width:100%;height:100%;border-radius:8px;display:block;touch-action:none}
+        .bottom-controls{display:flex;align-items:center;gap:5px;justify-content:center;flex-wrap:wrap;margin-top:5px;padding:5px 8px;background:rgba(0,0,0,0.25);border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+        .dice-area{display:flex;align-items:center;gap:5px}
+        .dice-result{font-size:28px;min-width:38px;text-align:center;color:#ffd700;background:rgba(255,255,255,0.03);padding:2px 6px;border-radius:8px;border:1px solid rgba(255,215,0,0.06)}
+        .btn-roll{background:linear-gradient(135deg,#ff6b6b,#ee5a24);border:none;color:#fff;padding:6px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;transition:all .3s ease;min-height:36px;touch-action:manipulation}
+        .btn-roll:active:not(:disabled){transform:scale(.95)}
+        .btn-roll:disabled{opacity:.3;cursor:not-allowed}
+        .btn-end-turn{background:linear-gradient(135deg,#44ff88,#00d45a);border:none;color:#000;padding:6px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;transition:all .3s ease;min-height:36px;touch-action:manipulation}
+        .btn-end-turn:active:not(:disabled){transform:scale(.95)}
+        .btn-end-turn:disabled{opacity:.3;cursor:not-allowed}
+        .log-area{background:rgba(0,0,0,0.25);border-radius:8px;padding:3px 8px;max-height:32px;overflow-y:auto;margin-top:4px;font-size:8px;color:rgba(255,255,255,0.2);font-family:'Courier New',monospace;border:1px solid rgba(255,255,255,0.02)}
+        .log-area .log-entry{padding:1px 0;border-bottom:1px solid rgba(255,255,255,0.02)}
+        .log-area .log-entry .highlight{color:#ffd700}
+        .log-area::-webkit-scrollbar{width:2px}
+        .log-area::-webkit-scrollbar-track{background:transparent}
+        .log-area::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.06);border-radius:4px}
 
-        /* GAME */
-        #game-screen {
-            display: none;
-            background: rgba(10, 10, 30, 0.75);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            padding: 8px;
-            border: 2px solid rgba(255, 215, 0, 0.08);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            position: relative;
-            z-index: 2;
-        }
-        #game-screen.active {
-            display: block;
-        }
+        #congrats-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:100;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);justify-content:center;align-items:center;flex-direction:column;animation:fadeIn .5s ease}
+        #congrats-overlay.show{display:flex}
+        @keyframes fadeIn{0%{opacity:0;transform:scale(.8)}100%{opacity:1;transform:scale(1)}}
+        #congrats-overlay .trophy{font-size:80px;animation:bounce 1s infinite}
+        #congrats-overlay .title{color:#ffd700;font-size:36px;font-weight:900;margin-top:10px;text-shadow:0 0 40px rgba(255,215,0,0.3);text-align:center}
+        #congrats-overlay .winner{color:#fff;font-size:24px;font-weight:700;margin-top:5px;text-align:center}
+        #congrats-overlay .winner span{color:#44ff88}
+        #congrats-overlay .sub{color:rgba(255,255,255,0.3);font-size:12px;margin-top:15px;animation:blink 1s infinite}
+        @keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+        #congrats-overlay .btn-ok{margin-top:20px;background:linear-gradient(135deg,#ffd700,#f0a500);border:none;color:#0a0a1a;padding:12px 40px;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s ease;touch-action:manipulation}
+        #congrats-overlay .btn-ok:active{transform:scale(.95)}
+        .confetti{position:fixed;width:10px;height:10px;z-index:101;border-radius:2px;animation:confettiFall linear forwards;pointer-events:none}
+        @keyframes confettiFall{0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1}100%{transform:translateY(100vh) rotate(720deg) scale(.5);opacity:0}}
 
-        .game-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 6px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            flex-wrap: wrap;
-            gap: 4px;
-        }
-        .game-header .room-id {
-            color: rgba(255, 255, 255, 0.15);
-            font-size: 9px;
-            letter-spacing: 1px;
-        }
-        .game-header .turn-indicator {
-            color: #ffd700;
-            font-size: 11px;
-            font-weight: 700;
-        }
-        .game-header .turn-indicator span {
-            color: #44ff88;
-        }
-        .game-header .btn {
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            background: rgba(255, 255, 255, 0.03);
-            color: rgba(255, 255, 255, 0.25);
-            font-size: 10px;
-            cursor: pointer;
-            touch-action: manipulation;
-        }
-        .game-header .btn:active {
-            transform: scale(0.95);
-        }
-
-        .players-status {
-            display: flex;
-            gap: 4px;
-            justify-content: center;
-            flex-wrap: wrap;
-            padding: 4px 0;
-        }
-        .player-status {
-            background: rgba(255, 255, 255, 0.04);
-            padding: 2px 8px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            font-size: 8px;
-            color: rgba(255, 255, 255, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .player-status .color-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        .player-status .pos {
-            color: rgba(255, 255, 255, 0.15);
-            font-size: 6px;
-        }
-        .player-status.active {
-            border-color: #ffd700;
-            background: rgba(255, 215, 0, 0.06);
-            color: #fff;
-        }
-        .player-status.bot {
-            border-color: rgba(255, 107, 107, 0.2);
-            background: rgba(255, 107, 107, 0.04);
-        }
-
-        .board-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 560px;
-            margin: 4px auto;
-            aspect-ratio: 1;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            padding: 2px;
-            border: 2px solid rgba(255, 215, 0, 0.05);
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            touch-action: none;
-        }
-        canvas#board {
-            width: 100%;
-            height: 100%;
-            border-radius: 8px;
-            display: block;
-            touch-action: none;
-        }
-
-        .bottom-controls {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 5px;
-            padding: 5px 8px;
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-        }
-        .dice-area {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .dice-result {
-            font-size: 28px;
-            min-width: 38px;
-            text-align: center;
-            color: #ffd700;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 2px 6px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 215, 0, 0.06);
-        }
-        .btn-roll {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            border: none;
-            color: #fff;
-            padding: 6px 14px;
-            border-radius: 10px;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all .3s ease;
-            min-height: 36px;
-            touch-action: manipulation;
-        }
-        .btn-roll:active:not(:disabled) {
-            transform: scale(0.95);
-        }
-        .btn-roll:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-        .btn-end-turn {
-            background: linear-gradient(135deg, #44ff88, #00d45a);
-            border: none;
-            color: #000;
-            padding: 6px 14px;
-            border-radius: 10px;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all .3s ease;
-            min-height: 36px;
-            touch-action: manipulation;
-        }
-        .btn-end-turn:active:not(:disabled) {
-            transform: scale(0.95);
-        }
-        .btn-end-turn:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        .log-area {
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 8px;
-            padding: 3px 8px;
-            max-height: 32px;
-            overflow-y: auto;
-            margin-top: 4px;
-            font-size: 8px;
-            color: rgba(255, 255, 255, 0.2);
-            font-family: 'Courier New', monospace;
-            border: 1px solid rgba(255, 255, 255, 0.02);
-        }
-        .log-area .log-entry {
-            padding: 1px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-        }
-        .log-area .log-entry .highlight {
-            color: #ffd700;
-        }
-        .log-area::-webkit-scrollbar {
-            width: 2px;
-        }
-        .log-area::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .log-area::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 4px;
-        }
-
-        /* CONGRATULATIONS */
-        #congrats-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 100;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            animation: fadeIn 0.5s ease;
-        }
-        #congrats-overlay.show {
-            display: flex;
-        }
-        @keyframes fadeIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        #congrats-overlay .trophy {
-            font-size: 80px;
-            animation: bounce 1s infinite;
-        }
-        #congrats-overlay .title {
-            color: #ffd700;
-            font-size: 36px;
-            font-weight: 900;
-            margin-top: 10px;
-            text-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
-            text-align: center;
-        }
-        #congrats-overlay .winner {
-            color: #fff;
-            font-size: 24px;
-            font-weight: 700;
-            margin-top: 5px;
-            text-align: center;
-        }
-        #congrats-overlay .winner span {
-            color: #44ff88;
-        }
-        #congrats-overlay .sub {
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 12px;
-            margin-top: 15px;
-            animation: blink 1s infinite;
-        }
-        @keyframes blink {
-            0%,
-            100% {
-                opacity: 0.3;
-            }
-            50% {
-                opacity: 1;
-            }
-        }
-        #congrats-overlay .btn-ok {
-            margin-top: 20px;
-            background: linear-gradient(135deg, #ffd700, #f0a500);
-            border: none;
-            color: #0a0a1a;
-            padding: 12px 40px;
-            border-radius: 14px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all .3s ease;
-            touch-action: manipulation;
-        }
-        #congrats-overlay .btn-ok:active {
-            transform: scale(0.95);
-        }
-
-        .confetti {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            z-index: 101;
-            border-radius: 2px;
-            animation: confettiFall linear forwards;
-            pointer-events: none;
-        }
-        @keyframes confettiFall {
-            0% {
-                transform: translateY(0) rotate(0deg) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(720deg) scale(0.5);
-                opacity: 0;
-            }
-        }
-
-        @media(max-width:420px) {
-            body {
-                padding: 4px;
-            }
-            #landing-page {
-                padding: 20px 15px;
-                min-height: 70vh;
-                border-radius: 18px;
-            }
-            #landing-page .logo {
-                font-size: 48px;
-            }
-            #landing-page h1 {
-                font-size: 26px;
-            }
-            #landing-page .desc {
-                font-size: 12px;
-            }
-            .btn-landing {
-                padding: 12px 30px;
-                font-size: 16px;
-                max-width: 260px;
-            }
-            #lobby-screen {
-                padding: 15px 10px;
-                border-radius: 16px;
-            }
-            #lobby-screen h2 {
-                font-size: 20px;
-            }
-            .lobby-options {
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
-            .mode-selector {
-                grid-template-columns: 1fr;
-                gap: 6px;
-            }
-            #game-screen {
-                padding: 5px;
-                border-radius: 16px;
-            }
-            .game-header .turn-indicator {
-                font-size: 10px;
-            }
-            .dice-result {
-                font-size: 24px;
-                min-width: 34px;
-                padding: 2px 4px;
-            }
-            .btn-roll,
-            .btn-end-turn {
-                padding: 5px 10px;
-                font-size: 10px;
-                min-height: 30px;
-            }
-            .bottom-controls {
-                gap: 4px;
-                padding: 4px 6px;
-                border-radius: 10px;
-            }
-            .player-status {
-                font-size: 7px;
-                padding: 2px 5px;
-            }
-            .log-area {
-                font-size: 7px;
-                max-height: 28px;
-                padding: 3px 6px;
-            }
-            .lobby-box {
-                padding: 10px 8px;
-            }
-            .lobby-box input {
-                padding: 6px;
-                font-size: 12px;
-            }
-            .lobby-box .btn {
-                padding: 7px;
-                font-size: 11px;
-            }
-            .btn-bot {
-                padding: 10px;
-                font-size: 12px;
-            }
-            .board-wrapper {
-                border-radius: 8px;
-            }
-            .moon-bg {
-                width: 50px !important;
-                height: 50px !important;
-            }
-            .ufo-bg {
-                font-size: 28px !important;
-            }
-            .rocket-bg {
-                font-size: 22px !important;
-            }
-            .space-snake {
-                font-size: 24px !important;
-            }
-            .shooting-star-bg::after {
-                width: 35px !important;
-            }
-            #loadingSpinner {
-                width: 16px;
-                height: 16px;
-            }
-            #congrats-overlay .title {
-                font-size: 24px;
-            }
-            #congrats-overlay .winner {
-                font-size: 18px;
-            }
-            #congrats-overlay .trophy {
-                font-size: 50px;
-            }
-        }
-
-        @media(max-width:360px) {
-            #landing-page .logo {
-                font-size: 40px;
-            }
-            #landing-page h1 {
-                font-size: 22px;
-            }
-            .btn-landing {
-                padding: 10px 20px;
-                font-size: 14px;
-            }
-            .dice-result {
-                font-size: 20px;
-                min-width: 28px;
-            }
-            .btn-roll,
-            .btn-end-turn {
-                padding: 4px 8px;
-                font-size: 9px;
-                min-height: 26px;
-            }
-            .game-header .turn-indicator {
-                font-size: 9px;
-            }
-            .board-wrapper {
-                border-radius: 6px;
-            }
-            .moon-bg {
-                width: 40px !important;
-                height: 40px !important;
-            }
-            .ufo-bg {
-                font-size: 20px !important;
-            }
-            .rocket-bg {
-                font-size: 16px !important;
-            }
-            .space-snake {
-                font-size: 18px !important;
-            }
-        }
-
-        @media(min-width:500px) {
-            #landing-page {
-                min-height: 60vh;
-            }
-            #landing-page .logo {
-                font-size: 80px;
-            }
-            #landing-page h1 {
-                font-size: 42px;
-            }
-            .btn-landing {
-                padding: 16px 60px;
-                font-size: 20px;
-                max-width: 350px;
-            }
-            #lobby-screen h2 {
-                font-size: 28px;
-            }
-            .mode-btn {
-                padding: 16px 12px;
-                font-size: 15px;
-            }
-            .mode-btn .icon {
-                font-size: 28px;
-            }
-            .dice-result {
-                font-size: 40px;
-                min-width: 56px;
-            }
-            .btn-roll,
-            .btn-end-turn {
-                padding: 10px 24px;
-                font-size: 14px;
-                min-height: 44px;
-            }
-            .player-status {
-                font-size: 10px;
-                padding: 4px 12px;
-            }
-            .lobby-box input {
-                padding: 12px;
-                font-size: 15px;
-            }
-            .lobby-box .btn {
-                padding: 12px;
-                font-size: 14px;
-            }
-            .moon-bg {
-                width: 90px !important;
-                height: 90px !important;
-            }
-            .ufo-bg {
-                font-size: 50px !important;
-            }
-            .rocket-bg {
-                font-size: 40px !important;
-            }
-            .space-snake {
-                font-size: 45px !important;
-            }
-            #congrats-overlay .title {
-                font-size: 48px;
-            }
-            #congrats-overlay .winner {
-                font-size: 30px;
-            }
-            #congrats-overlay .trophy {
-                font-size: 100px;
-            }
-        }
-
-        @media(max-height:500px) and (orientation:landscape) {
-            #landing-page {
-                min-height: 90vh;
-                padding: 15px 20px;
-            }
-            #landing-page .logo {
-                font-size: 36px;
-            }
-            #landing-page h1 {
-                font-size: 20px;
-            }
-            #landing-page .desc {
-                font-size: 10px;
-                margin-bottom: 12px;
-            }
-            .btn-landing {
-                padding: 8px 25px;
-                font-size: 14px;
-                max-width: 200px;
-            }
-            #game-screen {
-                padding: 4px;
-            }
-            .board-wrapper {
-                max-width: 40vh;
-            }
-            .bottom-controls {
-                padding: 3px 6px;
-                gap: 3px;
-            }
-            .dice-result {
-                font-size: 18px;
-                min-width: 28px;
-            }
-            .btn-roll,
-            .btn-end-turn {
-                padding: 3px 8px;
-                font-size: 9px;
-                min-height: 24px;
-            }
-            .player-status {
-                font-size: 6px;
-                padding: 1px 4px;
-            }
-            .log-area {
-                max-height: 22px;
-                font-size: 6px;
-            }
-            .game-header .turn-indicator {
-                font-size: 8px;
-            }
-            .game-header .room-id {
-                font-size: 7px;
-            }
-            .moon-bg {
-                width: 30px !important;
-                height: 30px !important;
-            }
-            .ufo-bg {
-                font-size: 16px !important;
-            }
-            .rocket-bg {
-                font-size: 14px !important;
-            }
-            .space-snake {
-                font-size: 16px !important;
-            }
-            #loadingSpinner {
-                width: 14px;
-                height: 14px;
-            }
-        }
+        @media(max-width:420px){body{padding:4px}#landing-page{padding:20px 15px;min-height:70vh;border-radius:18px}#landing-page .logo{font-size:48px}#landing-page h1{font-size:26px}#landing-page .desc{font-size:12px}.btn-landing{padding:12px 30px;font-size:16px;max-width:260px}#lobby-screen{padding:15px 10px;border-radius:16px}#lobby-screen h2{font-size:20px}.lobby-options{grid-template-columns:1fr;gap:8px}.mode-selector{grid-template-columns:1fr;gap:6px}#game-screen{padding:5px;border-radius:16px}.game-header .turn-indicator{font-size:10px}.dice-result{font-size:24px;min-width:34px;padding:2px 4px}.btn-roll,.btn-end-turn{padding:5px 10px;font-size:10px;min-height:30px}.bottom-controls{gap:4px;padding:4px 6px;border-radius:10px}.player-status{font-size:7px;padding:2px 5px}.log-area{font-size:7px;max-height:28px;padding:3px 6px}.lobby-box{padding:10px 8px}.lobby-box input{padding:6px;font-size:12px}.lobby-box .btn{padding:7px;font-size:11px}.btn-bot{padding:10px;font-size:12px}.board-wrapper{border-radius:8px}.moon-bg{width:50px!important;height:50px!important}.ufo-bg{font-size:28px!important}.rocket-bg{font-size:22px!important}.space-snake{font-size:24px!important}.shooting-star-bg::after{width:35px!important}#loadingSpinner{width:16px;height:16px}#congrats-overlay .title{font-size:24px}#congrats-overlay .winner{font-size:18px}#congrats-overlay .trophy{font-size:50px}}
+        @media(max-width:360px){#landing-page .logo{font-size:40px}#landing-page h1{font-size:22px}.btn-landing{padding:10px 20px;font-size:14px}.dice-result{font-size:20px;min-width:28px}.btn-roll,.btn-end-turn{padding:4px 8px;font-size:9px;min-height:26px}.game-header .turn-indicator{font-size:9px}.board-wrapper{border-radius:6px}.moon-bg{width:40px!important;height:40px!important}.ufo-bg{font-size:20px!important}.rocket-bg{font-size:16px!important}.space-snake{font-size:18px!important}}
+        @media(min-width:500px){#landing-page{min-height:60vh}#landing-page .logo{font-size:80px}#landing-page h1{font-size:42px}.btn-landing{padding:16px 60px;font-size:20px;max-width:350px}#lobby-screen h2{font-size:28px}.mode-btn{padding:16px 12px;font-size:15px}.mode-btn .icon{font-size:28px}.dice-result{font-size:40px;min-width:56px}.btn-roll,.btn-end-turn{padding:10px 24px;font-size:14px;min-height:44px}.player-status{font-size:10px;padding:4px 12px}.lobby-box input{padding:12px;font-size:15px}.lobby-box .btn{padding:12px;font-size:14px}.moon-bg{width:90px!important;height:90px!important}.ufo-bg{font-size:50px!important}.rocket-bg{font-size:40px!important}.space-snake{font-size:45px!important}#congrats-overlay .title{font-size:48px}#congrats-overlay .winner{font-size:30px}#congrats-overlay .trophy{font-size:100px}}
+        @media(max-height:500px) and (orientation:landscape){#landing-page{min-height:90vh;padding:15px 20px}#landing-page .logo{font-size:36px}#landing-page h1{font-size:20px}#landing-page .desc{font-size:10px;margin-bottom:12px}.btn-landing{padding:8px 25px;font-size:14px;max-width:200px}#game-screen{padding:4px}.board-wrapper{max-width:40vh}.bottom-controls{padding:3px 6px;gap:3px}.dice-result{font-size:18px;min-width:28px}.btn-roll,.btn-end-turn{padding:3px 8px;font-size:9px;min-height:24px}.player-status{font-size:6px;padding:1px 4px}.log-area{max-height:22px;font-size:6px}.game-header .turn-indicator{font-size:8px}.game-header .room-id{font-size:7px}.moon-bg{width:30px!important;height:30px!important}.ufo-bg{font-size:16px!important}.rocket-bg{font-size:14px!important}.space-snake{font-size:16px!important}#loadingSpinner{width:14px;height:14px}}
     </style>
 </head>
 <body>
-
-    <!-- SPACE BACKGROUND -->
     <div id="space-bg">
         <div class="star" style="width:3px;height:3px;top:5%;left:10%;--duration:2.5s;"></div>
         <div class="star" style="width:2px;height:2px;top:15%;left:85%;--duration:3s;"></div>
@@ -1112,82 +148,43 @@
     </div>
 
     <div id="app">
-
-        <!-- LANDING PAGE -->
         <div id="landing-page">
             <div class="logo">🎲</div>
             <h1>Ular Tangga</h1>
-            <p class="desc">
-                Mainkan game klasik <span>Ular Tangga</span> secara <span>multiplayer</span> dengan teman atau lawan <span>bot</span>!<br>
-                <span>🎯</span> Siapa yang sampai ke 100 pertama?
-            </p>
+            <p class="desc">Mainkan <span>Ular Tangga</span> secara <span>multiplayer</span> dengan teman atau lawan <span>bot</span>!<br><span>🎯</span> Siapa yang sampai ke 100 pertama?</p>
             <button class="btn-landing" id="btnEnter">🚀 Masuk</button>
             <div class="footer-text">✦ Support 2-5 Player ✦</div>
         </div>
 
-        <!-- LOBBY -->
         <div id="lobby-screen">
             <h2>🎲 Pilih Mode</h2>
             <div class="subtitle2">✦ MULTIPLAYER / VS BOT ✦</div>
             <div class="mode-selector">
-                <button class="mode-btn active" id="modeOnline" onclick="setMode('online')">
-                    <span class="icon">🌐</span>Online Multiplayer<span class="desc">Host + Player Join</span>
-                </button>
-                <button class="mode-btn" id="modeBot" onclick="setMode('bot')">
-                    <span class="icon">🤖</span>Vs Bot (Offline)<span class="desc">1 Player vs 4 Bot</span>
-                </button>
+                <button class="mode-btn active" id="modeOnline" onclick="setMode('online')"><span class="icon">🌐</span>Online Multiplayer<span class="desc">Host + Player Join</span></button>
+                <button class="mode-btn" id="modeBot" onclick="setMode('bot')"><span class="icon">🤖</span>Vs Bot (Offline)<span class="desc">1 Player vs 4 Bot</span></button>
             </div>
             <div id="onlineOptions" class="lobby-options">
-                <div class="lobby-box">
-                    <h3>🔨 BUAT LOBBY</h3>
-                    <input type="text" id="playerNameCreate" placeholder="Nama kamu..." value="Host">
-                    <button class="btn btn-create" id="btnCreateLobby">🚀 Buat Lobby</button>
-                </div>
-                <div class="lobby-box">
-                    <h3>🔗 GABUNG LOBBY</h3>
-                    <input type="text" id="lobbyIdInput" placeholder="ID Lobby..." maxlength="6" style="text-transform:uppercase;">
-                    <input type="text" id="playerNameJoin" placeholder="Nama kamu..." value="Player" style="margin-top:5px;">
-                    <button class="btn btn-join" id="btnJoinLobby">🔗 Gabung</button>
-                </div>
+                <div class="lobby-box"><h3>🔨 BUAT LOBBY</h3><input type="text" id="playerNameCreate" placeholder="Nama kamu..." value="Host"><button class="btn btn-create" id="btnCreateLobby">🚀 Buat Lobby</button></div>
+                <div class="lobby-box"><h3>🔗 GABUNG LOBBY</h3><input type="text" id="lobbyIdInput" placeholder="ID Lobby..." maxlength="6" style="text-transform:uppercase;"><input type="text" id="playerNameJoin" placeholder="Nama kamu..." value="Player" style="margin-top:5px;"><button class="btn btn-join" id="btnJoinLobby">🔗 Gabung</button></div>
             </div>
-            <div id="botOptions" style="display:none;">
-                <div class="lobby-box" style="max-width:400px;margin:0 auto;">
-                    <h3>🤖 VS BOT</h3>
-                    <input type="text" id="playerNameBot" placeholder="Nama kamu..." value="Player">
-                    <button class="btn-bot" id="btnStartBot">🎮 Mulai Vs Bot</button>
-                </div>
-            </div>
+            <div id="botOptions" style="display:none;"><div class="lobby-box" style="max-width:400px;margin:0 auto;"><h3>🤖 VS BOT</h3><input type="text" id="playerNameBot" placeholder="Nama kamu..." value="Player"><button class="btn-bot" id="btnStartBot">🎮 Mulai Vs Bot</button></div></div>
             <div id="lobbyStatus">🎲 Pilih mode di atas</div>
             <div id="loadingSpinner"></div>
             <button class="back-btn" id="btnBackLanding">← Kembali</button>
         </div>
 
-        <!-- GAME -->
         <div id="game-screen">
-            <div class="game-header">
-                <div class="room-id">🆔 <span id="roomIdDisplay">-</span></div>
-                <div class="turn-indicator">🎯 Giliran: <span id="turnDisplay">-</span></div>
-                <button class="btn" id="btnLeave">✕ Keluar</button>
-            </div>
+            <div class="game-header"><div class="room-id">🆔 <span id="roomIdDisplay">-</span></div><div class="turn-indicator">🎯 Giliran: <span id="turnDisplay">-</span></div><button class="btn" id="btnLeave">✕ Keluar</button></div>
             <div class="players-status" id="playersStatus"></div>
-            <div class="board-wrapper">
-                <canvas id="board" width="600" height="600"></canvas>
-            </div>
+            <div class="board-wrapper"><canvas id="board" width="600" height="600"></canvas></div>
             <div class="bottom-controls">
-                <div class="dice-area">
-                    <div class="dice-result" id="diceResult">🎲</div>
-                    <button class="btn-roll" id="btnRoll">🎲 Lempar</button>
-                </div>
+                <div class="dice-area"><div class="dice-result" id="diceResult">🎲</div><button class="btn-roll" id="btnRoll">🎲 Lempar</button></div>
                 <button class="btn-end-turn" id="btnEndTurn">⏭️ End Turn</button>
             </div>
-            <div class="log-area" id="logArea">
-                <div class="log-entry">🎮 Selamat datang di Ular Tangga!</div>
-            </div>
+            <div class="log-area" id="logArea"><div class="log-entry">🎮 Selamat datang di Ular Tangga!</div></div>
         </div>
-
     </div>
 
-    <!-- CONGRATULATIONS OVERLAY -->
     <div id="congrats-overlay">
         <div class="trophy">🏆</div>
         <div class="title">🎉 CONGRATULATIONS! 🎉</div>
@@ -1198,1310 +195,437 @@
 
     <script>
         // ============================================================
-        // ULAR TANGGA - BROADCAST CHANNEL MULTIPLAYER
-        // (Komunikasi antar tab di browser yang sama)
+        // ULAR TANGGA - DADU 6 + CONGRATULATIONS + BOT JALAN
         // ============================================================
+        const BOARD_SIZE=10,TOTAL_CELLS=100;
+        const LADDERS={4:25,30:5,26:67,21:39,47:13,56:19,43:76,59:80};
+        const SNAKES={73:51,72:42,98:55,92:75,71:89};
+        const PLAYER_COLORS=['#ff4757','#2ed573','#ffa502','#1e90ff','#a29bfe'];
+        const BOT_NAMES=['Bot Alpha','Bot Beta','Bot Gamma','Bot Delta'];
+        const MAX_PLAYERS=5;
 
-        const BOARD_SIZE = 10;
-        const TOTAL_CELLS = 100;
+        let players={},playerId=null,playerName='',roomId=null,isHost=false,gameStarted=false,currentTurn=null,isMyTurn=false,isRolling=false,logEntries=[],hasRolled=false,isAnimating=false,isBotMode=false,botTimeout=null,diceAnimationInterval=null,joinTimeout=null,isConnecting=false,isPeerReady=false,peerInitialized=false,hostPeerId=null,isConnectedToHost=false,isGameOver=false,gameWinner=null,rollCount=0;
+        let peer=null,connections={},gameMode='online';
 
-        const LADDERS = { 4: 25, 30: 5, 26: 67, 21: 39, 47: 13, 56: 19, 43: 76, 59: 80 };
-        const SNAKES = { 73: 51, 72: 42, 98: 55, 92: 75, 71: 89 };
+        const boardImage=new Image();
+        boardImage.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22600%22 height=%22600%22%3E%3Crect width=%22600%22 height=%22600%22 fill=%22%231a1a2e%22/%3E%3Crect x=%221%22 y=%221%22 width=%22598%22 height=%22598%22 fill=%22%23222a3a%22 rx=%228%22/%3E%3C/svg%3E';
+        let boardImageLoaded=false;
+        boardImage.onload=function(){boardImageLoaded=true;drawBoard();};
+        boardImage.onerror=function(){boardImageLoaded=false;drawBoard();};
 
-        const PLAYER_COLORS = ['#ff4757', '#2ed573', '#ffa502', '#1e90ff', '#a29bfe'];
-        const BOT_NAMES = ['Bot Alpha', 'Bot Beta', 'Bot Gamma', 'Bot Delta'];
-        const MAX_PLAYERS = 5;
+        const landingPage=document.getElementById('landing-page');
+        const lobbyScreen=document.getElementById('lobby-screen');
+        const gameScreen=document.getElementById('game-screen');
+        const boardCanvas=document.getElementById('board');
+        const ctx=boardCanvas.getContext('2d');
+        const playerNameCreate=document.getElementById('playerNameCreate');
+        const playerNameJoin=document.getElementById('playerNameJoin');
+        const playerNameBot=document.getElementById('playerNameBot');
+        const lobbyIdInput=document.getElementById('lobbyIdInput');
+        const btnCreateLobby=document.getElementById('btnCreateLobby');
+        const btnJoinLobby=document.getElementById('btnJoinLobby');
+        const btnStartBot=document.getElementById('btnStartBot');
+        const btnRoll=document.getElementById('btnRoll');
+        const btnEndTurn=document.getElementById('btnEndTurn');
+        const btnLeave=document.getElementById('btnLeave');
+        const btnBackLanding=document.getElementById('btnBackLanding');
+        const btnEnter=document.getElementById('btnEnter');
+        const roomIdDisplay=document.getElementById('roomIdDisplay');
+        const turnDisplay=document.getElementById('turnDisplay');
+        const diceResult=document.getElementById('diceResult');
+        const playersStatus=document.getElementById('playersStatus');
+        const logArea=document.getElementById('logArea');
+        const lobbyStatus=document.getElementById('lobbyStatus');
+        const loadingSpinner=document.getElementById('loadingSpinner');
+        const onlineOptions=document.getElementById('onlineOptions');
+        const botOptions=document.getElementById('botOptions');
+        const modeOnline=document.getElementById('modeOnline');
+        const modeBot=document.getElementById('modeBot');
+        const congratsOverlay=document.getElementById('congrats-overlay');
+        const winnerName=document.getElementById('winnerName');
+        const btnCongratsOk=document.getElementById('btnCongratsOk');
 
-        let players = {};
-        let playerId = null;
-        let playerName = '';
-        let roomId = null;
-        let isHost = false;
-        let gameStarted = false;
-        let currentTurn = null;
-        let isMyTurn = false;
-        let isRolling = false;
-        let logEntries = [];
-        let hasRolled = false;
-        let isAnimating = false;
-        let isBotMode = false;
-        let botTimeout = null;
-        let diceAnimationInterval = null;
-        let joinTimeout = null;
-        let isConnecting = false;
-        let isGameOver = false;
-        let rollCount = 0;
-        let isProcessingBot = false;
-
-        // BROADCAST CHANNEL
-        let channel = null;
-        let isChannelReady = false;
-
-        const boardImage = new Image();
-        boardImage.src = 'papan.jpg';
-        let boardImageLoaded = false;
-        boardImage.onload = function() { boardImageLoaded = true;
-            drawBoard(); };
-        boardImage.onerror = function() { boardImageLoaded = false;
-            drawBoard(); };
-
-        // DOM
-        const landingPage = document.getElementById('landing-page');
-        const lobbyScreen = document.getElementById('lobby-screen');
-        const gameScreen = document.getElementById('game-screen');
-        const boardCanvas = document.getElementById('board');
-        const ctx = boardCanvas.getContext('2d');
-        const playerNameCreate = document.getElementById('playerNameCreate');
-        const playerNameJoin = document.getElementById('playerNameJoin');
-        const playerNameBot = document.getElementById('playerNameBot');
-        const lobbyIdInput = document.getElementById('lobbyIdInput');
-        const btnCreateLobby = document.getElementById('btnCreateLobby');
-        const btnJoinLobby = document.getElementById('btnJoinLobby');
-        const btnStartBot = document.getElementById('btnStartBot');
-        const btnRoll = document.getElementById('btnRoll');
-        const btnEndTurn = document.getElementById('btnEndTurn');
-        const btnLeave = document.getElementById('btnLeave');
-        const btnBackLanding = document.getElementById('btnBackLanding');
-        const btnEnter = document.getElementById('btnEnter');
-        const roomIdDisplay = document.getElementById('roomIdDisplay');
-        const turnDisplay = document.getElementById('turnDisplay');
-        const diceResult = document.getElementById('diceResult');
-        const playersStatus = document.getElementById('playersStatus');
-        const logArea = document.getElementById('logArea');
-        const lobbyStatus = document.getElementById('lobbyStatus');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const onlineOptions = document.getElementById('onlineOptions');
-        const botOptions = document.getElementById('botOptions');
-        const modeOnline = document.getElementById('modeOnline');
-        const modeBot = document.getElementById('modeBot');
-        const congratsOverlay = document.getElementById('congrats-overlay');
-        const winnerName = document.getElementById('winnerName');
-        const btnCongratsOk = document.getElementById('btnCongratsOk');
-
-        // ============================================================
-        // CONGRATULATIONS
-        // ============================================================
-        function showCongratulations(name) {
-            isGameOver = true;
-            winnerName.textContent = name;
+        function showCongratulations(name){
+            isGameOver=true;
+            winnerName.textContent=name;
             congratsOverlay.classList.add('show');
             createConfetti();
         }
 
-        function hideCongratulations() {
+        function hideCongratulations(){
             congratsOverlay.classList.remove('show');
-            isGameOver = false;
-            document.querySelectorAll('.confetti').forEach(el => el.remove());
+            isGameOver=false;
             resetAll();
             gameScreen.classList.remove('active');
-            lobbyScreen.style.display = 'block';
-            showStatus('👋 Game selesai', '');
+            lobbyScreen.style.display='block';
+            showStatus('👋 Game selesai','');
             setMode('online');
         }
+        btnCongratsOk.addEventListener('click',hideCongratulations);
 
-        btnCongratsOk.addEventListener('click', hideCongratulations);
-
-        function createConfetti() {
-            const colors = ['#ff6b6b', '#ffd700', '#44ddff', '#ff66aa', '#44ff88', '#ff8844'];
-            for (let i = 0; i < 80; i++) {
-                setTimeout(() => {
-                    const el = document.createElement('div');
-                    el.className = 'confetti';
-                    const size = Math.random() * 8 + 4;
-                    const isCircle = Math.random() > 0.5;
-                    el.style.width = isCircle ? size + 'px' : size * 0.5 + 'px';
-                    el.style.height = isCircle ? size + 'px' : size * 1.5 + 'px';
-                    el.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    el.style.borderRadius = isCircle ? '50%' : '2px';
-                    el.style.left = Math.random() * 100 + '%';
-                    el.style.top = '-10px';
-                    el.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
-                    el.style.animationDelay = (Math.random() * 0.5) + 's';
-                    el.style.transform = `rotate(${Math.random() * 360}deg)`;
+        function createConfetti(){
+            const colors=['#ff6b6b','#ffd700','#44ddff','#ff66aa','#44ff88','#ff8844'];
+            for(let i=0;i<80;i++){
+                setTimeout(()=>{
+                    const el=document.createElement('div');
+                    el.className='confetti';
+                    const size=Math.random()*8+4,isCircle=Math.random()>.5;
+                    el.style.width=isCircle?size+'px':size*.5+'px';
+                    el.style.height=isCircle?size+'px':size*1.5+'px';
+                    el.style.background=colors[Math.floor(Math.random()*colors.length)];
+                    el.style.borderRadius=isCircle?'50%':'2px';
+                    el.style.left=Math.random()*100+'%';
+                    el.style.top='-10px';
+                    el.style.animationDuration=(Math.random()*2+1.5)+'s';
+                    el.style.animationDelay=(Math.random()*.5)+'s';
+                    el.style.transform=`rotate(${Math.random()*360}deg)`;
                     document.body.appendChild(el);
-                    setTimeout(() => el.remove(), 4000);
-                }, i * 30);
+                    setTimeout(()=>el.remove(),4000);
+                },i*30);
             }
         }
 
-        // ============================================================
-        // LANDING PAGE
-        // ============================================================
-        btnEnter.addEventListener('click', () => {
-            landingPage.style.display = 'none';
-            lobbyScreen.style.display = 'block';
-            initChannel();
+        btnEnter.addEventListener('click',()=>{
+            landingPage.style.display='none';
+            lobbyScreen.style.display='block';
+            if(!peerInitialized){initPeer();}
+            else{showStatus('✅ Terhubung!','success');loadingSpinner.style.display='none';}
         });
 
-        btnBackLanding.addEventListener('click', () => {
-            lobbyScreen.style.display = 'none';
-            landingPage.style.display = 'flex';
+        btnBackLanding.addEventListener('click',()=>{
+            lobbyScreen.style.display='none';
+            landingPage.style.display='flex';
             leaveGame();
         });
 
-        function resetAll() {
-            players = {};
-            gameStarted = false;
-            currentTurn = null;
-            isMyTurn = false;
-            hasRolled = false;
-            isAnimating = false;
-            isBotMode = false;
-            roomId = null;
-            isHost = false;
-            logEntries = [];
-            isGameOver = false;
-            rollCount = 0;
-            isProcessingBot = false;
-            renderLog();
-            updateButtons();
-            if (joinTimeout) { clearTimeout(joinTimeout);
-                joinTimeout = null; }
-            isConnecting = false;
-            loadingSpinner.style.display = 'none';
+        function resetAll(){
+            players={};gameStarted=false;currentTurn=null;isMyTurn=false;hasRolled=false;isAnimating=false;isBotMode=false;roomId=null;isHost=false;hostPeerId=null;isConnectedToHost=false;logEntries=[];isGameOver=false;gameWinner=null;rollCount=0;
+            renderLog();updateButtons();connections={};
+            if(joinTimeout){clearTimeout(joinTimeout);joinTimeout=null;}
+            if(botTimeout){clearTimeout(botTimeout);botTimeout=null;}
+            isConnecting=false;loadingSpinner.style.display='none';
             congratsOverlay.classList.remove('show');
-            document.querySelectorAll('.confetti').forEach(el => el.remove());
+            document.querySelectorAll('.confetti').forEach(el=>el.remove());
         }
 
-        function setMode(mode) {
-            gameMode = mode;
-            if (mode === 'online') {
-                modeOnline.classList.add('active');
-                modeBot.classList.remove('active');
-                onlineOptions.style.display = 'grid';
-                botOptions.style.display = 'none';
-                lobbyStatus.className = '';
-                lobbyStatus.textContent = '🌐 Mode Online: Buat lobby atau gabung';
-                loadingSpinner.style.display = 'none';
-            } else {
-                modeBot.classList.add('active');
-                modeOnline.classList.remove('active');
-                onlineOptions.style.display = 'none';
-                botOptions.style.display = 'block';
-                lobbyStatus.className = '';
-                lobbyStatus.textContent = '🤖 Mode Bot: 1 Player vs 4 Bot';
-                loadingSpinner.style.display = 'none';
+        function setMode(mode){
+            gameMode=mode;
+            if(mode==='online'){
+                modeOnline.classList.add('active');modeBot.classList.remove('active');
+                onlineOptions.style.display='grid';botOptions.style.display='none';
+                lobbyStatus.className='';lobbyStatus.textContent='🌐 Mode Online: Buat lobby atau gabung';
+                loadingSpinner.style.display='none';
+            }else{
+                modeBot.classList.add('active');modeOnline.classList.remove('active');
+                onlineOptions.style.display='none';botOptions.style.display='block';
+                lobbyStatus.className='';lobbyStatus.textContent='🤖 Mode Bot: 1 Player vs 4 Bot';
+                loadingSpinner.style.display='none';
             }
-            if (isChannelReady) {
-                showStatus('✅ Terhubung!', 'success');
-                loadingSpinner.style.display = 'none';
-            }
+            if(isPeerReady){showStatus('✅ Terhubung!','success');loadingSpinner.style.display='none';}
         }
 
-        function showStatus(msg, type = '') {
-            lobbyStatus.className = type;
-            lobbyStatus.textContent = msg;
-            if (type === 'info' || type === '') {
-                if (!msg.includes('Terhubung') && !msg.includes('✅')) {
-                    loadingSpinner.style.display = 'inline-block';
-                } else {
-                    loadingSpinner.style.display = 'none';
-                }
-            } else {
-                loadingSpinner.style.display = 'none';
-            }
+        function showStatus(msg,type=''){
+            lobbyStatus.className=type;
+            lobbyStatus.textContent=msg;
+            if(type==='info'||type===''){
+                if(!msg.includes('Terhubung')&&!msg.includes('✅')){loadingSpinner.style.display='inline-block';}
+                else{loadingSpinner.style.display='none';}
+            }else{loadingSpinner.style.display='none';}
         }
 
-        // ============================================================
-        // BROADCAST CHANNEL INIT
-        // ============================================================
-        function initChannel() {
-            try {
-                channel = new BroadcastChannel('ular_tangga_channel');
-                isChannelReady = true;
-                console.log('✅ BroadcastChannel siap!');
-
-                channel.onmessage = (event) => {
-                    const data = event.data;
-                    if (data.roomId && data.roomId !== roomId) return;
-                    if (data.sender === playerId) return;
-                    handleMessage(data);
-                };
-
-                showStatus('✅ Terhubung!', 'success');
-                loadingSpinner.style.display = 'none';
-                btnCreateLobby.disabled = false;
-                btnJoinLobby.disabled = false;
-
-                return true;
-            } catch (e) {
-                console.error('❌ BroadcastChannel error:', e);
-                showStatus('⚠️ Browser tidak support multiplayer', 'error');
-                return false;
-            }
+        function initPeer(){
+            if(peerInitialized){console.log('✅ Peer sudah diinisialisasi');return;}
+            showStatus('🔗 Menghubungkan ke server...','info');
+            loadingSpinner.style.display='inline-block';
+            const id='st_'+Date.now()+'_'+Math.random().toString(36).substr(2,4);
+            peer=new Peer(id,{debug:0});
+            const connectTimeout=setTimeout(()=>{if(!isPeerReady&&peer){showStatus('⚠️ Koneksi lambat, coba refresh','warning');loadingSpinner.style.display='none';}},8000);
+            peer.on('open',(id)=>{clearTimeout(connectTimeout);playerId=id;isPeerReady=true;peerInitialized=true;console.log('✅ Peer ID:',id);showStatus('✅ Terhubung!','success');loadingSpinner.style.display='none';btnCreateLobby.disabled=false;btnJoinLobby.disabled=false;});
+            peer.on('connection',(conn)=>{console.log('📥 Incoming connection dari:',conn.peer);connections[conn.peer]=conn;setupConnection(conn);});
+            peer.on('error',(err)=>{console.error('❌ Peer error:',err);clearTimeout(connectTimeout);if(err.type==='unavailable-id'){showStatus('❌ ID tidak tersedia, coba refresh','error');}else if(err.type==='disconnected'){showStatus('⚠️ Koneksi terputus, refresh halaman','error');}else if(err.type==='peer-unavailable'){showStatus('❌ Peer tidak ditemukan, cek ID lobby','error');}else{showStatus('⚠️ Error: '+(err.message||err.type),'error');}loadingSpinner.style.display='none';isPeerReady=false;});
+            peer.on('disconnected',()=>{showStatus('⚠️ Koneksi terputus','error');isPeerReady=false;loadingSpinner.style.display='none';});
         }
 
-        function broadcast(data) {
-            if (!channel) return;
-            try {
-                channel.postMessage({ ...data, sender: playerId, roomId: roomId });
-                console.log('📤 Broadcast:', data.type);
-            } catch (e) {
-                console.warn('Broadcast error:', e);
-            }
-        }
+        function reconnectPeer(){if(peer){try{peer.destroy();}catch(e){}}peer=null;isPeerReady=false;peerInitialized=false;initPeer();}
 
-        // ============================================================
-        // HANDLE MESSAGE
-        // ============================================================
-        function handleMessage(data) {
-            console.log('📨 Pesan:', data.type, data);
-
-            switch (data.type) {
-                case 'PLAYER_JOIN':
-                    if (Object.keys(players).length >= MAX_PLAYERS) {
-                        broadcast({ type: 'LOBBY_FULL', to: data.playerId });
-                        return;
-                    }
-                    if (!players[data.playerId]) {
-                        players[data.playerId] = {
-                            id: data.playerId,
-                            name: data.name || 'Player',
-                            position: 1
-                        };
-                        addLog(`👋 ${data.name || 'Player'} bergabung!`, false);
-                        updatePlayersStatus();
-                        drawBoard();
-                        broadcast({ type: 'PLAYER_LIST', players: players });
-                    }
-                    break;
-
-                case 'LOBBY_FULL':
-                    showStatus('❌ Lobby sudah penuh! (max 5 pemain)', 'error');
-                    break;
-
-                case 'PLAYER_LIST':
-                    players = data.players;
-                    if (playerId && !players[playerId]) {
-                        players[playerId] = { id: playerId, name: playerName, position: 1 };
-                    }
-                    updatePlayersStatus();
-                    drawBoard();
-                    break;
-
-                case 'DICE_ROLL':
-                    if (data.playerId !== playerId) {
-                        addLog(`🎲 ${players[data.playerId]?.name} melempar ${data.value}`, false);
-                        processDiceRoll(data.playerId, data.value);
-                    }
-                    break;
-
-                case 'TURN_UPDATE':
-                    currentTurn = data.currentTurn;
-                    isMyTurn = (currentTurn === playerId);
-                    hasRolled = false;
-                    updateButtons();
-                    updatePlayersStatus();
-                    turnDisplay.textContent = players[currentTurn]?.name || '?';
-                    if (isMyTurn) addLog(`🎯 Giliranmu!`, true);
-                    drawBoard();
-                    break;
-
-                case 'START_GAME':
-                    gameStarted = true;
-                    currentTurn = data.firstTurn || Object.keys(players)[0];
-                    isMyTurn = (currentTurn === playerId);
-                    hasRolled = false;
-                    updateButtons();
-                    turnDisplay.textContent = players[currentTurn]?.name || '?';
-                    addLog(`🎮 Game dimulai! Giliran ${players[currentTurn]?.name}`, true);
-                    updatePlayersStatus();
-                    drawBoard();
-                    break;
-
-                case 'END_TURN':
-                    if (data.nextTurn) {
-                        currentTurn = data.nextTurn;
-                    } else {
-                        const keys = Object.keys(players);
-                        const idx = keys.indexOf(data.playerId);
-                        const nextIdx = (idx + 1) % keys.length;
-                        currentTurn = keys[nextIdx];
-                    }
-                    isMyTurn = (currentTurn === playerId);
-                    hasRolled = false;
-                    updateButtons();
-                    updatePlayersStatus();
-                    turnDisplay.textContent = players[currentTurn]?.name || '?';
-                    if (isMyTurn) {
-                        addLog(`🎯 Giliranmu!`, true);
-                    } else {
-                        addLog(`⏳ Menunggu ${players[currentTurn]?.name}...`, false);
-                    }
-                    drawBoard();
-                    break;
-
-                case 'GAME_OVER':
-                    gameStarted = false;
-                    updateButtons();
-                    const winner = players[data.winner];
-                    addLog(`🏆 ${winner?.name} MENANG! 🏆`, true);
-                    if (!isBotMode) {
-                        showCongratulations(winner?.name || 'Pemain');
-                    }
-                    break;
-
-                case 'SYNC':
-                    if (data.players) {
-                        players = data.players;
-                        if (playerId && !players[playerId]) {
-                            players[playerId] = { id: playerId, name: playerName, position: 1 };
-                        }
-                        updatePlayersStatus();
-                        drawBoard();
-                    }
-                    if (data.currentTurn) {
-                        currentTurn = data.currentTurn;
-                        isMyTurn = (currentTurn === playerId);
-                        updateButtons();
-                        turnDisplay.textContent = players[currentTurn]?.name || '?';
-                    }
-                    if (data.gameStarted !== undefined) {
-                        gameStarted = data.gameStarted;
-                        updateButtons();
-                    }
-                    break;
-
-                case 'LEAVE':
-                    if (players[data.playerId]) {
-                        const name = players[data.playerId]?.name;
-                        delete players[data.playerId];
-                        addLog(`👋 ${name} keluar`, false);
-                        updatePlayersStatus();
-                        drawBoard();
-                        broadcast({ type: 'PLAYER_LIST', players: players });
-                        if (Object.keys(players).length < 2 && !isBotMode) {
-                            gameStarted = false;
-                            updateButtons();
-                            addLog(`⏳ Menunggu 1 pemain lagi (min 2)...`, false);
-                        }
-                    }
-                    break;
-
-                case 'SYNC_REQUEST':
-                    broadcast({
-                        type: 'SYNC',
-                        players: players,
-                        currentTurn: currentTurn,
-                        gameStarted: gameStarted
-                    });
-                    break;
-
-                case 'INVALID_ID':
-                    showStatus('❌ ID Lobby salah! Periksa kembali.', 'error');
-                    break;
-            }
-        }
-
-        // ============================================================
-        // POSISI KOTAK
-        // ============================================================
-        function getCellPosition(cell) {
-            const row = Math.floor((cell - 1) / BOARD_SIZE);
-            const col = (cell - 1) % BOARD_SIZE;
-            const x = row % 2 === 0 ? col : (BOARD_SIZE - 1 - col);
-            const y = BOARD_SIZE - 1 - row;
-            return { x, y };
-        }
-
-        // ============================================================
-        // DRAW BOARD
-        // ============================================================
-        function drawBoard() {
-            const w = boardCanvas.width,
-                h = boardCanvas.height;
-            ctx.clearRect(0, 0, w, h);
-            if (boardImageLoaded && boardImage.complete && boardImage.naturalWidth > 0) {
-                ctx.drawImage(boardImage, 0, 0, w, h);
-            } else {
-                ctx.fillStyle = 'rgba(10,10,30,0.6)';
-                ctx.fillRect(0, 0, w, h);
-                ctx.fillStyle = 'rgba(255,255,255,0.15)';
-                ctx.font = '16px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('📷 Papan tidak ditemukan', w / 2, h / 2);
-                ctx.fillText('Upload papan.jpg', w / 2, h / 2 + 25);
-            }
-            const playerKeys = Object.keys(players);
-            const offsets = [
-                [-8, -8],
-                [8, -8],
-                [-8, 8],
-                [8, 8],
-                [0, 0]
-            ];
-            for (let i = 0; i < playerKeys.length; i++) {
-                const pid = playerKeys[i],
-                    p = players[pid];
-                if (!p) continue;
-                const pos = getCellPosition(p.position);
-                const cellSize = w / BOARD_SIZE;
-                const x = pos.x * cellSize + cellSize / 2 + offsets[i % 5][0];
-                const y = pos.y * cellSize + cellSize / 2 + offsets[i % 5][1];
-                const color = PLAYER_COLORS[i % PLAYER_COLORS.length];
-                const radius = Math.max(cellSize * 0.14, 8);
-                ctx.shadowColor = color;
-                ctx.shadowBlur = 15;
-                ctx.fillStyle = color;
-                ctx.beginPath();
-                ctx.arc(x, y, radius, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.shadowBlur = 0;
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.arc(x, y, radius, 0, Math.PI * 2);
-                ctx.stroke();
-                ctx.fillStyle = '#fff';
-                ctx.font = `bold ${Math.max(radius * 1.1, 9)}px Arial`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(p.name ? p.name[0].toUpperCase() : '?', x, y + 1);
-            }
-        }
-
-        // ============================================================
-        // ANIMASI GERAKAN
-        // ============================================================
-        function animatePlayerMove(pid, steps, callback) {
-            if (isAnimating) return;
-            const p = players[pid];
-            if (!p) return;
-            const startPos = p.position;
-            let currentPos = startPos,
-                step = 1;
-            isAnimating = true;
-            btnRoll.disabled = true;
-            btnEndTurn.disabled = true;
-
-            const stepInterval = setInterval(() => {
-                if (step > steps) {
-                    clearInterval(stepInterval);
-                    let finalPos = currentPos;
-                    if (LADDERS[finalPos]) {
-                        const target = LADDERS[finalPos];
-                        addLog(`🪜 ${p.name} NAIK TANGGA! ${finalPos} → ${target}`, true);
-                        finalPos = target;
-                        p.position = finalPos;
-                        drawBoard();
-                    } else if (SNAKES[finalPos]) {
-                        const target = SNAKES[finalPos];
-                        addLog(`🐍 ${p.name} TURUN ULAR! ${finalPos} → ${target}`, true);
-                        finalPos = target;
-                        p.position = finalPos;
-                        drawBoard();
-                    }
-                    p.position = finalPos;
-                    if (finalPos === TOTAL_CELLS) {
-                        addLog(`🏆 ${p.name} MENANG! 🏆`, true);
-                        gameStarted = false;
-                        if (!isBotMode) {
-                            broadcast({ type: 'GAME_OVER', winner: pid });
-                        }
-                        updatePlayersStatus();
-                        drawBoard();
-                        updateButtons();
-                        isAnimating = false;
-                        showCongratulations(p.name);
-                        if (callback) callback();
-                        return;
-                    }
-                    updatePlayersStatus();
-                    drawBoard();
-                    if (pid === playerId || isBotMode) {
-                        hasRolled = true;
-                        isRolling = false;
-                        btnEndTurn.disabled = false;
-                        updateButtons();
-                        if (rollCount === 6) {
-                            addLog(`🎯 ${p.name} mendapat giliran tambahan karena dadu 6!`, true);
-                            setTimeout(() => {
-                                if (pid === playerId || isBotMode) {
-                                    btnRoll.disabled = false;
-                                    btnEndTurn.disabled = true;
-                                    hasRolled = false;
-                                    updateButtons();
-                                }
-                            }, 500);
-                        }
-                    }
-                    isAnimating = false;
-                    if (callback) callback();
-                    return;
-                }
-
-                currentPos = startPos + step;
-                p.position = currentPos;
-                drawBoard();
-                step++;
-            }, 120);
-        }
-
-        // ============================================================
-        // PROSES DADU
-        // ============================================================
-        function processDiceRoll(pid, value) {
-            const p = players[pid];
-            if (!p) return;
-
-            rollCount = value;
-
-            let newPos = p.position + value;
-
-            if (newPos > TOTAL_CELLS) {
-                const over = newPos - TOTAL_CELLS;
-                newPos = TOTAL_CELLS - over;
-                addLog(`↩️ ${p.name} melewati 100! Mundur ke ${newPos}`, true);
-            }
-
-            if (SNAKES[newPos]) {
-                addLog(`🐍 ${p.name} terkena ular! ${newPos} → ${SNAKES[newPos]}`, true);
-                newPos = SNAKES[newPos];
-            } else if (LADDERS[newPos]) {
-                addLog(`🪜 ${p.name} naik tangga! ${newPos} → ${LADDERS[newPos]}`, true);
-                newPos = LADDERS[newPos];
-            }
-
-            p.position = newPos;
-            addLog(`🎲 ${p.name} melempar ${value} → posisi ${newPos}`, false);
-
-            if (newPos === TOTAL_CELLS) {
-                addLog(`🏆 ${p.name} MENANG! 🏆`, true);
-                gameStarted = false;
-                if (!isBotMode) {
-                    broadcast({ type: 'GAME_OVER', winner: pid });
-                }
-                updatePlayersStatus();
-                drawBoard();
-                updateButtons();
-                showCongratulations(p.name);
-                return;
-            }
-
-            updatePlayersStatus();
-            drawBoard();
-            updateButtons();
-
-            if (value === 6) {
-                addLog(`🎯 ${p.name} mendapat giliran tambahan karena dadu 6!`, true);
-                hasRolled = false;
-                rollCount = 0;
-                btnRoll.disabled = false;
-                btnEndTurn.disabled = true;
-                updateButtons();
-                if (isBotMode && p.isBot) {
-                    setTimeout(() => {
-                        if (gameStarted && !isGameOver) {
-                            doBotTurn();
-                        }
-                    }, 600);
-                }
-            } else {
-                endTurn();
-            }
-        }
-
-        // ============================================================
-        // GAME LOGIC
-        // ============================================================
-        function addLog(message, highlight = false) {
-            logEntries.push({ message, highlight, time: Date.now() });
-            if (logEntries.length > 30) logEntries.shift();
-            renderLog();
-        }
-
-        function renderLog() {
-            logArea.innerHTML = logEntries.map(e =>
-                `<div class="log-entry">${e.highlight ? '<span class="highlight">' : ''}${e.message}${e.highlight ? '</span>' : ''}</div>`
-            ).join('');
-            logArea.scrollTop = logArea.scrollHeight;
-        }
-
-        function updatePlayersStatus() {
-            const keys = Object.keys(players);
-            playersStatus.innerHTML = keys.map((pid, i) => {
-                const p = players[pid];
-                const isActive = p && pid === currentTurn;
-                const isBot = p && p.isBot;
-                return `<div class="player-status ${isActive ? 'active' : ''} ${isBot ? 'bot' : ''}">
-                            <span class="color-dot" style="background:${PLAYER_COLORS[i % PLAYER_COLORS.length]}"></span>
-                            ${p ? p.name.substring(0,8) : '?'}
-                            ${p ? `<span class="pos">📍${p.position || 1}</span>` : ''}
-                            ${isActive ? '🎯' : ''}
-                            ${pid === playerId ? ' 👤' : ''}
-                            ${isBot ? ' 🤖' : ''}
-                        </div>`;
-            }).join('');
-            if (keys.length > 0 && players[currentTurn]) turnDisplay.textContent = players[currentTurn]?.name || keys[0];
-        }
-
-        function updateButtons() {
-            const playerCount = Object.keys(players).length;
-            if (isAnimating || isGameOver) {
-                btnRoll.disabled = true;
-                btnEndTurn.disabled = true;
-                return;
-            }
-
-            if (isBotMode) {
-                if (!gameStarted) {
-                    btnRoll.disabled = false;
-                    btnRoll.textContent = '🎮 Mulai';
-                    btnRoll.onclick = startBotGame;
-                    btnEndTurn.disabled = true;
-                    return;
-                }
-                const isActive = gameStarted && isMyTurn && !isRolling && !isAnimating;
-                btnRoll.textContent = '🎲 Lempar';
-                btnRoll.onclick = rollDice;
-                btnRoll.disabled = !isActive || hasRolled;
-                btnEndTurn.disabled = !(isActive && hasRolled);
-                return;
-            }
-
-            if (isHost && !gameStarted && playerCount >= 2) {
-                btnRoll.disabled = false;
-                btnRoll.textContent = '🎮 Mulai';
-                btnRoll.onclick = startGame;
-                btnEndTurn.disabled = true;
-                return;
-            }
-            if (isHost && !gameStarted && playerCount < 2) {
-                btnRoll.disabled = true;
-                btnRoll.textContent = '⏳ Tunggu...';
-                btnEndTurn.disabled = true;
-                return;
-            }
-            if (!gameStarted) {
-                btnRoll.disabled = true;
-                btnRoll.textContent = '⏳ Menunggu...';
-                btnEndTurn.disabled = true;
-                return;
-            }
-
-            const isActive = gameStarted && isMyTurn && !isRolling && !isAnimating;
-            btnRoll.textContent = '🎲 Lempar';
-            btnRoll.onclick = rollDice;
-            btnRoll.disabled = !isActive || hasRolled;
-            btnEndTurn.disabled = !(isActive && hasRolled);
-
-            if (!isBotMode && currentTurn && players[currentTurn] && players[currentTurn].isBot) {
-                btnRoll.disabled = true;
-                btnEndTurn.disabled = true;
-            }
-        }
-
-        // ============================================================
-        // DICE & TURN
-        // ============================================================
-        function rollDice() {
-            if (isAnimating) { addLog('⏳ Tunggu animasi...', false); return; }
-            if (isRolling) { addLog('⏳ Tunggu dadu...', false); return; }
-            if (!gameStarted) { addLog('⏳ Game belum mulai!', false); return; }
-            if (hasRolled) {
-                if (rollCount === 6) {
-                    hasRolled = false;
-                    btnEndTurn.disabled = true;
-                    updateButtons();
-                } else {
-                    addLog('⚠️ Kamu sudah lempar! Klik End Turn', true);
-                    return;
-                }
-            }
-            if (!isBotMode && !isMyTurn) { addLog('❌ Bukan giliranmu!', true); return; }
-            if (Object.keys(players).length < 2 && !isBotMode) { addLog('⏳ Butuh 2 pemain!', false); return; }
-
-            isRolling = true;
-            btnRoll.disabled = true;
-            btnEndTurn.disabled = true;
-
-            animateDice((finalVal) => {
-                if (!isBotMode) {
-                    broadcast({ type: 'DICE_ROLL', playerId: playerId, value: finalVal });
-                }
-                processDiceRoll(playerId, finalVal);
-                isRolling = false;
+        function setupConnection(conn){
+            conn.on('open',()=>{
+                console.log('✅ Connection open dengan:',conn.peer);
+                if(isHost&&roomId){const hostInfo={type:'HOST_INFO',hostId:playerId,roomId:roomId,players:players};conn.send(JSON.stringify(hostInfo));console.log('📤 Host info dikirim ke:',conn.peer);}
             });
+            conn.on('data',(data)=>{try{const parsed=typeof data==='string'?JSON.parse(data):data;if(parsed.sender===playerId)return;if(parsed.roomId&&parsed.roomId!==roomId)return;handleMessage(parsed,conn.peer);}catch(e){console.warn('Invalid data:',data);}});
+            conn.on('close',()=>{console.log('🔌 Connection closed:',conn.peer);delete connections[conn.peer];if(players[conn.peer]){const name=players[conn.peer]?.name||'Pemain';delete players[conn.peer];addLog(`👋 ${name} keluar`,false);updatePlayersStatus();drawBoard();if(Object.keys(players).length<2&&!isBotMode){gameStarted=false;updateButtons();addLog(`⏳ Menunggu 1 pemain lagi (min 2)...`,false);}}});
         }
 
-        function animateDice(callback) {
-            const emojis = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
-            let count = 0;
-            if (diceAnimationInterval) clearInterval(diceAnimationInterval);
-            diceAnimationInterval = setInterval(() => {
-                const val = Math.floor(Math.random() * 6) + 1;
-                diceResult.textContent = emojis[val - 1];
-                count++;
-                if (count > 10) {
-                    clearInterval(diceAnimationInterval);
-                    diceAnimationInterval = null;
-                    const finalVal = Math.floor(Math.random() * 6) + 1;
-                    diceResult.textContent = emojis[finalVal - 1];
-                    if (callback) callback(finalVal);
-                }
-            }, 80);
-        }
+        function broadcast(data){const message=JSON.stringify({...data,sender:playerId,roomId:roomId});for(const id in connections){try{connections[id].send(message);console.log('📤 Broadcast ke:',id,data.type);}catch(e){console.warn('Broadcast error:',e);}}}
 
-        function endTurn(nextTurn) {
-            const keys = Object.keys(players);
-            if (keys.length < 2 && !isBotMode) {
-                addLog('⏳ Butuh 2 pemain!', false);
-                btnRoll.disabled = true;
-                return;
-            }
-
-            if (nextTurn) {
-                currentTurn = nextTurn;
-            } else {
-                const currentIdx = keys.indexOf(currentTurn);
-                const nextIdx = (currentIdx + 1) % keys.length;
-                currentTurn = keys[nextIdx];
-            }
-
-            isMyTurn = (currentTurn === playerId);
-            hasRolled = false;
-            rollCount = 0;
-            diceResult.textContent = '🎲';
-            updateButtons();
-
-            if (isMyTurn && !isBotMode) addLog(`🎯 Giliranmu!`, true);
-            else if (!isBotMode) addLog(`⏳ ${players[currentTurn]?.name}...`, false);
-
-            updatePlayersStatus();
-            drawBoard();
-
-            if (!isBotMode) {
-                broadcast({ type: 'TURN_UPDATE', currentTurn: currentTurn });
-            }
-
-            if (!isBotMode && currentTurn && players[currentTurn] && players[currentTurn].isBot) {
-                btnRoll.disabled = true;
-                btnEndTurn.disabled = true;
+        function handleMessage(data,fromId){
+            console.log('📨 Pesan:',data.type,'dari:',fromId,data);
+            switch(data.type){
+                case'HOST_INFO':console.log('📥 Menerima HOST_INFO:',data);hostPeerId=data.hostId;isConnectedToHost=true;if(data.players){players=data.players;if(playerId&&!players[playerId]){players[playerId]={id:playerId,name:playerName,position:1};}updatePlayersStatus();drawBoard();addLog(`✅ Terhubung ke lobby! (${Object.keys(players).length} pemain)`,true);showStatus(`✅ Bergabung! (${Object.keys(players).length}/${MAX_PLAYERS} pemain)`,'success');loadingSpinner.style.display='none';}break;
+                case'PLAYER_JOIN':if(Object.keys(players).length>=MAX_PLAYERS){broadcast({type:'LOBBY_FULL',to:data.playerId});return;}if(!players[data.playerId]){players[data.playerId]={id:data.playerId,name:data.name||'Player',position:1};addLog(`👋 ${data.name||'Player'} bergabung!`,false);updatePlayersStatus();drawBoard();broadcast({type:'PLAYER_LIST',players:players});}break;
+                case'LOBBY_FULL':showStatus('❌ Lobby sudah penuh! (max 5 pemain)','error');break;
+                case'PLAYER_LIST':players=data.players;if(playerId&&!players[playerId]){players[playerId]={id:playerId,name:playerName,position:1};}updatePlayersStatus();drawBoard();break;
+                case'DICE_ROLL':if(data.playerId!==playerId){addLog(`🎲 ${players[data.playerId]?.name} melempar ${data.value}`,false);processDiceRoll(data.playerId,data.value);}break;
+                case'TURN_UPDATE':currentTurn=data.currentTurn;isMyTurn=(currentTurn===playerId);hasRolled=false;updateButtons();updatePlayersStatus();turnDisplay.textContent=players[currentTurn]?.name||'?';if(isMyTurn)addLog(`🎯 Giliranmu!`,true);drawBoard();break;
+                case'START_GAME':gameStarted=true;currentTurn=data.firstTurn||Object.keys(players)[0];isMyTurn=(currentTurn===playerId);hasRolled=false;updateButtons();turnDisplay.textContent=players[currentTurn]?.name||'?';addLog(`🎮 Game dimulai! Giliran ${players[currentTurn]?.name}`,true);updatePlayersStatus();drawBoard();break;
+                case'END_TURN':if(data.nextTurn){currentTurn=data.nextTurn;}else{const keys=Object.keys(players);const idx=keys.indexOf(data.playerId);const nextIdx=(idx+1)%keys.length;currentTurn=keys[nextIdx];}isMyTurn=(currentTurn===playerId);hasRolled=false;updateButtons();updatePlayersStatus();turnDisplay.textContent=players[currentTurn]?.name||'?';if(isMyTurn){addLog(`🎯 Giliranmu!`,true);}else{addLog(`⏳ Menunggu ${players[currentTurn]?.name}...`,false);}drawBoard();break;
+                case'GAME_OVER':gameStarted=false;updateButtons();const winner=players[data.winner];addLog(`🏆 ${winner?.name} MENANG! 🏆`,true);if(!isBotMode){showCongratulations(winner?.name||'Pemain');}break;
+                case'SYNC':if(data.players){players=data.players;if(playerId&&!players[playerId]){players[playerId]={id:playerId,name:playerName,position:1};}updatePlayersStatus();drawBoard();}if(data.currentTurn){currentTurn=data.currentTurn;isMyTurn=(currentTurn===playerId);updateButtons();turnDisplay.textContent=players[currentTurn]?.name||'?';}if(data.gameStarted!==undefined){gameStarted=data.gameStarted;updateButtons();}break;
+                case'LEAVE':if(players[data.playerId]){const name=players[data.playerId]?.name;delete players[data.playerId];addLog(`👋 ${name} keluar`,false);updatePlayersStatus();drawBoard();broadcast({type:'PLAYER_LIST',players:players});if(Object.keys(players).length<2&&!isBotMode){gameStarted=false;updateButtons();addLog(`⏳ Menunggu 1 pemain lagi (min 2)...`,false);}}break;
+                case'SYNC_REQUEST':console.log('📥 SYNC_REQUEST dari:',fromId);broadcast({type:'SYNC',players:players,currentTurn:currentTurn,gameStarted:gameStarted});break;
+                case'INVALID_ID':showStatus('❌ ID Lobby salah! Periksa kembali.','error');break;
             }
         }
 
-        function handleEndTurn() {
-            if (isAnimating) { addLog('⏳ Tunggu animasi...', false); return; }
-            if (!isBotMode && !isMyTurn) { addLog('❌ Bukan giliranmu!', true); return; }
-            if (!gameStarted) { addLog('⏳ Game belum mulai!', false); return; }
-            if (!hasRolled) {
-                if (rollCount === 6) {
-                    addLog('🎯 Kamu dapat giliran tambahan! Lempar dadu lagi.', true);
-                    hasRolled = false;
-                    btnEndTurn.disabled = true;
-                    btnRoll.disabled = false;
-                    updateButtons();
-                    return;
-                }
-                addLog('⚠️ Lempar dadu dulu!', true);
-                return;
-            }
-            if (!isBotMode && currentTurn && players[currentTurn] && players[currentTurn].isBot) {
-                addLog('🤖 Giliran bot...', false);
-                return;
-            }
+        function getCellPosition(cell){const row=Math.floor((cell-1)/BOARD_SIZE);const col=(cell-1)%BOARD_SIZE;const x=row%2===0?col:(BOARD_SIZE-1-col);const y=BOARD_SIZE-1-row;return{x,y};}
 
-            const keys = Object.keys(players);
-            const currentIdx = keys.indexOf(currentTurn);
-            const nextIdx = (currentIdx + 1) % keys.length;
-            const nextTurn = keys[nextIdx];
-
-            if (!isBotMode) {
-                broadcast({ type: 'END_TURN', playerId: playerId, nextTurn: nextTurn });
-            }
-
-            endTurn(nextTurn);
+        function drawBoard(){
+            const w=boardCanvas.width,h=boardCanvas.height;
+            ctx.clearRect(0,0,w,h);
+            if(boardImageLoaded&&boardImage.complete&&boardImage.naturalWidth>0){ctx.drawImage(boardImage,0,0,w,h);}
+            else{ctx.fillStyle='rgba(10,10,30,0.6)';ctx.fillRect(0,0,w,h);ctx.fillStyle='rgba(255,255,255,0.15)';ctx.font='16px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('📷 Papan tidak ditemukan',w/2,h/2);ctx.fillText('Upload papan.jpg',w/2,h/2+25);}
+            const playerKeys=Object.keys(players);
+            const offsets=[[-8,-8],[8,-8],[-8,8],[8,8],[0,0]];
+            for(let i=0;i<playerKeys.length;i++){const pid=playerKeys[i],p=players[pid];if(!p)continue;const pos=getCellPosition(p.position);const cellSize=w/BOARD_SIZE;const x=pos.x*cellSize+cellSize/2+offsets[i%5][0];const y=pos.y*cellSize+cellSize/2+offsets[i%5][1];const color=PLAYER_COLORS[i%PLAYER_COLORS.length];const radius=Math.max(cellSize*0.14,8);ctx.shadowColor=color;ctx.shadowBlur=15;ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#fff';ctx.font=`bold ${Math.max(radius*1.1,9)}px Arial`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.name?p.name[0].toUpperCase():'?',x,y+1);}
         }
 
-        // ============================================================
-        // ONLINE MODE
-        // ============================================================
-        function startGame() {
-            if (!isHost) { addLog('❌ Hanya host yang bisa mulai!', true); return; }
-            if (Object.keys(players).length < 2) { addLog('⏳ Butuh 2 pemain!', false); return; }
+        function animatePlayerMove(pid,steps,callback){if(isAnimating)return;const p=players[pid];if(!p)return;const startPos=p.position;let currentPos=startPos,step=1;isAnimating=true;btnRoll.disabled=true;btnEndTurn.disabled=true;const stepInterval=setInterval(()=>{if(step>steps){clearInterval(stepInterval);let finalPos=currentPos;if(LADDERS[finalPos]){const target=LADDERS[finalPos];addLog(`🪜 ${p.name} NAIK TANGGA! ${finalPos} → ${target}`,true);finalPos=target;p.position=finalPos;drawBoard();}else if(SNAKES[finalPos]){const target=SNAKES[finalPos];addLog(`🐍 ${p.name} TURUN ULAR! ${finalPos} → ${target}`,true);finalPos=target;p.position=finalPos;drawBoard();}p.position=finalPos;if(finalPos===TOTAL_CELLS){addLog(`🏆 ${p.name} MENANG! 🏆`,true);gameStarted=false;if(!isBotMode){broadcast({type:'GAME_OVER',winner:pid});}updatePlayersStatus();drawBoard();updateButtons();isAnimating=false;showCongratulations(p.name);if(callback)callback();return;}updatePlayersStatus();drawBoard();if(pid===playerId||isBotMode){hasRolled=true;isRolling=false;btnEndTurn.disabled=false;updateButtons();if(rollCount===6){addLog(`🎯 ${p.name} mendapat giliran tambahan karena dadu 6!`,true);setTimeout(()=>{if(pid===playerId||isBotMode){btnRoll.disabled=false;btnEndTurn.disabled=true;hasRolled=false;updateButtons();}},500);}}isAnimating=false;if(callback)callback();return;}currentPos=startPos+step;p.position=currentPos;drawBoard();step++;},120);}
 
-            gameStarted = true;
-            const keys = Object.keys(players);
-            currentTurn = keys[0];
-            isMyTurn = (currentTurn === playerId);
-            hasRolled = false;
-            rollCount = 0;
-
-            btnRoll.textContent = '🎲 Lempar';
-            btnRoll.onclick = rollDice;
-            btnRoll.disabled = false;
-            btnEndTurn.disabled = true;
-
-            broadcast({ type: 'START_GAME', firstTurn: currentTurn });
-            addLog(`🎮 Game dimulai! ${players[currentTurn]?.name} duluan`, true);
-            updatePlayersStatus();
-            drawBoard();
-            updateButtons();
+        function processDiceRoll(pid,value){
+            const p=players[pid];if(!p)return;
+            rollCount=value;
+            let newPos=p.position+value;
+            if(newPos>TOTAL_CELLS){const over=newPos-TOTAL_CELLS;newPos=TOTAL_CELLS-over;addLog(`↩️ ${p.name} melewati 100! Mundur ke ${newPos}`,true);}
+            if(SNAKES[newPos]){addLog(`🐍 ${p.name} terkena ular! ${newPos} → ${SNAKES[newPos]}`,true);newPos=SNAKES[newPos];}
+            else if(LADDERS[newPos]){addLog(`🪜 ${p.name} naik tangga! ${newPos} → ${LADDERS[newPos]}`,true);newPos=LADDERS[newPos];}
+            p.position=newPos;addLog(`🎲 ${p.name} melempar ${value} → posisi ${newPos}`,false);
+            if(newPos===TOTAL_CELLS){addLog(`🏆 ${p.name} MENANG! 🏆`,true);gameStarted=false;if(!isBotMode){broadcast({type:'GAME_OVER',winner:pid});}updatePlayersStatus();drawBoard();updateButtons();showCongratulations(p.name);return;}
+            updatePlayersStatus();drawBoard();updateButtons();
+            if(value===6){addLog(`🎯 ${p.name} mendapat giliran tambahan karena dadu 6!`,true);hasRolled=false;btnRoll.disabled=false;btnEndTurn.disabled=true;updateButtons();}
+            else{endTurn();}
         }
 
-        // ============================================================
-        // VALIDASI ID
-        // ============================================================
-        function isValidRoomId(id) { return /^[A-Z0-9]{6}$/.test(id); }
+        function addLog(message,highlight=false){logEntries.push({message,highlight,time:Date.now()});if(logEntries.length>30)logEntries.shift();renderLog();}
+        function renderLog(){logArea.innerHTML=logEntries.map(e=>`<div class="log-entry">${e.highlight?'<span class="highlight">':''}${e.message}${e.highlight?'</span>':''}</div>`).join('');logArea.scrollTop=logArea.scrollHeight;}
+        function updatePlayersStatus(){const keys=Object.keys(players);playersStatus.innerHTML=keys.map((pid,i)=>{const p=players[pid];const isActive=p&&pid===currentTurn;const isBot=p&&p.isBot;return `<div class="player-status ${isActive?'active':''} ${isBot?'bot':''}"><span class="color-dot" style="background:${PLAYER_COLORS[i%PLAYER_COLORS.length]}"></span>${p?p.name.substring(0,8):'?'}${p?`<span class="pos">📍${p.position||1}</span>`:''}${isActive?'🎯':''}${pid===playerId?' 👤':''}${isBot?' 🤖':''}</div>`;}).join('');if(keys.length>0&&players[currentTurn])turnDisplay.textContent=players[currentTurn]?.name||keys[0];}
+        function updateButtons(){const playerCount=Object.keys(players).length;if(isAnimating||isGameOver){btnRoll.disabled=true;btnEndTurn.disabled=true;return;}if(isBotMode){if(!gameStarted){btnRoll.disabled=false;btnRoll.textContent='🎮 Mulai';btnRoll.onclick=startBotGame;btnEndTurn.disabled=true;return;}const isActive=gameStarted&&isMyTurn&&!isRolling&&!isAnimating;btnRoll.textContent='🎲 Lempar';btnRoll.onclick=rollDice;btnRoll.disabled=!isActive||hasRolled;btnEndTurn.disabled=!(isActive&&hasRolled);return;}if(isHost&&!gameStarted&&playerCount>=2){btnRoll.disabled=false;btnRoll.textContent='🎮 Mulai';btnRoll.onclick=startGame;btnEndTurn.disabled=true;return;}if(isHost&&!gameStarted&&playerCount<2){btnRoll.disabled=true;btnRoll.textContent='⏳ Tunggu...';btnEndTurn.disabled=true;return;}if(!gameStarted){btnRoll.disabled=true;btnRoll.textContent='⏳ Menunggu...';btnEndTurn.disabled=true;return;}const isActive=gameStarted&&isMyTurn&&!isRolling&&!isAnimating;btnRoll.textContent='🎲 Lempar';btnRoll.onclick=rollDice;btnRoll.disabled=!isActive||hasRolled;btnEndTurn.disabled=!(isActive&&hasRolled);if(!isBotMode&&currentTurn&&players[currentTurn]&&players[currentTurn].isBot){btnRoll.disabled=true;btnEndTurn.disabled=true;}}
 
-        function generateRoomId() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let result = '';
-            for (let i = 0; i < 6; i++) result += chars[Math.floor(Math.random() * chars.length)];
-            return result;
+        function rollDice(){if(isAnimating){addLog('⏳ Tunggu animasi...',false);return;}if(isRolling){addLog('⏳ Tunggu dadu...',false);return;}if(!gameStarted){addLog('⏳ Game belum mulai!',false);return;}if(hasRolled){if(rollCount===6){hasRolled=false;btnEndTurn.disabled=true;updateButtons();}else{addLog('⚠️ Kamu sudah lempar! Klik End Turn',true);return;}}if(!isBotMode&&!isMyTurn){addLog('❌ Bukan giliranmu!',true);return;}if(Object.keys(players).length<2&&!isBotMode){addLog('⏳ Butuh 2 pemain!',false);return;}isRolling=true;btnRoll.disabled=true;btnEndTurn.disabled=true;animateDice((finalVal)=>{if(!isBotMode){broadcast({type:'DICE_ROLL',playerId:playerId,value:finalVal});}processDiceRoll(playerId,finalVal);isRolling=false;});}
+        function animateDice(callback){const emojis=['⚀','⚁','⚂','⚃','⚄','⚅'];let count=0;if(diceAnimationInterval)clearInterval(diceAnimationInterval);diceAnimationInterval=setInterval(()=>{const val=Math.floor(Math.random()*6)+1;diceResult.textContent=emojis[val-1];count++;if(count>10){clearInterval(diceAnimationInterval);diceAnimationInterval=null;const finalVal=Math.floor(Math.random()*6)+1;diceResult.textContent=emojis[finalVal-1];if(callback)callback(finalVal);}},80);}
+        function endTurn(nextTurn){const keys=Object.keys(players);if(keys.length<2&&!isBotMode){addLog('⏳ Butuh 2 pemain!',false);btnRoll.disabled=true;return;}if(nextTurn){currentTurn=nextTurn;}else{const currentIdx=keys.indexOf(currentTurn);const nextIdx=(currentIdx+1)%keys.length;currentTurn=keys[nextIdx];}isMyTurn=(currentTurn===playerId);hasRolled=false;rollCount=0;diceResult.textContent='🎲';updateButtons();if(isMyTurn&&!isBotMode)addLog(`🎯 Giliranmu!`,true);else if(!isBotMode)addLog(`⏳ ${players[currentTurn]?.name}...`,false);updatePlayersStatus();drawBoard();if(!isBotMode){broadcast({type:'TURN_UPDATE',currentTurn:currentTurn});}if(!isBotMode&&currentTurn&&players[currentTurn]&&players[currentTurn].isBot){btnRoll.disabled=true;btnEndTurn.disabled=true;}
+            // 🔥 BOT TURN - LANGSUNG JALAN!
+            if(isBotMode&&gameStarted&&!isGameOver){
+                if(botTimeout)clearTimeout(botTimeout);
+                botTimeout=setTimeout(()=>{doBotTurn();},400);
+            }
         }
+        function handleEndTurn(){if(isAnimating){addLog('⏳ Tunggu animasi...',false);return;}if(!isBotMode&&!isMyTurn){addLog('❌ Bukan giliranmu!',true);return;}if(!gameStarted){addLog('⏳ Game belum mulai!',false);return;}if(!hasRolled){if(rollCount===6){addLog('🎯 Kamu dapat giliran tambahan! Lempar dadu lagi.',true);hasRolled=false;btnEndTurn.disabled=true;btnRoll.disabled=false;updateButtons();return;}addLog('⚠️ Lempar dadu dulu!',true);return;}if(!isBotMode&&currentTurn&&players[currentTurn]&&players[currentTurn].isBot){addLog('🤖 Giliran bot...',false);return;}const keys=Object.keys(players);const currentIdx=keys.indexOf(currentTurn);const nextIdx=(currentIdx+1)%keys.length;const nextTurn=keys[nextIdx];if(!isBotMode){broadcast({type:'END_TURN',playerId:playerId,nextTurn:nextTurn});}endTurn(nextTurn);}
+
+        function startGame(){if(!isHost){addLog('❌ Hanya host yang bisa mulai!',true);return;}if(Object.keys(players).length<2){addLog('⏳ Butuh 2 pemain!',false);return;}gameStarted=true;const keys=Object.keys(players);currentTurn=keys[0];isMyTurn=(currentTurn===playerId);hasRolled=false;rollCount=0;btnRoll.textContent='🎲 Lempar';btnRoll.onclick=rollDice;btnRoll.disabled=false;btnEndTurn.disabled=true;broadcast({type:'START_GAME',firstTurn:currentTurn});addLog(`🎮 Game dimulai! ${players[currentTurn]?.name} duluan`,true);updatePlayersStatus();drawBoard();updateButtons();}
+
+        function isValidRoomId(id){return/^[A-Z0-9]{6}$/.test(id);}
+        function generateRoomId(){const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';let result='';for(let i=0;i<6;i++)result+=chars[Math.floor(Math.random()*chars.length)];return result;}
+
+        function createLobby(){if(gameMode==='bot'){startBotGame();return;}if(!isPeerReady){showStatus('⏳ Menghubungkan ke server...','info');loadingSpinner.style.display='inline-block';if(!peerInitialized){initPeer();}else{reconnectPeer();}setTimeout(()=>{if(isPeerReady){createLobby();}else{showStatus('❌ Gagal terhubung ke server, coba refresh','error');loadingSpinner.style.display='none';}},2000);return;}const name=playerNameCreate.value.trim()||'Host';playerName=name;roomId=generateRoomId();isHost=true;isBotMode=false;hostPeerId=playerId;players={};players[playerId]={id:playerId,name:playerName,position:1};showStatus(`✅ Lobby "${roomId}" dibuat! (Host: ${playerName})`,'success');roomIdDisplay.textContent=roomId;showGame();updatePlayersStatus();drawBoard();addLog(`🎮 Lobby "${roomId}" dibuat`,true);updateButtons();broadcast({type:'SYNC',players:players,roomId:roomId});console.log('🏠 Host ID:',playerId,'Room:',roomId);}
+
+        function joinLobby(){console.log('🔘 JOIN LOBY - Player mencoba gabung');if(gameMode==='bot'){startBotGame();return;}if(!isPeerReady){console.log('⚠️ Peer belum siap, coba init ulang');showStatus('⏳ Menghubungkan ke server...','info');loadingSpinner.style.display='inline-block';if(!peerInitialized){initPeer();}else{reconnectPeer();}setTimeout(()=>{if(isPeerReady){joinLobby();}else{showStatus('❌ Gagal terhubung ke server, coba refresh','error');loadingSpinner.style.display='none';}},2000);return;}let id=lobbyIdInput.value.trim().toUpperCase();lobbyIdInput.value=id;if(!isValidRoomId(id)){showStatus('❌ ID Lobby harus 6 karakter (huruf/angka)! Contoh: ABC123','error');return;}if(isConnecting){showStatus('⏳ Sedang menghubungkan...','info');return;}const name=playerNameJoin.value.trim()||'Player';playerName=name;roomId=id;isHost=false;isBotMode=false;isConnecting=true;showStatus(`🔗 Menghubungkan ke lobby "${id}"...`,'info');loadingSpinner.style.display='inline-block';btnJoinLobby.disabled=true;btnJoinLobby.textContent='⏳ Menghubungkan...';broadcast({type:'PLAYER_JOIN',playerId:playerId,name:playerName,roomId:roomId});setTimeout(()=>{broadcast({type:'SYNC_REQUEST',roomId:roomId});},500);roomIdDisplay.textContent=id;showGame();addLog(`👋 ${playerName} bergabung!`,false);if(joinTimeout)clearTimeout(joinTimeout);joinTimeout=setTimeout(()=>{isConnecting=false;btnJoinLobby.disabled=false;btnJoinLobby.textContent='🔗 Gabung';showStatus('⏳ Waktu habis! Coba lagi atau refresh.','warning');loadingSpinner.style.display='none';console.log('⚠️ Join timeout!');},8000);setTimeout(()=>{if(joinTimeout)clearTimeout(joinTimeout);isConnecting=false;btnJoinLobby.disabled=false;btnJoinLobby.textContent='🔗 Gabung';loadingSpinner.style.display='none';if(Object.keys(players).length>1){showStatus(`✅ Bergabung! (${Object.keys(players).length}/${MAX_PLAYERS} pemain)`,'success');}else{showStatus(`⏳ Menunggu host merespon...`,'info');loadingSpinner.style.display='inline-block';setTimeout(()=>{broadcast({type:'SYNC_REQUEST',roomId:roomId});},2000);}updatePlayersStatus();drawBoard();updateButtons();},1500);}
 
         // ============================================================
-        // LOBBY
+        // 🔥 BOT MODE - DIPERBAIKI, BOT AUTO JALAN!
         // ============================================================
-        function createLobby() {
-            if (gameMode === 'bot') { startBotGame(); return; }
-
-            if (!isChannelReady) {
-                showStatus('⏳ Menghubungkan ke channel...', 'info');
-                loadingSpinner.style.display = 'inline-block';
-                initChannel();
-                setTimeout(() => {
-                    if (isChannelReady) {
-                        createLobby();
-                    } else {
-                        showStatus('❌ Gagal terhubung, coba refresh', 'error');
-                        loadingSpinner.style.display = 'none';
-                    }
-                }, 1000);
-                return;
+        function startBotGame(){
+            const name=playerNameBot.value.trim()||'Player';
+            playerName=name;
+            playerId='player';
+            isBotMode=true;
+            isHost=true;
+            players={};
+            players[playerId]={id:playerId,name:playerName,position:1,isBot:false};
+            for(let i=0;i<4;i++){
+                const botId='bot_'+i;
+                players[botId]={id:botId,name:BOT_NAMES[i],position:1,isBot:true};
             }
-
-            const name = playerNameCreate.value.trim() || 'Host';
-            playerName = name;
-            playerId = 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 3);
-            roomId = generateRoomId();
-            isHost = true;
-            isBotMode = false;
-            players = {};
-            players[playerId] = { id: playerId, name: playerName, position: 1 };
-
-            showStatus(`✅ Lobby "${roomId}" dibuat! (Host: ${playerName})`, 'success');
-            roomIdDisplay.textContent = roomId;
-            showGame();
-
-            updatePlayersStatus();
-            drawBoard();
-            addLog(`🎮 Lobby "${roomId}" dibuat`, true);
-            updateButtons();
-
-            broadcast({ type: 'SYNC', players: players, roomId: roomId });
-
-            console.log('🏠 Host ID:', playerId, 'Room:', roomId);
-        }
-
-        function joinLobby() {
-            console.log('🔘 JOIN LOBBY - Player mencoba gabung');
-
-            if (gameMode === 'bot') { startBotGame(); return; }
-
-            if (!isChannelReady) {
-                showStatus('⏳ Menghubungkan ke channel...', 'info');
-                loadingSpinner.style.display = 'inline-block';
-                initChannel();
-                setTimeout(() => {
-                    if (isChannelReady) {
-                        joinLobby();
-                    } else {
-                        showStatus('❌ Gagal terhubung, coba refresh', 'error');
-                        loadingSpinner.style.display = 'none';
-                    }
-                }, 1000);
-                return;
-            }
-
-            let id = lobbyIdInput.value.trim().toUpperCase();
-            lobbyIdInput.value = id;
-
-            if (!isValidRoomId(id)) {
-                showStatus('❌ ID Lobby harus 6 karakter (huruf/angka)! Contoh: ABC123', 'error');
-                return;
-            }
-
-            if (isConnecting) {
-                showStatus('⏳ Sedang menghubungkan...', 'info');
-                return;
-            }
-
-            const name = playerNameJoin.value.trim() || 'Player';
-            playerName = name;
-            playerId = 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 3);
-            roomId = id;
-            isHost = false;
-            isBotMode = false;
-            isConnecting = true;
-
-            showStatus(`🔗 Menghubungkan ke lobby "${id}"...`, 'info');
-            loadingSpinner.style.display = 'inline-block';
-
-            btnJoinLobby.disabled = true;
-            btnJoinLobby.textContent = '⏳ Menghubungkan...';
-
-            broadcast({
-                type: 'PLAYER_JOIN',
-                playerId: playerId,
-                name: playerName,
-                roomId: roomId
-            });
-
-            setTimeout(() => {
-                broadcast({ type: 'SYNC_REQUEST', roomId: roomId });
-            }, 500);
-
-            roomIdDisplay.textContent = id;
-            showGame();
-            addLog(`👋 ${playerName} bergabung!`, false);
-
-            if (joinTimeout) clearTimeout(joinTimeout);
-            joinTimeout = setTimeout(() => {
-                isConnecting = false;
-                btnJoinLobby.disabled = false;
-                btnJoinLobby.textContent = '🔗 Gabung';
-                showStatus('⏳ Waktu habis! Coba lagi atau refresh.', 'warning');
-                loadingSpinner.style.display = 'none';
-                console.log('⚠️ Join timeout!');
-            }, 8000);
-
-            setTimeout(() => {
-                if (joinTimeout) clearTimeout(joinTimeout);
-                isConnecting = false;
-                btnJoinLobby.disabled = false;
-                btnJoinLobby.textContent = '🔗 Gabung';
-                loadingSpinner.style.display = 'none';
-
-                // Cek apakah player sudah terdaftar
-                if (playerId && !players[playerId]) {
-                    players[playerId] = { id: playerId, name: playerName, position: 1 };
-                }
-
-                const count = Object.keys(players).length;
-                if (count > 1) {
-                    showStatus(`✅ Bergabung! (${count}/${MAX_PLAYERS} pemain)`, 'success');
-                } else {
-                    showStatus(`⏳ Menunggu host merespon...`, 'info');
-                    loadingSpinner.style.display = 'inline-block';
-                    setTimeout(() => {
-                        broadcast({ type: 'SYNC_REQUEST', roomId: roomId });
-                    }, 2000);
-                }
-                updatePlayersStatus();
-                drawBoard();
-                updateButtons();
-            }, 1500);
-        }
-
-        // ============================================================
-        // BOT MODE
-        // ============================================================
-        function startBotGame() {
-            const name = playerNameBot.value.trim() || 'Player';
-            playerName = name;
-            playerId = 'player';
-            isBotMode = true;
-            isHost = true;
-            isProcessingBot = false;
-
-            players = {};
-            players[playerId] = { id: playerId, name: playerName, position: 1, isBot: false };
-            for (let i = 0; i < 4; i++) {
-                const botId = 'bot_' + i;
-                players[botId] = {
-                    id: botId,
-                    name: BOT_NAMES[i],
-                    position: 1,
-                    isBot: true
-                };
-            }
-
-            roomId = 'BOT_MODE';
-            roomIdDisplay.textContent = '🤖 VS BOT';
-
+            roomId='BOT_MODE';
+            roomIdDisplay.textContent='🤖 VS BOT';
             showGame();
             updatePlayersStatus();
             drawBoard();
-            addLog(`🤖 Vs Bot! Kamu vs 4 Bot`, true);
-
-            gameStarted = true;
-            const keys = Object.keys(players);
-            currentTurn = keys[0];
-            isMyTurn = true;
-            hasRolled = false;
-            rollCount = 0;
-
-            btnRoll.textContent = '🎲 Lempar';
-            btnRoll.onclick = rollDice;
-            btnRoll.disabled = false;
-            btnEndTurn.disabled = true;
-
+            addLog(`🤖 Vs Bot! Kamu vs 4 Bot`,true);
+            gameStarted=true;
+            const keys=Object.keys(players);
+            currentTurn=keys[0];
+            isMyTurn=true;
+            hasRolled=false;
+            rollCount=0;
+            btnRoll.textContent='🎲 Lempar';
+            btnRoll.onclick=rollDice;
+            btnRoll.disabled=false;
+            btnEndTurn.disabled=true;
             updateButtons();
             updatePlayersStatus();
-            turnDisplay.textContent = players[currentTurn]?.name;
-
-            showStatus('🤖 Kalahkan 4 Bot!', '');
+            turnDisplay.textContent=players[currentTurn]?.name;
+            showStatus('🤖 Kalahkan 4 Bot!','');
+            addLog(`🎯 Giliran ${players[currentTurn]?.name}!`,true);
         }
 
-        function doBotTurn() {
-            if (isProcessingBot) {
-                console.log('⚠️ Bot sedang diproses, skip');
+        // 🔥 INI YANG DIPERBAIKI - BOT JALAN!
+        function doBotTurn(){
+            if(!gameStarted||isAnimating||isRolling||isGameOver){
+                if(botTimeout)clearTimeout(botTimeout);
+                botTimeout=setTimeout(()=>{doBotTurn();},500);
                 return;
             }
 
-            if (!gameStarted || isAnimating || isRolling || isGameOver) {
-                if (botTimeout) clearTimeout(botTimeout);
-                botTimeout = setTimeout(() => doBotTurn(), 500);
-                return;
-            }
-
-            const keys = Object.keys(players);
-            let botTurn = null;
-
-            if (players[currentTurn] && players[currentTurn].isBot) {
-                botTurn = currentTurn;
-            } else {
-                const currentIdx = keys.indexOf(currentTurn);
-                for (let i = 1; i <= keys.length; i++) {
-                    const idx = (currentIdx + i) % keys.length;
-                    if (players[keys[idx]] && players[keys[idx]].isBot) {
-                        botTurn = keys[idx];
+            // Cari bot yang gilirannya
+            let botTurn=null;
+            if(players[currentTurn]&&players[currentTurn].isBot){
+                botTurn=currentTurn;
+            }else{
+                const keys=Object.keys(players);
+                for(let i=0;i<keys.length;i++){
+                    if(players[keys[i]]&&players[keys[i]].isBot){
+                        botTurn=keys[i];
                         break;
                     }
                 }
             }
 
-            if (!botTurn) {
-                updateButtons();
+            if(!botTurn){
+                // Kalo udah ga ada bot (semua udah keluar / menang), stop
+                if(botTimeout)clearTimeout(botTimeout);
                 return;
             }
 
-            currentTurn = botTurn;
-            isMyTurn = false;
-            hasRolled = false;
-            rollCount = 0;
-
+            // Set giliran ke bot
+            currentTurn=botTurn;
+            isMyTurn=false;
+            hasRolled=false;
+            rollCount=0;
             updatePlayersStatus();
-            turnDisplay.textContent = players[currentTurn]?.name;
+            turnDisplay.textContent=players[currentTurn]?.name;
             drawBoard();
             updateButtons();
 
-            isProcessingBot = true;
+            if(botTimeout)clearTimeout(botTimeout);
 
-            if (botTimeout) clearTimeout(botTimeout);
-            botTimeout = setTimeout(() => {
-                if (!gameStarted || isGameOver) {
-                    isProcessingBot = false;
+            // BOT LEMPAR DADU
+            botTimeout=setTimeout(()=>{
+                if(!gameStarted||isGameOver){
+                    if(botTimeout)clearTimeout(botTimeout);
                     return;
                 }
 
-                const bot = players[botTurn];
-                if (!bot) {
-                    isProcessingBot = false;
+                const bot=players[botTurn];
+                if(!bot){
+                    if(botTimeout)clearTimeout(botTimeout);
                     return;
                 }
 
-                const val = Math.floor(Math.random() * 6) + 1;
-                const emojis = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
-                diceResult.textContent = emojis[val - 1];
+                // Animasi dadu bot
+                const emojis=['⚀','⚁','⚂','⚃','⚄','⚅'];
+                let count=0;
+                const botDiceInterval=setInterval(()=>{
+                    const val=Math.floor(Math.random()*6)+1;
+                    diceResult.textContent=emojis[val-1];
+                    count++;
+                    if(count>8){
+                        clearInterval(botDiceInterval);
+                        const finalVal=Math.floor(Math.random()*6)+1;
+                        diceResult.textContent=emojis[finalVal-1];
+                        rollCount=finalVal;
 
-                rollCount = val;
-                let newPos = bot.position + val;
+                        // Proses dadu bot
+                        let newPos=bot.position+finalVal;
 
-                if (newPos > TOTAL_CELLS) {
-                    const over = newPos - TOTAL_CELLS;
-                    newPos = TOTAL_CELLS - over;
-                    addLog(`↩️ ${bot.name} melewati 100! Mundur ke ${newPos}`, true);
-                }
-
-                if (SNAKES[newPos]) {
-                    addLog(`🐍 ${bot.name} terkena ular! ${newPos} → ${SNAKES[newPos]}`, true);
-                    newPos = SNAKES[newPos];
-                } else if (LADDERS[newPos]) {
-                    addLog(`🪜 ${bot.name} naik tangga! ${newPos} → ${LADDERS[newPos]}`, true);
-                    newPos = LADDERS[newPos];
-                }
-
-                bot.position = newPos;
-                addLog(`🤖 ${bot.name} melempar ${val} → posisi ${newPos}`, false);
-
-                if (newPos === TOTAL_CELLS) {
-                    addLog(`🤖 ${bot.name} MENANG! 🏆`, true);
-                    gameStarted = false;
-                    updateButtons();
-                    updatePlayersStatus();
-                    isProcessingBot = false;
-                    showCongratulations(bot.name);
-                    return;
-                }
-
-                updatePlayersStatus();
-                drawBoard();
-                updateButtons();
-
-                if (val === 6) {
-                    addLog(`🎯 ${bot.name} mendapat giliran tambahan karena dadu 6!`, true);
-                    isProcessingBot = false;
-                    setTimeout(() => {
-                        if (gameStarted && !isGameOver) {
-                            doBotTurn();
+                        if(newPos>TOTAL_CELLS){
+                            const over=newPos-TOTAL_CELLS;
+                            newPos=TOTAL_CELLS-over;
+                            addLog(`↩️ ${bot.name} melewati 100! Mundur ke ${newPos}`,true);
                         }
-                    }, 600);
-                } else {
-                    const keys2 = Object.keys(players);
-                    const currentIdx2 = keys2.indexOf(currentTurn);
-                    const nextIdx2 = (currentIdx2 + 1) % keys2.length;
-                    currentTurn = keys2[nextIdx2];
-                    isMyTurn = (currentTurn === playerId);
-                    hasRolled = false;
-                    rollCount = 0;
 
-                    updatePlayersStatus();
-                    turnDisplay.textContent = players[currentTurn]?.name;
-                    drawBoard();
-                    updateButtons();
+                        if(SNAKES[newPos]){
+                            addLog(`🐍 ${bot.name} terkena ular! ${newPos} → ${SNAKES[newPos]}`,true);
+                            newPos=SNAKES[newPos];
+                        }else if(LADDERS[newPos]){
+                            addLog(`🪜 ${bot.name} naik tangga! ${newPos} → ${LADDERS[newPos]}`,true);
+                            newPos=LADDERS[newPos];
+                        }
 
-                    isProcessingBot = false;
+                        bot.position=newPos;
+                        addLog(`🤖 ${bot.name} melempar ${finalVal} → posisi ${newPos}`,false);
 
-                    if (isMyTurn) {
-                        btnRoll.disabled = false;
-                        btnEndTurn.disabled = true;
-                        addLog(`🎯 Giliranmu!`, true);
-                    } else {
-                        if (players[currentTurn] && players[currentTurn].isBot) {
-                            if (botTimeout) clearTimeout(botTimeout);
-                            botTimeout = setTimeout(() => doBotTurn(), 600);
+                        if(newPos===TOTAL_CELLS){
+                            addLog(`🤖 ${bot.name} MENANG! 🏆`,true);
+                            gameStarted=false;
+                            updateButtons();
+                            updatePlayersStatus();
+                            drawBoard();
+                            showCongratulations(bot.name);
+                            if(botTimeout)clearTimeout(botTimeout);
+                            return;
+                        }
+
+                        updatePlayersStatus();
+                        drawBoard();
+                        updateButtons();
+
+                        // Jika dadu 6, bot dapat giliran tambahan
+                        if(finalVal===6){
+                            addLog(`🎯 ${bot.name} mendapat giliran tambahan karena dadu 6!`,true);
+                            if(botTimeout)clearTimeout(botTimeout);
+                            botTimeout=setTimeout(()=>{doBotTurn();},600);
+                        }else{
+                            // Pindah ke pemain berikutnya
+                            const keys=Object.keys(players);
+                            const currentIdx=keys.indexOf(botTurn);
+                            const nextIdx=(currentIdx+1)%keys.length;
+                            currentTurn=keys[nextIdx];
+                            isMyTurn=(currentTurn===playerId);
+                            hasRolled=false;
+                            rollCount=0;
+
+                            updatePlayersStatus();
+                            turnDisplay.textContent=players[currentTurn]?.name;
+                            drawBoard();
+                            updateButtons();
+
+                            if(isMyTurn){
+                                btnRoll.disabled=false;
+                                btnEndTurn.disabled=true;
+                                addLog(`🎯 Giliranmu!`,true);
+                                if(botTimeout)clearTimeout(botTimeout);
+                            }else{
+                                if(botTimeout)clearTimeout(botTimeout);
+                                botTimeout=setTimeout(()=>{doBotTurn();},600);
+                            }
                         }
                     }
-                }
-            }, 500);
+                },100);
+            },400);
         }
 
-        // ============================================================
-        // LOBBY UI
-        // ============================================================
-        function showGame() {
-            lobbyScreen.style.display = 'none';
-            gameScreen.classList.add('active');
-            setTimeout(() => { resizeBoard(); }, 150);
-            loadingSpinner.style.display = 'none';
-            btnJoinLobby.disabled = false;
-            btnJoinLobby.textContent = '🔗 Gabung';
-        }
+        function showGame(){lobbyScreen.style.display='none';gameScreen.classList.add('active');setTimeout(()=>{resizeBoard();},150);loadingSpinner.style.display='none';btnJoinLobby.disabled=false;btnJoinLobby.textContent='🔗 Gabung';}
+        function leaveGame(){if(diceAnimationInterval)clearInterval(diceAnimationInterval);if(botTimeout)clearTimeout(botTimeout);if(joinTimeout)clearTimeout(joinTimeout);isConnecting=false;btnJoinLobby.disabled=false;btnJoinLobby.textContent='🔗 Gabung';if(!isBotMode&&roomId){broadcast({type:'LEAVE',playerId:playerId,roomId:roomId});}resetAll();gameScreen.classList.remove('active');lobbyScreen.style.display='block';showStatus('👋 Keluar dari game','');setMode('online');loadingSpinner.style.display='none';btnCreateLobby.disabled=false;btnJoinLobby.disabled=false;hostPeerId=null;isConnectedToHost=false;congratsOverlay.classList.remove('show');document.querySelectorAll('.confetti').forEach(el=>el.remove());if(peer){try{for(const id in connections){connections[id].close();}}catch(e){}}}
+        function resizeBoard(){const wrapper=document.querySelector('.board-wrapper');if(!wrapper)return;const size=Math.min(wrapper.clientWidth,560);if(size>10){boardCanvas.width=size;boardCanvas.height=size;drawBoard();}}
 
-        function leaveGame() {
-            if (diceAnimationInterval) clearInterval(diceAnimationInterval);
-            if (botTimeout) clearTimeout(botTimeout);
-            if (joinTimeout) clearTimeout(joinTimeout);
-            isConnecting = false;
-            isProcessingBot = false;
-            btnJoinLobby.disabled = false;
-            btnJoinLobby.textContent = '🔗 Gabung';
+        btnCreateLobby.addEventListener('click',function(e){console.log('🔘 Buat Lobby diklik');createLobby();});
+        btnJoinLobby.addEventListener('click',function(e){console.log('🔘 Gabung diklik');joinLobby();});
+        btnStartBot.addEventListener('click',function(e){console.log('🔘 Start Bot diklik');startBotGame();});
+        btnRoll.addEventListener('click',rollDice);
+        btnEndTurn.addEventListener('click',handleEndTurn);
+        btnLeave.addEventListener('click',leaveGame);
+        lobbyIdInput.addEventListener('keydown',(e)=>{if(e.key==='Enter'){e.preventDefault();console.log('⏎ Enter pada ID lobby');btnJoinLobby.click();}setTimeout(()=>{lobbyIdInput.value=lobbyIdInput.value.toUpperCase();},10);});
+        playerNameCreate.addEventListener('keydown',(e)=>{if(e.key==='Enter')btnCreateLobby.click();});
+        playerNameJoin.addEventListener('keydown',(e)=>{if(e.key==='Enter')btnJoinLobby.click();});
+        playerNameBot.addEventListener('keydown',(e)=>{if(e.key==='Enter')btnStartBot.click();});
 
-            if (!isBotMode && roomId) {
-                broadcast({ type: 'LEAVE', playerId: playerId, roomId: roomId });
-            }
-
-            resetAll();
-            gameScreen.classList.remove('active');
-            lobbyScreen.style.display = 'block';
-            showStatus('👋 Keluar dari game', '');
-            setMode('online');
-            loadingSpinner.style.display = 'none';
-
-            btnCreateLobby.disabled = false;
-            btnJoinLobby.disabled = false;
-
-            congratsOverlay.classList.remove('show');
-            document.querySelectorAll('.confetti').forEach(el => el.remove());
-
-            // Tutup channel
-            if (channel) {
-                try { channel.close(); } catch (e) {}
-                channel = null;
-                isChannelReady = false;
-            }
-        }
-
-        function resizeBoard() {
-            const wrapper = document.querySelector('.board-wrapper');
-            if (!wrapper) return;
-            const size = Math.min(wrapper.clientWidth, 560);
-            if (size > 10) {
-                boardCanvas.width = size;
-                boardCanvas.height = size;
-                drawBoard();
-            }
-        }
-
-        // ============================================================
-        // EVENT LISTENERS
-        // ============================================================
-        btnCreateLobby.addEventListener('click', function(e) {
-            console.log('🔘 Buat Lobby diklik');
-            createLobby();
-        });
-
-        btnJoinLobby.addEventListener('click', function(e) {
-            console.log('🔘 Gabung diklik');
-            joinLobby();
-        });
-
-        btnStartBot.addEventListener('click', function(e) {
-            console.log('🔘 Start Bot diklik');
-            startBotGame();
-        });
-
-        btnRoll.addEventListener('click', rollDice);
-        btnEndTurn.addEventListener('click', handleEndTurn);
-        btnLeave.addEventListener('click', leaveGame);
-
-        lobbyIdInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                console.log('⏎ Enter pada ID lobby');
-                btnJoinLobby.click();
-            }
-            setTimeout(() => { lobbyIdInput.value = lobbyIdInput.value.toUpperCase(); }, 10);
-        });
-        playerNameCreate.addEventListener('keydown', (e) => { if (e.key === 'Enter') btnCreateLobby.click(); });
-        playerNameJoin.addEventListener('keydown', (e) => { if (e.key === 'Enter') btnJoinLobby.click(); });
-        playerNameBot.addEventListener('keydown', (e) => { if (e.key === 'Enter') btnStartBot.click(); });
-
-        // ============================================================
-        // INIT
-        // ============================================================
-        landingPage.style.display = 'flex';
-        lobbyScreen.style.display = 'none';
-        gameScreen.classList.remove('active');
-
-        window.addEventListener('resize', resizeBoard);
-        setTimeout(resizeBoard, 300);
-
-        addLog('🎲 Ular Tangga!', false);
-        updateButtons();
-        loadingSpinner.style.display = 'none';
-
-        btnCreateLobby.disabled = false;
-        btnJoinLobby.disabled = false;
-
-        // Auto init channel
-        initChannel();
-
-        console.log('🎲 Ular Tangga - BROADCAST CHANNEL MULTIPLAYER!');
-        console.log('📌 Buka di beberapa tab di browser yang sama untuk multiplayer');
-
-        window.addEventListener('beforeunload', () => {
-            if (roomId && !isBotMode) {
-                broadcast({ type: 'LEAVE', playerId: playerId, roomId: roomId });
-            }
-            if (channel) {
-                try { channel.close(); } catch (e) {}
-            }
-        });
+        landingPage.style.display='flex';lobbyScreen.style.display='none';gameScreen.classList.remove('active');
+        window.addEventListener('resize',resizeBoard);setTimeout(resizeBoard,300);
+        addLog('🎲 Ular Tangga!',false);updateButtons();loadingSpinner.style.display='none';
+        btnCreateLobby.disabled=false;btnJoinLobby.disabled=false;
+        console.log('🎲 Ular Tangga - DADU 6 + BOT AUTO JALAN!');
+        window.addEventListener('beforeunload',()=>{if(roomId&&!isBotMode){broadcast({type:'LEAVE',playerId:playerId,roomId:roomId});}});
     </script>
 </body>
 </html>
