@@ -863,7 +863,7 @@
 
     <script>
         // ============================================================
-        // ULAR TANGGA - FULL FIXED!
+        // ULAR TANGGA - DADU 6 FIXED!
         // ============================================================
 
         const BOARD_SIZE = 10;
@@ -897,6 +897,7 @@
         let rollCount = 0;
         let isBotTurnRunning = false;
         let waitingForBotResponse = false;
+        let isExtraTurn = false; // Flag untuk dadu 6
 
         // BROADCAST CHANNEL
         let channel = null;
@@ -1019,6 +1020,7 @@
             rollCount = 0;
             isBotTurnRunning = false;
             waitingForBotResponse = false;
+            isExtraTurn = false;
             renderLog();
             updateButtons();
             if (joinTimeout) { clearTimeout(joinTimeout);
@@ -1160,6 +1162,7 @@
                     currentTurn = data.currentTurn;
                     isMyTurn = (currentTurn === playerId);
                     hasRolled = false;
+                    isExtraTurn = false;
                     updateButtons();
                     updatePlayersStatus();
                     turnDisplay.textContent = players[currentTurn]?.name || '?';
@@ -1172,6 +1175,7 @@
                     currentTurn = data.firstTurn || Object.keys(players)[0];
                     isMyTurn = (currentTurn === playerId);
                     hasRolled = false;
+                    isExtraTurn = false;
                     updateButtons();
                     turnDisplay.textContent = players[currentTurn]?.name || '?';
                     addLog(`🎮 Game dimulai! Giliran ${players[currentTurn]?.name}`, true);
@@ -1190,6 +1194,7 @@
                     }
                     isMyTurn = (currentTurn === playerId);
                     hasRolled = false;
+                    isExtraTurn = false;
                     updateButtons();
                     updatePlayersStatus();
                     turnDisplay.textContent = players[currentTurn]?.name || '?';
@@ -1332,7 +1337,7 @@
         }
 
         // ============================================================
-        // PROSES DADU - FIXED!
+        // PROSES DADU - DADU 6 FIXED!
         // ============================================================
         function processDiceRoll(pid, value) {
             const p = players[pid];
@@ -1380,9 +1385,12 @@
             drawBoard();
             updateButtons();
 
-            // Jika dadu 6, dapat giliran tambahan
+            // Jika dadu 6 -> DAPAT GILIRAN TAMBAHAN!
             if (value === 6) {
-                addLog(`🎯 ${p.name} mendapat giliran tambahan karena dadu 6!`, true);
+                isExtraTurn = true;
+                addLog(`🎯 ${p.name} mendapat giliran TAMBAHAN karena dadu 6!`, true);
+                
+                // Reset status untuk lempar lagi
                 hasRolled = false;
                 rollCount = 0;
                 btnRoll.disabled = false;
@@ -1398,7 +1406,8 @@
                     }, 800);
                 }
             } else {
-                // Lanjut ke pemain berikutnya
+                // Bukan dadu 6, lanjut ke pemain berikutnya
+                isExtraTurn = false;
                 endTurn();
             }
         }
@@ -1432,6 +1441,7 @@
                             ${isActive ? '🎯' : ''}
                             ${pid === playerId ? ' 👤' : ''}
                             ${isBot ? ' 🤖' : ''}
+                            ${isActive && isExtraTurn ? ' 🔄' : ''}
                         </div>`;
             }).join('');
             if (keys.length > 0 && players[currentTurn]) turnDisplay.textContent = players[currentTurn]?.name || keys[0];
@@ -1456,8 +1466,9 @@
                 const isActive = gameStarted && isMyTurn && !isRolling && !isAnimating;
                 btnRoll.textContent = '🎲 Lempar';
                 btnRoll.onclick = rollDice;
-                btnRoll.disabled = !isActive || hasRolled;
-                btnEndTurn.disabled = !(isActive && hasRolled);
+                // Jika dadu 6, tombol roll aktif (giliran tambahan)
+                btnRoll.disabled = !isActive || (hasRolled && !isExtraTurn);
+                btnEndTurn.disabled = !(isActive && hasRolled && !isExtraTurn);
                 return;
             }
 
@@ -1484,8 +1495,9 @@
             const isActive = gameStarted && isMyTurn && !isRolling && !isAnimating;
             btnRoll.textContent = '🎲 Lempar';
             btnRoll.onclick = rollDice;
-            btnRoll.disabled = !isActive || hasRolled;
-            btnEndTurn.disabled = !(isActive && hasRolled);
+            // Jika dadu 6, tombol roll aktif (giliran tambahan)
+            btnRoll.disabled = !isActive || (hasRolled && !isExtraTurn);
+            btnEndTurn.disabled = !(isActive && hasRolled && !isExtraTurn);
 
             if (!isBotMode && currentTurn && players[currentTurn] && players[currentTurn].isBot) {
                 btnRoll.disabled = true;
@@ -1494,7 +1506,7 @@
         }
 
         // ============================================================
-        // DICE & TURN - FIXED!
+        // DICE & TURN - DADU 6 FIXED!
         // ============================================================
         function rollDice() {
             if (isAnimating) { addLog('⏳ Tunggu animasi...', false); return; }
@@ -1502,16 +1514,18 @@
             if (!gameStarted) { addLog('⏳ Game belum mulai!', false); return; }
             
             // Jika sudah lempar dan bukan dadu 6
-            if (hasRolled) {
-                if (rollCount === 6) {
-                    // Reset untuk lempar tambahan
-                    hasRolled = false;
-                    btnEndTurn.disabled = true;
-                    updateButtons();
-                } else {
-                    addLog('⚠️ Kamu sudah lempar! Klik End Turn', true);
-                    return;
-                }
+            if (hasRolled && !isExtraTurn) {
+                addLog('⚠️ Kamu sudah lempar! Klik End Turn', true);
+                return;
+            }
+            
+            // Jika sudah lempar dan dadu 6 (giliran tambahan)
+            if (hasRolled && isExtraTurn) {
+                // Reset untuk lempar tambahan
+                hasRolled = false;
+                isExtraTurn = false;
+                btnEndTurn.disabled = true;
+                updateButtons();
             }
             
             if (!isBotMode && !isMyTurn) { addLog('❌ Bukan giliranmu!', true); return; }
@@ -1539,7 +1553,6 @@
                 diceAnimationInterval = null;
             }
             
-            // Tampilkan animasi 10 kali
             diceAnimationInterval = setInterval(() => {
                 const val = Math.floor(Math.random() * 6) + 1;
                 diceResult.textContent = emojis[val - 1];
@@ -1548,7 +1561,6 @@
                 if (count >= 10) {
                     clearInterval(diceAnimationInterval);
                     diceAnimationInterval = null;
-                    // Hasil akhir
                     const finalVal = Math.floor(Math.random() * 6) + 1;
                     diceResult.textContent = emojis[finalVal - 1];
                     if (callback) callback(finalVal);
@@ -1574,6 +1586,7 @@
 
             isMyTurn = (currentTurn === playerId);
             hasRolled = false;
+            isExtraTurn = false;
             rollCount = 0;
             diceResult.textContent = '🎲';
             updateButtons();
@@ -1600,15 +1613,17 @@
             if (!isBotMode && !isMyTurn) { addLog('❌ Bukan giliranmu!', true); return; }
             if (!gameStarted) { addLog('⏳ Game belum mulai!', false); return; }
             
+            // Jika dadu 6, jangan end turn, harus lempar lagi
+            if (isExtraTurn) {
+                addLog('🎯 Kamu dapat giliran tambahan! Lempar dadu lagi.', true);
+                hasRolled = false;
+                btnEndTurn.disabled = true;
+                btnRoll.disabled = false;
+                updateButtons();
+                return;
+            }
+            
             if (!hasRolled) {
-                if (rollCount === 6) {
-                    addLog('🎯 Kamu dapat giliran tambahan! Lempar dadu lagi.', true);
-                    hasRolled = false;
-                    btnEndTurn.disabled = true;
-                    btnRoll.disabled = false;
-                    updateButtons();
-                    return;
-                }
                 addLog('⚠️ Lempar dadu dulu!', true);
                 return;
             }
@@ -1642,6 +1657,7 @@
             currentTurn = keys[0];
             isMyTurn = (currentTurn === playerId);
             hasRolled = false;
+            isExtraTurn = false;
             rollCount = 0;
 
             btnRoll.textContent = '🎲 Lempar';
@@ -1669,7 +1685,7 @@
         }
 
         // ============================================================
-        // LOBBY - FIXED!
+        // LOBBY
         // ============================================================
         function createLobby() {
             if (gameMode === 'bot') { startBotGame(); return; }
@@ -1759,7 +1775,6 @@
             btnJoinLobby.disabled = true;
             btnJoinLobby.textContent = '⏳ Menghubungkan...';
 
-            // Kirim join request
             broadcast({
                 type: 'PLAYER_JOIN',
                 playerId: playerId,
@@ -1767,7 +1782,6 @@
                 roomId: roomId
             });
 
-            // Minta sinkronisasi
             setTimeout(() => {
                 broadcast({ type: 'SYNC_REQUEST', roomId: roomId });
             }, 500);
@@ -1776,7 +1790,6 @@
             showGame();
             addLog(`👋 ${playerName} bergabung!`, false);
 
-            // Timeout
             if (joinTimeout) clearTimeout(joinTimeout);
             joinTimeout = setTimeout(() => {
                 isConnecting = false;
@@ -1787,7 +1800,6 @@
                 console.log('⚠️ Join timeout!');
             }, 8000);
 
-            // Tunggu response
             setTimeout(() => {
                 if (joinTimeout) clearTimeout(joinTimeout);
                 isConnecting = false;
@@ -1810,7 +1822,7 @@
         }
 
         // ============================================================
-        // BOT MODE - FIXED!
+        // BOT MODE - DADU 6 FIXED!
         // ============================================================
         function startBotGame() {
             const name = playerNameBot.value.trim() || 'Player';
@@ -1820,6 +1832,7 @@
             isHost = true;
             isBotTurnRunning = false;
             waitingForBotResponse = false;
+            isExtraTurn = false;
 
             players = {};
             players[playerId] = { id: playerId, name: playerName, position: 1, isBot: false };
@@ -1843,7 +1856,7 @@
 
             gameStarted = true;
             const keys = Object.keys(players);
-            currentTurn = keys[0]; // Player duluan
+            currentTurn = keys[0];
             isMyTurn = true;
             hasRolled = false;
             rollCount = 0;
@@ -1861,7 +1874,6 @@
         }
 
         function doBotTurn() {
-            // Cegah tumpang tindih
             if (isBotTurnRunning || waitingForBotResponse) {
                 console.log('⚠️ Bot sedang berjalan atau menunggu');
                 return;
@@ -1873,7 +1885,6 @@
                 return;
             }
 
-            // Cari bot yang sedang giliran
             let botTurn = null;
             if (players[currentTurn] && players[currentTurn].isBot) {
                 botTurn = currentTurn;
@@ -1894,13 +1905,13 @@
                 return;
             }
 
-            // Set currentTurn ke bot
             currentTurn = botTurn;
             isMyTurn = false;
             hasRolled = false;
             rollCount = 0;
             isBotTurnRunning = true;
             waitingForBotResponse = true;
+            isExtraTurn = false;
 
             updatePlayersStatus();
             turnDisplay.textContent = players[currentTurn]?.name;
@@ -1922,12 +1933,10 @@
                     return;
                 }
 
-                // Lempar dadu bot
                 const val = Math.floor(Math.random() * 6) + 1;
                 const emojis = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
                 diceResult.textContent = emojis[val - 1];
 
-                // Proses dadu bot
                 rollCount = val;
                 let newPos = bot.position + val;
 
@@ -1948,7 +1957,6 @@
                 bot.position = newPos;
                 addLog(`🤖 ${bot.name} melempar ${val} → posisi ${newPos}`, false);
 
-                // Cek menang
                 if (newPos === TOTAL_CELLS) {
                     addLog(`🤖 ${bot.name} MENANG! 🏆`, true);
                     gameStarted = false;
@@ -1967,16 +1975,17 @@
                 waitingForBotResponse = false;
                 isBotTurnRunning = false;
 
-                // Jika dadu 6, bot dapat giliran tambahan
+                // JIKA DADU 6 -> GILIRAN TAMBAHAN!
                 if (val === 6) {
-                    addLog(`🎯 ${bot.name} mendapat giliran tambahan karena dadu 6!`, true);
+                    isExtraTurn = true;
+                    addLog(`🎯 ${bot.name} mendapat giliran TAMBAHAN karena dadu 6!`, true);
                     setTimeout(() => {
                         if (gameStarted && !isGameOver) {
                             doBotTurn();
                         }
                     }, 700);
                 } else {
-                    // Lanjut ke pemain berikutnya
+                    isExtraTurn = false;
                     const keys2 = Object.keys(players);
                     const currentIdx2 = keys2.indexOf(currentTurn);
                     const nextIdx2 = (currentIdx2 + 1) % keys2.length;
@@ -1995,7 +2004,6 @@
                         btnEndTurn.disabled = true;
                         addLog(`🎯 Giliranmu!`, true);
                     } else {
-                        // Jika giliran bot berikutnya
                         if (players[currentTurn] && players[currentTurn].isBot) {
                             if (botTimeout) clearTimeout(botTimeout);
                             botTimeout = setTimeout(() => doBotTurn(), 700);
@@ -2034,6 +2042,7 @@
             isConnecting = false;
             isBotTurnRunning = false;
             waitingForBotResponse = false;
+            isExtraTurn = false;
             btnJoinLobby.disabled = false;
             btnJoinLobby.textContent = '🔗 Gabung';
 
@@ -2123,7 +2132,7 @@
         btnCreateLobby.disabled = false;
         btnJoinLobby.disabled = false;
 
-        console.log('🎲 Ular Tangga - FULL FIXED!');
+        console.log('🎲 Ular Tangga - DADU 6 FIXED!');
 
         window.addEventListener('beforeunload', () => {
             if (roomId && !isBotMode) {
