@@ -261,7 +261,7 @@
             letter-spacing: 2px;
         }
 
-        /* LOBBY SCREEN */
+        /* LOBBY */
         #lobby-screen {
             display: none;
             background: rgba(10, 10, 30, 0.75);
@@ -380,8 +380,6 @@
             color: #fff;
             transition: all .3s ease;
             touch-action: manipulation;
-            position: relative;
-            overflow: hidden;
         }
         .lobby-box .btn:active {
             transform: scale(0.95);
@@ -463,7 +461,7 @@
             }
         }
 
-        /* GAME SCREEN */
+        /* GAME */
         #game-screen {
             display: none;
             background: rgba(10, 10, 30, 0.75);
@@ -673,7 +671,109 @@
             border-radius: 4px;
         }
 
-        /* RESPONSIVE */
+        /* CONGRATULATIONS */
+        #congrats-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            animation: fadeIn 0.5s ease;
+        }
+        #congrats-overlay.show {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        #congrats-overlay .trophy {
+            font-size: 80px;
+            animation: bounce 1s infinite;
+        }
+        #congrats-overlay .title {
+            color: #ffd700;
+            font-size: 36px;
+            font-weight: 900;
+            margin-top: 10px;
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+            text-align: center;
+        }
+        #congrats-overlay .winner {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 5px;
+            text-align: center;
+        }
+        #congrats-overlay .winner span {
+            color: #44ff88;
+        }
+        #congrats-overlay .sub {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 12px;
+            margin-top: 15px;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+        #congrats-overlay .btn-ok {
+            margin-top: 20px;
+            background: linear-gradient(135deg, #ffd700, #f0a500);
+            border: none;
+            color: #0a0a1a;
+            padding: 12px 40px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .3s ease;
+            touch-action: manipulation;
+        }
+        #congrats-overlay .btn-ok:active {
+            transform: scale(0.95);
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            z-index: 101;
+            border-radius: 2px;
+            animation: confettiFall linear forwards;
+            pointer-events: none;
+        }
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg) scale(0.5);
+                opacity: 0;
+            }
+        }
+
         @media(max-width:420px) {
             body {
                 padding: 4px;
@@ -782,6 +882,15 @@
                 width: 16px;
                 height: 16px;
             }
+            #congrats-overlay .title {
+                font-size: 24px;
+            }
+            #congrats-overlay .winner {
+                font-size: 18px;
+            }
+            #congrats-overlay .trophy {
+                font-size: 50px;
+            }
         }
 
         @media(max-width:360px) {
@@ -885,6 +994,15 @@
             }
             .space-snake {
                 font-size: 45px !important;
+            }
+            #congrats-overlay .title {
+                font-size: 48px;
+            }
+            #congrats-overlay .winner {
+                font-size: 30px;
+            }
+            #congrats-overlay .trophy {
+                font-size: 100px;
             }
         }
 
@@ -1071,9 +1189,18 @@
 
     </div>
 
+    <!-- CONGRATULATIONS OVERLAY -->
+    <div id="congrats-overlay">
+        <div class="trophy">🏆</div>
+        <div class="title">🎉 CONGRATULATIONS! 🎉</div>
+        <div class="winner"><span id="winnerName">Pemain</span> MENANG!</div>
+        <div class="sub">👆 Tap untuk kembali ke menu</div>
+        <button class="btn-ok" id="btnCongratsOk">OK</button>
+    </div>
+
     <script>
         // ============================================================
-        // ULAR TANGGA - FIXED JOIN BUTTON
+        // ULAR TANGGA - BOT FIXED + DADU 6
         // ============================================================
 
         const BOARD_SIZE = 10;
@@ -1105,6 +1232,12 @@
         let isConnecting = false;
         let isPeerReady = false;
         let peerInitialized = false;
+        let hostPeerId = null;
+        let isConnectedToHost = false;
+        let isGameOver = false;
+        let gameWinner = null;
+        let rollCount = 0;
+        let isProcessingBot = false;
 
         // PEERJS
         let peer = null;
@@ -1147,6 +1280,58 @@
         const botOptions = document.getElementById('botOptions');
         const modeOnline = document.getElementById('modeOnline');
         const modeBot = document.getElementById('modeBot');
+        const congratsOverlay = document.getElementById('congrats-overlay');
+        const winnerName = document.getElementById('winnerName');
+        const btnCongratsOk = document.getElementById('btnCongratsOk');
+
+        // ============================================================
+        // CONGRATULATIONS
+        // ============================================================
+        function showCongratulations(name) {
+            isGameOver = true;
+            gameWinner = name;
+            winnerName.textContent = name;
+            congratsOverlay.classList.add('show');
+            createConfetti();
+        }
+
+        function hideCongratulations() {
+            congratsOverlay.classList.remove('show');
+            isGameOver = false;
+            gameWinner = null;
+            document.querySelectorAll('.confetti').forEach(el => el.remove());
+            // Reset game
+            resetAll();
+            gameScreen.classList.remove('active');
+            lobbyScreen.style.display = 'block';
+            showStatus('👋 Game selesai', '');
+            setMode('online');
+        }
+
+        btnCongratsOk.addEventListener('click', hideCongratulations);
+
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#ffd700', '#44ddff', '#ff66aa', '#44ff88', '#ff8844'];
+            for (let i = 0; i < 80; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.className = 'confetti';
+                    const size = Math.random() * 8 + 4;
+                    const isCircle = Math.random() > 0.5;
+                    el.style.width = isCircle ? size + 'px' : size * 0.5 + 'px';
+                    el.style.height = isCircle ? size + 'px' : size * 1.5 + 'px';
+                    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    el.style.borderRadius = isCircle ? '50%' : '2px';
+                    el.style.left = Math.random() * 100 + '%';
+                    el.style.top = '-10px';
+                    el.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+                    el.style.animationDelay = (Math.random() * 0.5) + 's';
+                    el.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    document.body.appendChild(el);
+                    setTimeout(() => el.remove(), 4000);
+                }, i * 30);
+            }
+        }
 
         // ============================================================
         // LANDING PAGE
@@ -1154,7 +1339,6 @@
         btnEnter.addEventListener('click', () => {
             landingPage.style.display = 'none';
             lobbyScreen.style.display = 'block';
-            // Auto init peer saat masuk lobby
             if (!peerInitialized) {
                 initPeer();
             } else {
@@ -1179,7 +1363,13 @@
             isBotMode = false;
             roomId = null;
             isHost = false;
+            hostPeerId = null;
+            isConnectedToHost = false;
             logEntries = [];
+            isGameOver = false;
+            gameWinner = null;
+            rollCount = 0;
+            isProcessingBot = false;
             renderLog();
             updateButtons();
             connections = {};
@@ -1187,6 +1377,8 @@
                 joinTimeout = null; }
             isConnecting = false;
             loadingSpinner.style.display = 'none';
+            congratsOverlay.classList.remove('show');
+            document.querySelectorAll('.confetti').forEach(el => el.remove());
         }
 
         function setMode(mode) {
@@ -1208,7 +1400,6 @@
                 lobbyStatus.textContent = '🤖 Mode Bot: 1 Player vs 4 Bot';
                 loadingSpinner.style.display = 'none';
             }
-            // Jika peer sudah siap, tampilkan status
             if (isPeerReady) {
                 showStatus('✅ Terhubung!', 'success');
                 loadingSpinner.style.display = 'none';
@@ -1230,7 +1421,7 @@
         }
 
         // ============================================================
-        // PEERJS INIT - DIPANGGIL SEKALI SAJA
+        // PEERJS INIT
         // ============================================================
         function initPeer() {
             if (peerInitialized) {
@@ -1260,28 +1451,14 @@
                 console.log('✅ Peer ID:', id);
                 showStatus('✅ Terhubung!', 'success');
                 loadingSpinner.style.display = 'none';
-                // Enable tombol setelah terhubung
                 btnCreateLobby.disabled = false;
                 btnJoinLobby.disabled = false;
             });
 
             peer.on('connection', (conn) => {
-                console.log('📥 Incoming connection:', conn.peer);
+                console.log('📥 Incoming connection dari:', conn.peer);
                 connections[conn.peer] = conn;
                 setupConnection(conn);
-
-                conn.on('open', () => {
-                    if (isHost && roomId) {
-                        const joinData = {
-                            type: 'PLAYER_JOIN',
-                            playerId: playerId,
-                            name: playerName,
-                            roomId: roomId
-                        };
-                        conn.send(JSON.stringify(joinData));
-                        broadcast(joinData);
-                    }
-                });
             });
 
             peer.on('error', (err) => {
@@ -1307,7 +1484,6 @@
             });
         }
 
-        // Coba init ulang jika perlu
         function reconnectPeer() {
             if (peer) {
                 try { peer.destroy(); } catch (e) {}
@@ -1320,7 +1496,17 @@
 
         function setupConnection(conn) {
             conn.on('open', () => {
-                console.log('✅ Connection open:', conn.peer);
+                console.log('✅ Connection open dengan:', conn.peer);
+                if (isHost && roomId) {
+                    const hostInfo = {
+                        type: 'HOST_INFO',
+                        hostId: playerId,
+                        roomId: roomId,
+                        players: players
+                    };
+                    conn.send(JSON.stringify(hostInfo));
+                    console.log('📤 Host info dikirim ke:', conn.peer);
+                }
             });
 
             conn.on('data', (data) => {
@@ -1328,7 +1514,7 @@
                     const parsed = typeof data === 'string' ? JSON.parse(data) : data;
                     if (parsed.sender === playerId) return;
                     if (parsed.roomId && parsed.roomId !== roomId) return;
-                    handleMessage(parsed);
+                    handleMessage(parsed, conn.peer);
                 } catch (e) { console.warn('Invalid data:', data); }
             });
 
@@ -1341,7 +1527,7 @@
                     addLog(`👋 ${name} keluar`, false);
                     updatePlayersStatus();
                     drawBoard();
-                    if (Object.keys(players).length < 2) {
+                    if (Object.keys(players).length < 2 && !isBotMode) {
                         gameStarted = false;
                         updateButtons();
                         addLog(`⏳ Menunggu 1 pemain lagi (min 2)...`, false);
@@ -1353,17 +1539,37 @@
         function broadcast(data) {
             const message = JSON.stringify({ ...data, sender: playerId, roomId: roomId });
             for (const id in connections) {
-                try { connections[id].send(message); } catch (e) { console.warn('Broadcast error:', e); }
+                try {
+                    connections[id].send(message);
+                    console.log('📤 Broadcast ke:', id, data.type);
+                } catch (e) { console.warn('Broadcast error:', e); }
             }
         }
 
         // ============================================================
         // HANDLE MESSAGE
         // ============================================================
-        function handleMessage(data) {
-            console.log('📨 Pesan:', data.type, data);
+        function handleMessage(data, fromId) {
+            console.log('📨 Pesan:', data.type, 'dari:', fromId, data);
 
             switch (data.type) {
+                case 'HOST_INFO':
+                    console.log('📥 Menerima HOST_INFO:', data);
+                    hostPeerId = data.hostId;
+                    isConnectedToHost = true;
+                    if (data.players) {
+                        players = data.players;
+                        if (playerId && !players[playerId]) {
+                            players[playerId] = { id: playerId, name: playerName, position: 1 };
+                        }
+                        updatePlayersStatus();
+                        drawBoard();
+                        addLog(`✅ Terhubung ke lobby! (${Object.keys(players).length} pemain)`, true);
+                        showStatus(`✅ Bergabung! (${Object.keys(players).length}/${MAX_PLAYERS} pemain)`, 'success');
+                        loadingSpinner.style.display = 'none';
+                    }
+                    break;
+
                 case 'PLAYER_JOIN':
                     if (Object.keys(players).length >= MAX_PLAYERS) {
                         broadcast({ type: 'LOBBY_FULL', to: data.playerId });
@@ -1381,9 +1587,11 @@
                         broadcast({ type: 'PLAYER_LIST', players: players });
                     }
                     break;
+
                 case 'LOBBY_FULL':
                     showStatus('❌ Lobby sudah penuh! (max 5 pemain)', 'error');
                     break;
+
                 case 'PLAYER_LIST':
                     players = data.players;
                     if (playerId && !players[playerId]) {
@@ -1392,12 +1600,14 @@
                     updatePlayersStatus();
                     drawBoard();
                     break;
+
                 case 'DICE_ROLL':
                     if (data.playerId !== playerId) {
                         addLog(`🎲 ${players[data.playerId]?.name} melempar ${data.value}`, false);
-                        animatePlayerMove(data.playerId, data.value);
+                        processDiceRoll(data.playerId, data.value);
                     }
                     break;
+
                 case 'TURN_UPDATE':
                     currentTurn = data.currentTurn;
                     isMyTurn = (currentTurn === playerId);
@@ -1408,6 +1618,7 @@
                     if (isMyTurn) addLog(`🎯 Giliranmu!`, true);
                     drawBoard();
                     break;
+
                 case 'START_GAME':
                     gameStarted = true;
                     currentTurn = data.firstTurn || Object.keys(players)[0];
@@ -1419,6 +1630,7 @@
                     updatePlayersStatus();
                     drawBoard();
                     break;
+
                 case 'END_TURN':
                     if (data.nextTurn) {
                         currentTurn = data.nextTurn;
@@ -1440,11 +1652,17 @@
                     }
                     drawBoard();
                     break;
+
                 case 'GAME_OVER':
                     gameStarted = false;
                     updateButtons();
-                    addLog(`🏆 ${players[data.winner]?.name} MENANG! 🏆`, true);
+                    const winner = players[data.winner];
+                    addLog(`🏆 ${winner?.name} MENANG! 🏆`, true);
+                    if (!isBotMode) {
+                        showCongratulations(winner?.name || 'Pemain');
+                    }
                     break;
+
                 case 'SYNC':
                     if (data.players) {
                         players = data.players;
@@ -1465,6 +1683,7 @@
                         updateButtons();
                     }
                     break;
+
                 case 'LEAVE':
                     if (players[data.playerId]) {
                         const name = players[data.playerId]?.name;
@@ -1473,14 +1692,16 @@
                         updatePlayersStatus();
                         drawBoard();
                         broadcast({ type: 'PLAYER_LIST', players: players });
-                        if (Object.keys(players).length < 2) {
+                        if (Object.keys(players).length < 2 && !isBotMode) {
                             gameStarted = false;
                             updateButtons();
                             addLog(`⏳ Menunggu 1 pemain lagi (min 2)...`, false);
                         }
                     }
                     break;
+
                 case 'SYNC_REQUEST':
+                    console.log('📥 SYNC_REQUEST dari:', fromId);
                     broadcast({
                         type: 'SYNC',
                         players: players,
@@ -1488,6 +1709,7 @@
                         gameStarted: gameStarted
                     });
                     break;
+
                 case 'INVALID_ID':
                     showStatus('❌ ID Lobby salah! Periksa kembali.', 'error');
                     break;
@@ -1597,11 +1819,14 @@
                     if (finalPos === TOTAL_CELLS) {
                         addLog(`🏆 ${p.name} MENANG! 🏆`, true);
                         gameStarted = false;
-                        if (!isBotMode) broadcast({ type: 'GAME_OVER', winner: pid });
+                        if (!isBotMode) {
+                            broadcast({ type: 'GAME_OVER', winner: pid });
+                        }
                         updatePlayersStatus();
                         drawBoard();
                         updateButtons();
                         isAnimating = false;
+                        showCongratulations(p.name);
                         if (callback) callback();
                         return;
                     }
@@ -1612,16 +1837,94 @@
                         isRolling = false;
                         btnEndTurn.disabled = false;
                         updateButtons();
+                        if (rollCount === 6) {
+                            addLog(`🎯 ${p.name} mendapat giliran tambahan karena dadu 6!`, true);
+                            setTimeout(() => {
+                                if (pid === playerId || isBotMode) {
+                                    btnRoll.disabled = false;
+                                    btnEndTurn.disabled = true;
+                                    hasRolled = false;
+                                    updateButtons();
+                                }
+                            }, 500);
+                        }
                     }
                     isAnimating = false;
                     if (callback) callback();
                     return;
                 }
+
                 currentPos = startPos + step;
                 p.position = currentPos;
                 drawBoard();
                 step++;
             }, 120);
+        }
+
+        // ============================================================
+        // PROSES DADU
+        // ============================================================
+        function processDiceRoll(pid, value) {
+            const p = players[pid];
+            if (!p) return;
+
+            rollCount = value;
+
+            let newPos = p.position + value;
+
+            if (newPos > TOTAL_CELLS) {
+                const over = newPos - TOTAL_CELLS;
+                newPos = TOTAL_CELLS - over;
+                addLog(`↩️ ${p.name} melewati 100! Mundur ke ${newPos}`, true);
+            }
+
+            if (SNAKES[newPos]) {
+                addLog(`🐍 ${p.name} terkena ular! ${newPos} → ${SNAKES[newPos]}`, true);
+                newPos = SNAKES[newPos];
+            } else if (LADDERS[newPos]) {
+                addLog(`🪜 ${p.name} naik tangga! ${newPos} → ${LADDERS[newPos]}`, true);
+                newPos = LADDERS[newPos];
+            }
+
+            p.position = newPos;
+            addLog(`🎲 ${p.name} melempar ${value} → posisi ${newPos}`, false);
+
+            if (newPos === TOTAL_CELLS) {
+                addLog(`🏆 ${p.name} MENANG! 🏆`, true);
+                gameStarted = false;
+                if (!isBotMode) {
+                    broadcast({ type: 'GAME_OVER', winner: pid });
+                }
+                updatePlayersStatus();
+                drawBoard();
+                updateButtons();
+                showCongratulations(p.name);
+                return;
+            }
+
+            updatePlayersStatus();
+            drawBoard();
+            updateButtons();
+
+            if (value === 6) {
+                addLog(`🎯 ${p.name} mendapat giliran tambahan karena dadu 6!`, true);
+                hasRolled = false;
+                rollCount = 0;
+                btnRoll.disabled = false;
+                btnEndTurn.disabled = true;
+                updateButtons();
+                // Jika bot, lanjutkan bot turn
+                if (isBotMode && p.isBot) {
+                    setTimeout(() => {
+                        if (gameStarted && !isGameOver) {
+                            doBotTurn();
+                        }
+                    }, 600);
+                }
+            } else {
+                // Jika bukan dadu 6, lanjutkan ke pemain berikutnya
+                endTurn();
+            }
         }
 
         // ============================================================
@@ -1660,14 +1963,20 @@
 
         function updateButtons() {
             const playerCount = Object.keys(players).length;
-            if (isAnimating) { btnRoll.disabled = true;
-                btnEndTurn.disabled = true; return; }
+            if (isAnimating || isGameOver) {
+                btnRoll.disabled = true;
+                btnEndTurn.disabled = true;
+                return;
+            }
 
             if (isBotMode) {
-                if (!gameStarted) { btnRoll.disabled = false;
+                if (!gameStarted) {
+                    btnRoll.disabled = false;
                     btnRoll.textContent = '🎮 Mulai';
                     btnRoll.onclick = startBotGame;
-                    btnEndTurn.disabled = true; return; }
+                    btnEndTurn.disabled = true;
+                    return;
+                }
                 const isActive = gameStarted && isMyTurn && !isRolling && !isAnimating;
                 btnRoll.textContent = '🎲 Lempar';
                 btnRoll.onclick = rollDice;
@@ -1689,9 +1998,12 @@
                 btnEndTurn.disabled = true;
                 return;
             }
-            if (!gameStarted) { btnRoll.disabled = true;
+            if (!gameStarted) {
+                btnRoll.disabled = true;
                 btnRoll.textContent = '⏳ Menunggu...';
-                btnEndTurn.disabled = true; return; }
+                btnEndTurn.disabled = true;
+                return;
+            }
 
             const isActive = gameStarted && isMyTurn && !isRolling && !isAnimating;
             btnRoll.textContent = '🎲 Lempar';
@@ -1712,7 +2024,16 @@
             if (isAnimating) { addLog('⏳ Tunggu animasi...', false); return; }
             if (isRolling) { addLog('⏳ Tunggu dadu...', false); return; }
             if (!gameStarted) { addLog('⏳ Game belum mulai!', false); return; }
-            if (hasRolled) { addLog('⚠️ Kamu sudah lempar! Klik End Turn', true); return; }
+            if (hasRolled) {
+                if (rollCount === 6) {
+                    hasRolled = false;
+                    btnEndTurn.disabled = true;
+                    updateButtons();
+                } else {
+                    addLog('⚠️ Kamu sudah lempar! Klik End Turn', true);
+                    return;
+                }
+            }
             if (!isBotMode && !isMyTurn) { addLog('❌ Bukan giliranmu!', true); return; }
             if (Object.keys(players).length < 2 && !isBotMode) { addLog('⏳ Butuh 2 pemain!', false); return; }
 
@@ -1721,14 +2042,11 @@
             btnEndTurn.disabled = true;
 
             animateDice((finalVal) => {
-                if (!isBotMode) broadcast({ type: 'DICE_ROLL', playerId: playerId, value: finalVal });
-                addLog(`🎲 ${players[playerId]?.name} → ${finalVal}`, false);
-                animatePlayerMove(playerId, finalVal, () => {
-                    if (players[playerId]?.position < TOTAL_CELLS) btnEndTurn.disabled = false;
-                    if (isBotMode && gameStarted && players[playerId]?.position < TOTAL_CELLS) {
-                        setTimeout(() => doBotTurn(), 600);
-                    }
-                });
+                if (!isBotMode) {
+                    broadcast({ type: 'DICE_ROLL', playerId: playerId, value: finalVal });
+                }
+                processDiceRoll(playerId, finalVal);
+                isRolling = false;
             });
         }
 
@@ -1752,15 +2070,23 @@
 
         function endTurn(nextTurn) {
             const keys = Object.keys(players);
-            if (keys.length < 2 && !isBotMode) { addLog('⏳ Butuh 2 pemain!', false);
-                btnRoll.disabled = true; return; }
+            if (keys.length < 2 && !isBotMode) {
+                addLog('⏳ Butuh 2 pemain!', false);
+                btnRoll.disabled = true;
+                return;
+            }
 
-            if (nextTurn) { currentTurn = nextTurn; } else { const currentIdx = keys.indexOf(currentTurn);
+            if (nextTurn) {
+                currentTurn = nextTurn;
+            } else {
+                const currentIdx = keys.indexOf(currentTurn);
                 const nextIdx = (currentIdx + 1) % keys.length;
-                currentTurn = keys[nextIdx]; }
+                currentTurn = keys[nextIdx];
+            }
 
             isMyTurn = (currentTurn === playerId);
             hasRolled = false;
+            rollCount = 0;
             diceResult.textContent = '🎲';
             updateButtons();
 
@@ -1773,13 +2099,29 @@
             if (!isBotMode) {
                 broadcast({ type: 'TURN_UPDATE', currentTurn: currentTurn });
             }
+
+            if (!isBotMode && currentTurn && players[currentTurn] && players[currentTurn].isBot) {
+                btnRoll.disabled = true;
+                btnEndTurn.disabled = true;
+            }
         }
 
         function handleEndTurn() {
             if (isAnimating) { addLog('⏳ Tunggu animasi...', false); return; }
             if (!isBotMode && !isMyTurn) { addLog('❌ Bukan giliranmu!', true); return; }
             if (!gameStarted) { addLog('⏳ Game belum mulai!', false); return; }
-            if (!hasRolled) { addLog('⚠️ Lempar dadu dulu!', true); return; }
+            if (!hasRolled) {
+                if (rollCount === 6) {
+                    addLog('🎯 Kamu dapat giliran tambahan! Lempar dadu lagi.', true);
+                    hasRolled = false;
+                    btnEndTurn.disabled = true;
+                    btnRoll.disabled = false;
+                    updateButtons();
+                    return;
+                }
+                addLog('⚠️ Lempar dadu dulu!', true);
+                return;
+            }
             if (!isBotMode && currentTurn && players[currentTurn] && players[currentTurn].isBot) {
                 addLog('🤖 Giliran bot...', false);
                 return;
@@ -1809,6 +2151,7 @@
             currentTurn = keys[0];
             isMyTurn = (currentTurn === playerId);
             hasRolled = false;
+            rollCount = 0;
 
             btnRoll.textContent = '🎲 Lempar';
             btnRoll.onclick = rollDice;
@@ -1835,22 +2178,19 @@
         }
 
         // ============================================================
-        // LOBBY - DENGAN FEEDBACK KLIK
+        // LOBBY
         // ============================================================
         function createLobby() {
             if (gameMode === 'bot') { startBotGame(); return; }
 
-            // Cek koneksi peer
             if (!isPeerReady) {
                 showStatus('⏳ Menghubungkan ke server...', 'info');
                 loadingSpinner.style.display = 'inline-block';
-                // Coba init ulang
                 if (!peerInitialized) {
                     initPeer();
                 } else {
                     reconnectPeer();
                 }
-                // Tunggu sebentar lalu coba lagi
                 setTimeout(() => {
                     if (isPeerReady) {
                         createLobby();
@@ -1867,6 +2207,7 @@
             roomId = generateRoomId();
             isHost = true;
             isBotMode = false;
+            hostPeerId = playerId;
             players = {};
             players[playerId] = { id: playerId, name: playerName, position: 1 };
 
@@ -1880,14 +2221,15 @@
             updateButtons();
 
             broadcast({ type: 'SYNC', players: players, roomId: roomId });
+
+            console.log('🏠 Host ID:', playerId, 'Room:', roomId);
         }
 
         function joinLobby() {
-            console.log('🔘 Tombol JOIN diklik!');
+            console.log('🔘 JOIN LOBY - Player mencoba gabung');
 
             if (gameMode === 'bot') { startBotGame(); return; }
 
-            // CEK KONEKSI PEER
             if (!isPeerReady) {
                 console.log('⚠️ Peer belum siap, coba init ulang');
                 showStatus('⏳ Menghubungkan ke server...', 'info');
@@ -1931,21 +2273,9 @@
             showStatus(`🔗 Menghubungkan ke lobby "${id}"...`, 'info');
             loadingSpinner.style.display = 'inline-block';
 
-            // DISABLE TOMBOL SEMENTARA
             btnJoinLobby.disabled = true;
             btnJoinLobby.textContent = '⏳ Menghubungkan...';
 
-            // Timeout jika join terlalu lama (8 detik)
-            if (joinTimeout) clearTimeout(joinTimeout);
-            joinTimeout = setTimeout(() => {
-                isConnecting = false;
-                btnJoinLobby.disabled = false;
-                btnJoinLobby.textContent = '🔗 Gabung';
-                showStatus('⏳ Waktu habis! Coba lagi atau refresh.', 'warning');
-                loadingSpinner.style.display = 'none';
-            }, 8000);
-
-            // Kirim join request ke semua (host akan menerima)
             broadcast({
                 type: 'PLAYER_JOIN',
                 playerId: playerId,
@@ -1953,7 +2283,6 @@
                 roomId: roomId
             });
 
-            // Minta sync dari host
             setTimeout(() => {
                 broadcast({ type: 'SYNC_REQUEST', roomId: roomId });
             }, 500);
@@ -1962,7 +2291,16 @@
             showGame();
             addLog(`👋 ${playerName} bergabung!`, false);
 
-            // Proses setelah join
+            if (joinTimeout) clearTimeout(joinTimeout);
+            joinTimeout = setTimeout(() => {
+                isConnecting = false;
+                btnJoinLobby.disabled = false;
+                btnJoinLobby.textContent = '🔗 Gabung';
+                showStatus('⏳ Waktu habis! Coba lagi atau refresh.', 'warning');
+                loadingSpinner.style.display = 'none';
+                console.log('⚠️ Join timeout!');
+            }, 8000);
+
             setTimeout(() => {
                 if (joinTimeout) clearTimeout(joinTimeout);
                 isConnecting = false;
@@ -1970,24 +2308,23 @@
                 btnJoinLobby.textContent = '🔗 Gabung';
                 loadingSpinner.style.display = 'none';
 
-                if (playerId && !players[playerId]) {
-                    players[playerId] = { id: playerId, name: playerName, position: 1 };
-                }
-                const count = Object.keys(players).length;
-                if (count > 1) {
-                    showStatus(`✅ Bergabung! (${count}/${MAX_PLAYERS} pemain)`, 'success');
+                if (Object.keys(players).length > 1) {
+                    showStatus(`✅ Bergabung! (${Object.keys(players).length}/${MAX_PLAYERS} pemain)`, 'success');
                 } else {
-                    showStatus(`⏳ Menunggu pemain lain... (${count}/${MAX_PLAYERS})`, 'info');
+                    showStatus(`⏳ Menunggu host merespon...`, 'info');
                     loadingSpinner.style.display = 'inline-block';
+                    setTimeout(() => {
+                        broadcast({ type: 'SYNC_REQUEST', roomId: roomId });
+                    }, 2000);
                 }
                 updatePlayersStatus();
                 drawBoard();
                 updateButtons();
-            }, 1000);
+            }, 1500);
         }
 
         // ============================================================
-        // BOT MODE
+        // BOT MODE - FIXED! BOT BERJALAN DENGAN BENAR
         // ============================================================
         function startBotGame() {
             const name = playerNameBot.value.trim() || 'Player';
@@ -1995,6 +2332,7 @@
             playerId = 'player';
             isBotMode = true;
             isHost = true;
+            isProcessingBot = false;
 
             players = {};
             players[playerId] = { id: playerId, name: playerName, position: 1, isBot: false };
@@ -2021,6 +2359,7 @@
             currentTurn = keys[0];
             isMyTurn = true;
             hasRolled = false;
+            rollCount = 0;
 
             btnRoll.textContent = '🎲 Lempar';
             btnRoll.onclick = rollDice;
@@ -2035,7 +2374,13 @@
         }
 
         function doBotTurn() {
-            if (!gameStarted || isAnimating || isRolling) {
+            // Cegah doBotTurn berjalan bersamaan
+            if (isProcessingBot) {
+                console.log('⚠️ Bot sedang diproses, skip');
+                return;
+            }
+            
+            if (!gameStarted || isAnimating || isRolling || isGameOver) {
                 if (botTimeout) clearTimeout(botTimeout);
                 botTimeout = setTimeout(() => doBotTurn(), 500);
                 return;
@@ -2044,66 +2389,132 @@
             const keys = Object.keys(players);
             let botTurn = null;
 
-            if (players[currentTurn] && players[currentTurn].isBot) botTurn = currentTurn;
-            else {
+            // Cek apakah currentTurn adalah bot
+            if (players[currentTurn] && players[currentTurn].isBot) {
+                botTurn = currentTurn;
+            } else {
+                // Cari bot berikutnya
                 const currentIdx = keys.indexOf(currentTurn);
                 for (let i = 1; i <= keys.length; i++) {
                     const idx = (currentIdx + i) % keys.length;
-                    if (players[keys[idx]] && players[keys[idx]].isBot) { botTurn = keys[idx]; break; }
+                    if (players[keys[idx]] && players[keys[idx]].isBot) {
+                        botTurn = keys[idx];
+                        break;
+                    }
                 }
             }
 
-            if (!botTurn) { updateButtons(); return; }
+            if (!botTurn) {
+                // Tidak ada bot yang tersisa
+                updateButtons();
+                return;
+            }
 
+            // Set currentTurn ke bot
             currentTurn = botTurn;
             isMyTurn = false;
             hasRolled = false;
+            rollCount = 0;
 
             updatePlayersStatus();
             turnDisplay.textContent = players[currentTurn]?.name;
             drawBoard();
             updateButtons();
 
+            // Proses giliran bot
+            isProcessingBot = true;
+            
             if (botTimeout) clearTimeout(botTimeout);
             botTimeout = setTimeout(() => {
-                if (!gameStarted) return;
+                if (!gameStarted || isGameOver) {
+                    isProcessingBot = false;
+                    return;
+                }
+                
                 const bot = players[botTurn];
-                if (!bot) return;
+                if (!bot) {
+                    isProcessingBot = false;
+                    return;
+                }
+
                 const val = Math.floor(Math.random() * 6) + 1;
                 const emojis = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
                 diceResult.textContent = emojis[val - 1];
-                addLog(`🤖 ${bot.name} → ${val}`, false);
-                animatePlayerMove(botTurn, val, () => {
-                    if (bot.position === TOTAL_CELLS) {
-                        addLog(`🤖 ${bot.name} MENANG! 🏆`, true);
-                        gameStarted = false;
-                        updateButtons();
-                        updatePlayersStatus();
-                        return;
-                    }
-                    const playerAlive = players[playerId] && players[playerId].position < TOTAL_CELLS;
-                    if (!playerAlive) { addLog(`💀 Kamu kalah!`, true);
-                        gameStarted = false;
-                        updateButtons(); return; }
+
+                // Proses dadu bot
+                rollCount = val;
+                let newPos = bot.position + val;
+
+                if (newPos > TOTAL_CELLS) {
+                    const over = newPos - TOTAL_CELLS;
+                    newPos = TOTAL_CELLS - over;
+                    addLog(`↩️ ${bot.name} melewati 100! Mundur ke ${newPos}`, true);
+                }
+
+                if (SNAKES[newPos]) {
+                    addLog(`🐍 ${bot.name} terkena ular! ${newPos} → ${SNAKES[newPos]}`, true);
+                    newPos = SNAKES[newPos];
+                } else if (LADDERS[newPos]) {
+                    addLog(`🪜 ${bot.name} naik tangga! ${newPos} → ${LADDERS[newPos]}`, true);
+                    newPos = LADDERS[newPos];
+                }
+
+                bot.position = newPos;
+                addLog(`🤖 ${bot.name} melempar ${val} → posisi ${newPos}`, false);
+
+                if (newPos === TOTAL_CELLS) {
+                    addLog(`🤖 ${bot.name} MENANG! 🏆`, true);
+                    gameStarted = false;
+                    updateButtons();
+                    updatePlayersStatus();
+                    isProcessingBot = false;
+                    showCongratulations(bot.name);
+                    return;
+                }
+
+                updatePlayersStatus();
+                drawBoard();
+                updateButtons();
+
+                // Jika dadu 6, bot mendapat giliran tambahan
+                if (val === 6) {
+                    addLog(`🎯 ${bot.name} mendapat giliran tambahan karena dadu 6!`, true);
+                    isProcessingBot = false;
+                    // Lanjutkan turn bot
+                    setTimeout(() => {
+                        if (gameStarted && !isGameOver) {
+                            doBotTurn();
+                        }
+                    }, 600);
+                } else {
+                    // Lanjut ke pemain berikutnya
                     const keys2 = Object.keys(players);
                     const currentIdx2 = keys2.indexOf(currentTurn);
                     const nextIdx2 = (currentIdx2 + 1) % keys2.length;
                     currentTurn = keys2[nextIdx2];
                     isMyTurn = (currentTurn === playerId);
                     hasRolled = false;
+                    rollCount = 0;
+
                     updatePlayersStatus();
                     turnDisplay.textContent = players[currentTurn]?.name;
                     drawBoard();
                     updateButtons();
+
+                    isProcessingBot = false;
+
                     if (isMyTurn) {
                         btnRoll.disabled = false;
                         btnEndTurn.disabled = true;
                         addLog(`🎯 Giliranmu!`, true);
                     } else {
-                        if (botTimeout) clearTimeout(botTimeout);
-                        botTimeout = setTimeout(() => doBotTurn(), 600);
+                        // Jika giliran bot berikutnya, lanjutkan
+                        if (players[currentTurn] && players[currentTurn].isBot) {
+                            if (botTimeout) clearTimeout(botTimeout);
+                            botTimeout = setTimeout(() => doBotTurn(), 600);
+                        }
                     }
-                });
+                }
             }, 500);
         }
 
@@ -2115,7 +2526,6 @@
             gameScreen.classList.add('active');
             setTimeout(() => { resizeBoard(); }, 150);
             loadingSpinner.style.display = 'none';
-            // Reset tombol join
             btnJoinLobby.disabled = false;
             btnJoinLobby.textContent = '🔗 Gabung';
         }
@@ -2125,6 +2535,7 @@
             if (botTimeout) clearTimeout(botTimeout);
             if (joinTimeout) clearTimeout(joinTimeout);
             isConnecting = false;
+            isProcessingBot = false;
             btnJoinLobby.disabled = false;
             btnJoinLobby.textContent = '🔗 Gabung';
 
@@ -2139,14 +2550,17 @@
             setMode('online');
             loadingSpinner.style.display = 'none';
 
-            // Reset tombol
             btnCreateLobby.disabled = false;
             btnJoinLobby.disabled = false;
+            hostPeerId = null;
+            isConnectedToHost = false;
+
+            congratsOverlay.classList.remove('show');
+            document.querySelectorAll('.confetti').forEach(el => el.remove());
 
             if (peer) {
                 try {
                     for (const id in connections) { connections[id].close(); }
-                    // Jangan destroy peer, biarkan tetap terhubung
                 } catch (e) {}
             }
         }
@@ -2163,7 +2577,7 @@
         }
 
         // ============================================================
-        // EVENT LISTENERS - DENGAN LOG
+        // EVENT LISTENERS
         // ============================================================
         btnCreateLobby.addEventListener('click', function(e) {
             console.log('🔘 Buat Lobby diklik');
@@ -2184,7 +2598,6 @@
         btnEndTurn.addEventListener('click', handleEndTurn);
         btnLeave.addEventListener('click', leaveGame);
 
-        // Enter key
         lobbyIdInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -2211,12 +2624,10 @@
         updateButtons();
         loadingSpinner.style.display = 'none';
 
-        // Enable tombol default
         btnCreateLobby.disabled = false;
         btnJoinLobby.disabled = false;
 
-        console.log('🎲 Ular Tangga - FIXED JOIN BUTTON!');
-        console.log('📌 Jika tombol gabung tidak responsif, cek console di sini');
+        console.log('🎲 Ular Tangga - BOT FIXED!');
 
         window.addEventListener('beforeunload', () => {
             if (roomId && !isBotMode) {
