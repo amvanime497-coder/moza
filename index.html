@@ -31,9 +31,7 @@
             z-index: 1;
         }
 
-        /* ============================================
-           BACKGROUND LUAR ANGKASA
-           ============================================ */
+        /* SPACE BACKGROUND */
         #space-bg {
             position: fixed;
             top: 0;
@@ -44,8 +42,6 @@
             overflow: hidden;
             background: #0a0a1a;
         }
-
-        /* Bintang berkedip */
         .star {
             position: absolute;
             border-radius: 50%;
@@ -63,26 +59,12 @@
                 transform: scale(1.3);
             }
         }
-
-        /* Bulan */
         .moon-bg {
             position: absolute;
             border-radius: 50%;
             background: radial-gradient(circle at 35% 35%, #f5f5dc, #ddd8c4);
             box-shadow: 0 0 80px rgba(255, 255, 200, 0.1), 0 0 200px rgba(255, 255, 200, 0.03);
             animation: moonFloat 10s ease-in-out infinite;
-        }
-        .moon-bg::after {
-            content: '';
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(200, 190, 170, 0.25);
-        }
-        .moon-bg::before {
-            content: '';
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(200, 190, 170, 0.15);
         }
         @keyframes moonFloat {
             0%,
@@ -93,8 +75,6 @@
                 transform: translateY(-25px) rotate(5deg);
             }
         }
-
-        /* UFO */
         .ufo-bg {
             position: absolute;
             font-size: 40px;
@@ -119,8 +99,6 @@
                 transform: translateX(110vw) translateY(0) scale(1);
             }
         }
-
-        /* Roket */
         .rocket-bg {
             position: absolute;
             font-size: 30px;
@@ -142,8 +120,6 @@
                 transform: translateX(120vw) translateY(0) rotate(-5deg);
             }
         }
-
-        /* Ular terbang (space snake) */
         .space-snake {
             position: absolute;
             font-size: 35px;
@@ -171,8 +147,6 @@
                 transform: translateX(130vw) translateY(0) rotate(0deg);
             }
         }
-
-        /* Bintang jatuh */
         .shooting-star-bg {
             position: absolute;
             width: 2px;
@@ -213,9 +187,7 @@
             }
         }
 
-        /* ============================================
-           LANDING PAGE
-           ============================================ */
+        /* LANDING PAGE */
         #landing-page {
             background: rgba(10, 10, 30, 0.75);
             backdrop-filter: blur(15px);
@@ -289,9 +261,7 @@
             letter-spacing: 2px;
         }
 
-        /* ============================================
-           LOBBY SCREEN
-           ============================================ */
+        /* LOBBY SCREEN */
         #lobby-screen {
             display: none;
             background: rgba(10, 10, 30, 0.75);
@@ -446,6 +416,7 @@
             border-radius: 8px;
             background: rgba(0, 0, 0, 0.2);
             min-height: 30px;
+            transition: all .3s ease;
         }
         #lobbyStatus.error {
             color: #ff4444;
@@ -462,10 +433,31 @@
             background: rgba(68, 221, 255, 0.05);
             border: 1px solid rgba(68, 221, 255, 0.1);
         }
+        #lobbyStatus.warning {
+            color: #ffaa44;
+            background: rgba(255, 170, 68, 0.05);
+            border: 1px solid rgba(255, 170, 68, 0.1);
+        }
+        #loadingSpinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top: 2px solid #ffd700;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 8px;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 
-        /* ============================================
-           GAME SCREEN
-           ============================================ */
+        /* GAME SCREEN */
         #game-screen {
             display: none;
             background: rgba(10, 10, 30, 0.75);
@@ -675,9 +667,7 @@
             border-radius: 4px;
         }
 
-        /* ============================================
-           RESPONSIVE MOBILE OPTIMAL
-           ============================================ */
+        /* RESPONSIVE */
         @media(max-width:420px) {
             body {
                 padding: 4px;
@@ -766,7 +756,6 @@
             .board-wrapper {
                 border-radius: 8px;
             }
-            /* Background elements smaller */
             .moon-bg {
                 width: 50px !important;
                 height: 50px !important;
@@ -782,6 +771,10 @@
             }
             .shooting-star-bg::after {
                 width: 35px !important;
+            }
+            #loadingSpinner {
+                width: 16px;
+                height: 16px;
             }
         }
 
@@ -889,7 +882,6 @@
             }
         }
 
-        /* Landscape HP */
         @media(max-height:500px) and (orientation:landscape) {
             #landing-page {
                 min-height: 90vh;
@@ -957,16 +949,17 @@
             .space-snake {
                 font-size: 16px !important;
             }
+            #loadingSpinner {
+                width: 14px;
+                height: 14px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- ============================================
-    BACKGROUND LUAR ANGKASA
-    ============================================ -->
+    <!-- SPACE BACKGROUND -->
     <div id="space-bg">
-        <!-- Bintang -->
         <div class="star" style="width:3px;height:3px;top:5%;left:10%;--duration:2.5s;"></div>
         <div class="star" style="width:2px;height:2px;top:15%;left:85%;--duration:3s;"></div>
         <div class="star" style="width:4px;height:4px;top:30%;left:3%;--duration:2s;"></div>
@@ -981,25 +974,15 @@
         <div class="star" style="width:2px;height:2px;top:50%;left:70%;--duration:3.1s;"></div>
         <div class="star" style="width:4px;height:4px;top:75%;left:55%;--duration:2.4s;"></div>
         <div class="star" style="width:2px;height:2px;top:10%;left:70%;--duration:3.6s;"></div>
-
-        <!-- Bulan -->
         <div class="moon-bg" style="width:80px;height:80px;top:8%;right:5%;"></div>
         <div class="moon-bg" style="width:45px;height:45px;bottom:15%;left:8%;animation-duration:14s;opacity:0.5;"></div>
-
-        <!-- UFO -->
         <div class="ufo-bg" style="top:20%;animation-duration:16s;animation-delay:0s;">🛸</div>
         <div class="ufo-bg" style="top:60%;animation-duration:20s;animation-delay:4s;font-size:28px;">🛸</div>
-
-        <!-- Roket -->
         <div class="rocket-bg" style="top:35%;animation-duration:18s;animation-delay:2s;">🚀</div>
         <div class="rocket-bg" style="top:75%;animation-duration:22s;animation-delay:6s;font-size:22px;">🚀</div>
-
-        <!-- Ular Terbang -->
         <div class="space-snake" style="top:10%;animation-duration:25s;animation-delay:1s;">🐍</div>
         <div class="space-snake" style="top:50%;animation-duration:20s;animation-delay:5s;font-size:28px;">🐍</div>
         <div class="space-snake" style="top:80%;animation-duration:28s;animation-delay:3s;font-size:22px;">🐍</div>
-
-        <!-- Bintang Jatuh -->
         <div class="shooting-star-bg" style="top:8%;left:80%;animation-duration:4.5s;animation-delay:0s;"></div>
         <div class="shooting-star-bg" style="top:25%;left:60%;animation-duration:5s;animation-delay:2.5s;"></div>
         <div class="shooting-star-bg" style="top:45%;left:90%;animation-duration:4s;animation-delay:5s;"></div>
@@ -1053,6 +1036,7 @@
                 </div>
             </div>
             <div id="lobbyStatus">🎲 Pilih mode di atas</div>
+            <div id="loadingSpinner"></div>
             <button class="back-btn" id="btnBackLanding">← Kembali</button>
         </div>
 
@@ -1083,7 +1067,7 @@
 
     <script>
         // ============================================================
-        // ULAR TANGGA - PEERJS MULTIPLAYER + SPACE BACKGROUND
+        // ULAR TANGGA - PEERJS MULTIPLAYER + FAST CONNECT
         // ============================================================
 
         const BOARD_SIZE = 10;
@@ -1111,6 +1095,8 @@
         let isBotMode = false;
         let botTimeout = null;
         let diceAnimationInterval = null;
+        let joinTimeout = null;
+        let isConnecting = false;
 
         // PEERJS
         let peer = null;
@@ -1149,6 +1135,7 @@
         const playersStatus = document.getElementById('playersStatus');
         const logArea = document.getElementById('logArea');
         const lobbyStatus = document.getElementById('lobbyStatus');
+        const loadingSpinner = document.getElementById('loadingSpinner');
         const onlineOptions = document.getElementById('onlineOptions');
         const botOptions = document.getElementById('botOptions');
         const modeOnline = document.getElementById('modeOnline');
@@ -1183,6 +1170,10 @@
             renderLog();
             updateButtons();
             connections = {};
+            if (joinTimeout) { clearTimeout(joinTimeout);
+                joinTimeout = null; }
+            isConnecting = false;
+            loadingSpinner.style.display = 'none';
         }
 
         function setMode(mode) {
@@ -1202,15 +1193,21 @@
                 lobbyStatus.className = '';
                 lobbyStatus.textContent = '🤖 Mode Bot: 1 Player vs 4 Bot';
             }
+            loadingSpinner.style.display = 'none';
         }
 
         function showStatus(msg, type = '') {
             lobbyStatus.className = type;
             lobbyStatus.textContent = msg;
+            if (type === 'info' || type === '') {
+                loadingSpinner.style.display = 'inline-block';
+            } else {
+                loadingSpinner.style.display = 'none';
+            }
         }
 
         // ============================================================
-        // PEERJS INIT
+        // PEERJS INIT - WITH TIMEOUT
         // ============================================================
         function initPeer() {
             if (isPeerReady) return;
@@ -1221,11 +1218,21 @@
 
             peer = new Peer(id, { debug: 0 });
 
+            // Timeout jika koneksi terlalu lama (5 detik)
+            const connectTimeout = setTimeout(() => {
+                if (!isPeerReady && peer) {
+                    showStatus('⚠️ Koneksi lambat, coba refresh atau ganti jaringan', 'warning');
+                    loadingSpinner.style.display = 'none';
+                }
+            }, 5000);
+
             peer.on('open', (id) => {
+                clearTimeout(connectTimeout);
                 playerId = id;
                 isPeerReady = true;
                 console.log('✅ Peer ID:', id);
                 showStatus('✅ Terhubung!', 'success');
+                loadingSpinner.style.display = 'none';
             });
 
             peer.on('connection', (conn) => {
@@ -1249,16 +1256,24 @@
 
             peer.on('error', (err) => {
                 console.error('❌ Peer error:', err);
+                clearTimeout(connectTimeout);
                 if (err.type === 'unavailable-id') {
-                    showStatus('❌ ID tidak tersedia, coba lagi', 'error');
+                    showStatus('❌ ID tidak tersedia, coba refresh', 'error');
                 } else if (err.type === 'disconnected') {
                     showStatus('⚠️ Koneksi terputus, refresh halaman', 'error');
+                } else if (err.type === 'peer-unavailable') {
+                    showStatus('❌ Peer tidak ditemukan, cek ID lobby', 'error');
+                } else {
+                    showStatus('⚠️ Error koneksi: ' + (err.message || err.type), 'error');
                 }
+                loadingSpinner.style.display = 'none';
+                isPeerReady = false;
             });
 
             peer.on('disconnected', () => {
                 showStatus('⚠️ Koneksi terputus', 'error');
                 isPeerReady = false;
+                loadingSpinner.style.display = 'none';
             });
         }
 
@@ -1779,13 +1794,22 @@
         }
 
         // ============================================================
-        // LOBBY
+        // LOBBY - DENGAN TIMEOUT
         // ============================================================
         function createLobby() {
             if (gameMode === 'bot') { startBotGame(); return; }
 
             if (!isPeerReady) {
-                showStatus('⏳ Menunggu koneksi server...', 'info');
+                showStatus('⏳ Menghubungkan ke server...', 'info');
+                // Coba init ulang
+                initPeer();
+                setTimeout(() => {
+                    if (isPeerReady) {
+                        createLobby();
+                    } else {
+                        showStatus('❌ Gagal terhubung ke server, coba refresh', 'error');
+                    }
+                }, 3000);
                 return;
             }
 
@@ -1813,7 +1837,15 @@
             if (gameMode === 'bot') { startBotGame(); return; }
 
             if (!isPeerReady) {
-                showStatus('⏳ Menunggu koneksi server...', 'info');
+                showStatus('⏳ Menghubungkan ke server...', 'info');
+                initPeer();
+                setTimeout(() => {
+                    if (isPeerReady) {
+                        joinLobby();
+                    } else {
+                        showStatus('❌ Gagal terhubung ke server, coba refresh', 'error');
+                    }
+                }, 3000);
                 return;
             }
 
@@ -1825,15 +1857,29 @@
                 return;
             }
 
-            const name = playerNameJoin.value.trim() || 'Player';
+            if (isConnecting) {
+                showStatus('⏳ Sedang menghubungkan...', 'info');
+                return;
+            }
 
+            const name = playerNameJoin.value.trim() || 'Player';
             playerName = name;
             roomId = id;
             isHost = false;
             isBotMode = false;
+            isConnecting = true;
 
             showStatus(`🔗 Menghubungkan ke lobby "${id}"...`, 'info');
 
+            // Timeout jika join terlalu lama (5 detik)
+            if (joinTimeout) clearTimeout(joinTimeout);
+            joinTimeout = setTimeout(() => {
+                isConnecting = false;
+                showStatus('⏳ Waktu habis! Coba lagi atau refresh.', 'warning');
+                loadingSpinner.style.display = 'none';
+            }, 5000);
+
+            // Kirim join request
             broadcast({
                 type: 'PLAYER_JOIN',
                 playerId: playerId,
@@ -1850,6 +1896,9 @@
             addLog(`👋 ${playerName} bergabung!`, false);
 
             setTimeout(() => {
+                if (joinTimeout) clearTimeout(joinTimeout);
+                isConnecting = false;
+                
                 if (playerId && !players[playerId]) {
                     players[playerId] = { id: playerId, name: playerName, position: 1 };
                 }
@@ -1858,11 +1907,12 @@
                     showStatus(`✅ Bergabung! (${count}/${MAX_PLAYERS} pemain)`, 'success');
                 } else {
                     showStatus(`⏳ Menunggu pemain lain... (${count}/${MAX_PLAYERS})`, 'info');
+                    loadingSpinner.style.display = 'inline-block';
                 }
                 updatePlayersStatus();
                 drawBoard();
                 updateButtons();
-            }, 500);
+            }, 800);
         }
 
         // ============================================================
@@ -1993,11 +2043,14 @@
             lobbyScreen.style.display = 'none';
             gameScreen.classList.add('active');
             setTimeout(() => { resizeBoard(); }, 150);
+            loadingSpinner.style.display = 'none';
         }
 
         function leaveGame() {
             if (diceAnimationInterval) clearInterval(diceAnimationInterval);
             if (botTimeout) clearTimeout(botTimeout);
+            if (joinTimeout) clearTimeout(joinTimeout);
+            isConnecting = false;
 
             if (!isBotMode && roomId) {
                 broadcast({ type: 'LEAVE', playerId: playerId, roomId: roomId });
@@ -2008,6 +2061,7 @@
             lobbyScreen.style.display = 'block';
             showStatus('👋 Keluar dari game', '');
             setMode('online');
+            loadingSpinner.style.display = 'none';
 
             if (peer) {
                 try {
@@ -2061,8 +2115,9 @@
 
         addLog('🎲 Ular Tangga!', false);
         updateButtons();
+        loadingSpinner.style.display = 'none';
 
-        console.log('🎲 Ular Tangga - SPACE BACKGROUND!');
+        console.log('🎲 Ular Tangga - FAST CONNECT!');
 
         window.addEventListener('beforeunload', () => {
             if (roomId && !isBotMode) {
