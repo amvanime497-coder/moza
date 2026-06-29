@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Ular Tangga - Multiplayer</title>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js">
-    </script>
     <style>
         * {
             margin: 0;
@@ -49,15 +47,8 @@
             animation: twinkle var(--duration) ease-in-out infinite;
         }
         @keyframes twinkle {
-            0%,
-            100% {
-                opacity: 0.2;
-                transform: scale(0.8);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.3);
-            }
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.3); }
         }
         .moon-bg {
             position: absolute;
@@ -67,13 +58,8 @@
             animation: moonFloat 10s ease-in-out infinite;
         }
         @keyframes moonFloat {
-            0%,
-            100% {
-                transform: translateY(0) rotate(0deg);
-            }
-            50% {
-                transform: translateY(-25px) rotate(5deg);
-            }
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-25px) rotate(5deg); }
         }
         .ufo-bg {
             position: absolute;
@@ -83,21 +69,11 @@
             opacity: 0.6;
         }
         @keyframes ufoFly {
-            0% {
-                transform: translateX(-100px) translateY(0) scale(1);
-            }
-            25% {
-                transform: translateX(25vw) translateY(-20px) scale(1.05);
-            }
-            50% {
-                transform: translateX(55vw) translateY(15px) scale(0.95);
-            }
-            75% {
-                transform: translateX(85vw) translateY(-10px) scale(1.04);
-            }
-            100% {
-                transform: translateX(110vw) translateY(0) scale(1);
-            }
+            0% { transform: translateX(-100px) translateY(0) scale(1); }
+            25% { transform: translateX(25vw) translateY(-20px) scale(1.05); }
+            50% { transform: translateX(55vw) translateY(15px) scale(0.95); }
+            75% { transform: translateX(85vw) translateY(-10px) scale(1.04); }
+            100% { transform: translateX(110vw) translateY(0) scale(1); }
         }
         .rocket-bg {
             position: absolute;
@@ -107,18 +83,10 @@
             opacity: 0.5;
         }
         @keyframes rocketFly {
-            0% {
-                transform: translateX(-80px) translateY(0) rotate(-5deg);
-            }
-            30% {
-                transform: translateX(30vw) translateY(-30px) rotate(8deg);
-            }
-            60% {
-                transform: translateX(65vw) translateY(20px) rotate(-3deg);
-            }
-            100% {
-                transform: translateX(120vw) translateY(0) rotate(-5deg);
-            }
+            0% { transform: translateX(-80px) translateY(0) rotate(-5deg); }
+            30% { transform: translateX(30vw) translateY(-30px) rotate(8deg); }
+            60% { transform: translateX(65vw) translateY(20px) rotate(-3deg); }
+            100% { transform: translateX(120vw) translateY(0) rotate(-5deg); }
         }
         .space-snake {
             position: absolute;
@@ -128,24 +96,12 @@
             opacity: 0.4;
         }
         @keyframes spaceSnakeFly {
-            0% {
-                transform: translateX(-120px) translateY(0) rotate(0deg);
-            }
-            20% {
-                transform: translateX(20vw) translateY(-40px) rotate(10deg);
-            }
-            40% {
-                transform: translateX(45vw) translateY(30px) rotate(-15deg);
-            }
-            60% {
-                transform: translateX(70vw) translateY(-20px) rotate(8deg);
-            }
-            80% {
-                transform: translateX(95vw) translateY(25px) rotate(-5deg);
-            }
-            100% {
-                transform: translateX(130vw) translateY(0) rotate(0deg);
-            }
+            0% { transform: translateX(-120px) translateY(0) rotate(0deg); }
+            20% { transform: translateX(20vw) translateY(-40px) rotate(10deg); }
+            40% { transform: translateX(45vw) translateY(30px) rotate(-15deg); }
+            60% { transform: translateX(70vw) translateY(-20px) rotate(8deg); }
+            80% { transform: translateX(95vw) translateY(25px) rotate(-5deg); }
+            100% { transform: translateX(130vw) translateY(0) rotate(0deg); }
         }
         .shooting-star-bg {
             position: absolute;
@@ -168,23 +124,11 @@
             transform-origin: right center;
         }
         @keyframes shootingStar {
-            0% {
-                transform: translate(0, 0) rotate(-45deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            30% {
-                opacity: 1;
-            }
-            50% {
-                transform: translate(-300px, 300px) rotate(-45deg);
-                opacity: 0;
-            }
-            100% {
-                opacity: 0;
-            }
+            0% { transform: translate(0, 0) rotate(-45deg); opacity: 0; }
+            10% { opacity: 1; }
+            30% { opacity: 1; }
+            50% { transform: translate(-300px, 300px) rotate(-45deg); opacity: 0; }
+            100% { opacity: 0; }
         }
 
         /* LANDING PAGE */
@@ -211,13 +155,8 @@
             filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.15));
         }
         @keyframes bounce {
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-15px);
-            }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
         #landing-page h1 {
             color: #ffd700;
@@ -453,12 +392,8 @@
             margin: 0 auto 8px;
         }
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* GAME */
@@ -691,14 +626,8 @@
             display: flex;
         }
         @keyframes fadeIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
         }
         #congrats-overlay .trophy {
             font-size: 80px;
@@ -729,13 +658,8 @@
             animation: blink 1s infinite;
         }
         @keyframes blink {
-            0%,
-            100% {
-                opacity: 0.3;
-            }
-            50% {
-                opacity: 1;
-            }
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
         }
         #congrats-overlay .btn-ok {
             margin-top: 20px;
@@ -764,319 +688,100 @@
             pointer-events: none;
         }
         @keyframes confettiFall {
-            0% {
-                transform: translateY(0) rotate(0deg) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(720deg) scale(0.5);
-                opacity: 0;
-            }
+            0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg) scale(0.5); opacity: 0; }
         }
 
         @media(max-width:420px) {
-            body {
-                padding: 4px;
-            }
-            #landing-page {
-                padding: 20px 15px;
-                min-height: 70vh;
-                border-radius: 18px;
-            }
-            #landing-page .logo {
-                font-size: 48px;
-            }
-            #landing-page h1 {
-                font-size: 26px;
-            }
-            #landing-page .desc {
-                font-size: 12px;
-            }
-            .btn-landing {
-                padding: 12px 30px;
-                font-size: 16px;
-                max-width: 260px;
-            }
-            #lobby-screen {
-                padding: 15px 10px;
-                border-radius: 16px;
-            }
-            #lobby-screen h2 {
-                font-size: 20px;
-            }
-            .lobby-options {
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
-            .mode-selector {
-                grid-template-columns: 1fr;
-                gap: 6px;
-            }
-            #game-screen {
-                padding: 5px;
-                border-radius: 16px;
-            }
-            .game-header .turn-indicator {
-                font-size: 10px;
-            }
-            .dice-result {
-                font-size: 24px;
-                min-width: 34px;
-                padding: 2px 4px;
-            }
-            .btn-roll,
-            .btn-end-turn {
-                padding: 5px 10px;
-                font-size: 10px;
-                min-height: 30px;
-            }
-            .bottom-controls {
-                gap: 4px;
-                padding: 4px 6px;
-                border-radius: 10px;
-            }
-            .player-status {
-                font-size: 7px;
-                padding: 2px 5px;
-            }
-            .log-area {
-                font-size: 7px;
-                max-height: 28px;
-                padding: 3px 6px;
-            }
-            .lobby-box {
-                padding: 10px 8px;
-            }
-            .lobby-box input {
-                padding: 6px;
-                font-size: 12px;
-            }
-            .lobby-box .btn {
-                padding: 7px;
-                font-size: 11px;
-            }
-            .btn-bot {
-                padding: 10px;
-                font-size: 12px;
-            }
-            .board-wrapper {
-                border-radius: 8px;
-            }
-            .moon-bg {
-                width: 50px !important;
-                height: 50px !important;
-            }
-            .ufo-bg {
-                font-size: 28px !important;
-            }
-            .rocket-bg {
-                font-size: 22px !important;
-            }
-            .space-snake {
-                font-size: 24px !important;
-            }
-            .shooting-star-bg::after {
-                width: 35px !important;
-            }
-            #loadingSpinner {
-                width: 16px;
-                height: 16px;
-            }
-            #congrats-overlay .title {
-                font-size: 24px;
-            }
-            #congrats-overlay .winner {
-                font-size: 18px;
-            }
-            #congrats-overlay .trophy {
-                font-size: 50px;
-            }
+            body { padding: 4px; }
+            #landing-page { padding: 20px 15px; min-height: 70vh; border-radius: 18px; }
+            #landing-page .logo { font-size: 48px; }
+            #landing-page h1 { font-size: 26px; }
+            #landing-page .desc { font-size: 12px; }
+            .btn-landing { padding: 12px 30px; font-size: 16px; max-width: 260px; }
+            #lobby-screen { padding: 15px 10px; border-radius: 16px; }
+            #lobby-screen h2 { font-size: 20px; }
+            .lobby-options { grid-template-columns: 1fr; gap: 8px; }
+            .mode-selector { grid-template-columns: 1fr; gap: 6px; }
+            #game-screen { padding: 5px; border-radius: 16px; }
+            .game-header .turn-indicator { font-size: 10px; }
+            .dice-result { font-size: 24px; min-width: 34px; padding: 2px 4px; }
+            .btn-roll, .btn-end-turn { padding: 5px 10px; font-size: 10px; min-height: 30px; }
+            .bottom-controls { gap: 4px; padding: 4px 6px; border-radius: 10px; }
+            .player-status { font-size: 7px; padding: 2px 5px; }
+            .log-area { font-size: 7px; max-height: 28px; padding: 3px 6px; }
+            .lobby-box { padding: 10px 8px; }
+            .lobby-box input { padding: 6px; font-size: 12px; }
+            .lobby-box .btn { padding: 7px; font-size: 11px; }
+            .btn-bot { padding: 10px; font-size: 12px; }
+            .board-wrapper { border-radius: 8px; }
+            .moon-bg { width: 50px !important; height: 50px !important; }
+            .ufo-bg { font-size: 28px !important; }
+            .rocket-bg { font-size: 22px !important; }
+            .space-snake { font-size: 24px !important; }
+            .shooting-star-bg::after { width: 35px !important; }
+            #loadingSpinner { width: 16px; height: 16px; }
+            #congrats-overlay .title { font-size: 24px; }
+            #congrats-overlay .winner { font-size: 18px; }
+            #congrats-overlay .trophy { font-size: 50px; }
         }
 
         @media(max-width:360px) {
-            #landing-page .logo {
-                font-size: 40px;
-            }
-            #landing-page h1 {
-                font-size: 22px;
-            }
-            .btn-landing {
-                padding: 10px 20px;
-                font-size: 14px;
-            }
-            .dice-result {
-                font-size: 20px;
-                min-width: 28px;
-            }
-            .btn-roll,
-            .btn-end-turn {
-                padding: 4px 8px;
-                font-size: 9px;
-                min-height: 26px;
-            }
-            .game-header .turn-indicator {
-                font-size: 9px;
-            }
-            .board-wrapper {
-                border-radius: 6px;
-            }
-            .moon-bg {
-                width: 40px !important;
-                height: 40px !important;
-            }
-            .ufo-bg {
-                font-size: 20px !important;
-            }
-            .rocket-bg {
-                font-size: 16px !important;
-            }
-            .space-snake {
-                font-size: 18px !important;
-            }
+            #landing-page .logo { font-size: 40px; }
+            #landing-page h1 { font-size: 22px; }
+            .btn-landing { padding: 10px 20px; font-size: 14px; }
+            .dice-result { font-size: 20px; min-width: 28px; }
+            .btn-roll, .btn-end-turn { padding: 4px 8px; font-size: 9px; min-height: 26px; }
+            .game-header .turn-indicator { font-size: 9px; }
+            .board-wrapper { border-radius: 6px; }
+            .moon-bg { width: 40px !important; height: 40px !important; }
+            .ufo-bg { font-size: 20px !important; }
+            .rocket-bg { font-size: 16px !important; }
+            .space-snake { font-size: 18px !important; }
         }
 
         @media(min-width:500px) {
-            #landing-page {
-                min-height: 60vh;
-            }
-            #landing-page .logo {
-                font-size: 80px;
-            }
-            #landing-page h1 {
-                font-size: 42px;
-            }
-            .btn-landing {
-                padding: 16px 60px;
-                font-size: 20px;
-                max-width: 350px;
-            }
-            #lobby-screen h2 {
-                font-size: 28px;
-            }
-            .mode-btn {
-                padding: 16px 12px;
-                font-size: 15px;
-            }
-            .mode-btn .icon {
-                font-size: 28px;
-            }
-            .dice-result {
-                font-size: 40px;
-                min-width: 56px;
-            }
-            .btn-roll,
-            .btn-end-turn {
-                padding: 10px 24px;
-                font-size: 14px;
-                min-height: 44px;
-            }
-            .player-status {
-                font-size: 10px;
-                padding: 4px 12px;
-            }
-            .lobby-box input {
-                padding: 12px;
-                font-size: 15px;
-            }
-            .lobby-box .btn {
-                padding: 12px;
-                font-size: 14px;
-            }
-            .moon-bg {
-                width: 90px !important;
-                height: 90px !important;
-            }
-            .ufo-bg {
-                font-size: 50px !important;
-            }
-            .rocket-bg {
-                font-size: 40px !important;
-            }
-            .space-snake {
-                font-size: 45px !important;
-            }
-            #congrats-overlay .title {
-                font-size: 48px;
-            }
-            #congrats-overlay .winner {
-                font-size: 30px;
-            }
-            #congrats-overlay .trophy {
-                font-size: 100px;
-            }
+            #landing-page { min-height: 60vh; }
+            #landing-page .logo { font-size: 80px; }
+            #landing-page h1 { font-size: 42px; }
+            .btn-landing { padding: 16px 60px; font-size: 20px; max-width: 350px; }
+            #lobby-screen h2 { font-size: 28px; }
+            .mode-btn { padding: 16px 12px; font-size: 15px; }
+            .mode-btn .icon { font-size: 28px; }
+            .dice-result { font-size: 40px; min-width: 56px; }
+            .btn-roll, .btn-end-turn { padding: 10px 24px; font-size: 14px; min-height: 44px; }
+            .player-status { font-size: 10px; padding: 4px 12px; }
+            .lobby-box input { padding: 12px; font-size: 15px; }
+            .lobby-box .btn { padding: 12px; font-size: 14px; }
+            .moon-bg { width: 90px !important; height: 90px !important; }
+            .ufo-bg { font-size: 50px !important; }
+            .rocket-bg { font-size: 40px !important; }
+            .space-snake { font-size: 45px !important; }
+            #congrats-overlay .title { font-size: 48px; }
+            #congrats-overlay .winner { font-size: 30px; }
+            #congrats-overlay .trophy { font-size: 100px; }
         }
 
         @media(max-height:500px) and (orientation:landscape) {
-            #landing-page {
-                min-height: 90vh;
-                padding: 15px 20px;
-            }
-            #landing-page .logo {
-                font-size: 36px;
-            }
-            #landing-page h1 {
-                font-size: 20px;
-            }
-            #landing-page .desc {
-                font-size: 10px;
-                margin-bottom: 12px;
-            }
-            .btn-landing {
-                padding: 8px 25px;
-                font-size: 14px;
-                max-width: 200px;
-            }
-            #game-screen {
-                padding: 4px;
-            }
-            .board-wrapper {
-                max-width: 40vh;
-            }
-            .bottom-controls {
-                padding: 3px 6px;
-                gap: 3px;
-            }
-            .dice-result {
-                font-size: 18px;
-                min-width: 28px;
-            }
-            .btn-roll,
-            .btn-end-turn {
-                padding: 3px 8px;
-                font-size: 9px;
-                min-height: 24px;
-            }
-            .player-status {
-                font-size: 6px;
-                padding: 1px 4px;
-            }
-            .log-area {
-                max-height: 22px;
-                font-size: 6px;
-            }
-            .game-header .turn-indicator {
-                font-size: 8px;
-            }
-            .game-header .room-id {
-                font-size: 7px;
-            }
-            .moon-bg {
-                width: 30px !important;
-                height: 30px !important;
-            }
-            .ufo-bg {
-                font-size: 16px !important;
-            }
-            .rocket-bg {
-                font-size: 14px !important;
-            }
-            .space-snake {
-                font-size: 16px !important;
-            }
-            #loadingSpinner {
-                width: 14px;
-                height: 14px;
-            }
+            #landing-page { min-height: 90vh; padding: 15px 20px; }
+            #landing-page .logo { font-size: 36px; }
+            #landing-page h1 { font-size: 20px; }
+            #landing-page .desc { font-size: 10px; margin-bottom: 12px; }
+            .btn-landing { padding: 8px 25px; font-size: 14px; max-width: 200px; }
+            #game-screen { padding: 4px; }
+            .board-wrapper { max-width: 40vh; }
+            .bottom-controls { padding: 3px 6px; gap: 3px; }
+            .dice-result { font-size: 18px; min-width: 28px; }
+            .btn-roll, .btn-end-turn { padding: 3px 8px; font-size: 9px; min-height: 24px; }
+            .player-status { font-size: 6px; padding: 1px 4px; }
+            .log-area { max-height: 22px; font-size: 6px; }
+            .game-header .turn-indicator { font-size: 8px; }
+            .game-header .room-id { font-size: 7px; }
+            .moon-bg { width: 30px !important; height: 30px !important; }
+            .ufo-bg { font-size: 16px !important; }
+            .rocket-bg { font-size: 14px !important; }
+            .space-snake { font-size: 16px !important; }
+            #loadingSpinner { width: 14px; height: 14px; }
         }
     </style>
 </head>
@@ -1200,7 +905,7 @@
 
     <script>
         // ============================================================
-        // ULAR TANGGA - BOT FIXED + DADU 6
+        // ULAR TANGGA - DADU 6 + CONGRATULATIONS + BROADCAST CHANNEL
         // ============================================================
 
         const BOARD_SIZE = 10;
@@ -1230,18 +935,13 @@
         let diceAnimationInterval = null;
         let joinTimeout = null;
         let isConnecting = false;
-        let isPeerReady = false;
-        let peerInitialized = false;
-        let hostPeerId = null;
-        let isConnectedToHost = false;
         let isGameOver = false;
-        let gameWinner = null;
         let rollCount = 0;
         let isProcessingBot = false;
 
-        // PEERJS
-        let peer = null;
-        let connections = {};
+        // BROADCAST CHANNEL
+        let channel = null;
+        let isChannelReady = false;
 
         const boardImage = new Image();
         boardImage.src = 'papan.jpg';
@@ -1289,7 +989,6 @@
         // ============================================================
         function showCongratulations(name) {
             isGameOver = true;
-            gameWinner = name;
             winnerName.textContent = name;
             congratsOverlay.classList.add('show');
             createConfetti();
@@ -1298,9 +997,7 @@
         function hideCongratulations() {
             congratsOverlay.classList.remove('show');
             isGameOver = false;
-            gameWinner = null;
             document.querySelectorAll('.confetti').forEach(el => el.remove());
-            // Reset game
             resetAll();
             gameScreen.classList.remove('active');
             lobbyScreen.style.display = 'block';
@@ -1339,12 +1036,7 @@
         btnEnter.addEventListener('click', () => {
             landingPage.style.display = 'none';
             lobbyScreen.style.display = 'block';
-            if (!peerInitialized) {
-                initPeer();
-            } else {
-                showStatus('✅ Terhubung!', 'success');
-                loadingSpinner.style.display = 'none';
-            }
+            initChannel();
         });
 
         btnBackLanding.addEventListener('click', () => {
@@ -1363,16 +1055,12 @@
             isBotMode = false;
             roomId = null;
             isHost = false;
-            hostPeerId = null;
-            isConnectedToHost = false;
             logEntries = [];
             isGameOver = false;
-            gameWinner = null;
             rollCount = 0;
             isProcessingBot = false;
             renderLog();
             updateButtons();
-            connections = {};
             if (joinTimeout) { clearTimeout(joinTimeout);
                 joinTimeout = null; }
             isConnecting = false;
@@ -1400,7 +1088,7 @@
                 lobbyStatus.textContent = '🤖 Mode Bot: 1 Player vs 4 Bot';
                 loadingSpinner.style.display = 'none';
             }
-            if (isPeerReady) {
+            if (isChannelReady) {
                 showStatus('✅ Terhubung!', 'success');
                 loadingSpinner.style.display = 'none';
             }
@@ -1421,155 +1109,51 @@
         }
 
         // ============================================================
-        // PEERJS INIT
+        // BROADCAST CHANNEL INIT
         // ============================================================
-        function initPeer() {
-            if (peerInitialized) {
-                console.log('✅ Peer sudah diinisialisasi');
-                return;
-            }
+        function initChannel() {
+            try {
+                channel = new BroadcastChannel('ular_tangga_channel');
+                isChannelReady = true;
+                console.log('✅ BroadcastChannel siap!');
 
-            showStatus('🔗 Menghubungkan ke server...', 'info');
-            loadingSpinner.style.display = 'inline-block';
+                channel.onmessage = (event) => {
+                    const data = event.data;
+                    if (data.roomId && data.roomId !== roomId) return;
+                    if (data.sender === playerId) return;
+                    handleMessage(data);
+                };
 
-            const id = 'st_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
-
-            peer = new Peer(id, { debug: 0 });
-
-            const connectTimeout = setTimeout(() => {
-                if (!isPeerReady && peer) {
-                    showStatus('⚠️ Koneksi lambat, coba refresh', 'warning');
-                    loadingSpinner.style.display = 'none';
-                }
-            }, 8000);
-
-            peer.on('open', (id) => {
-                clearTimeout(connectTimeout);
-                playerId = id;
-                isPeerReady = true;
-                peerInitialized = true;
-                console.log('✅ Peer ID:', id);
                 showStatus('✅ Terhubung!', 'success');
                 loadingSpinner.style.display = 'none';
                 btnCreateLobby.disabled = false;
                 btnJoinLobby.disabled = false;
-            });
 
-            peer.on('connection', (conn) => {
-                console.log('📥 Incoming connection dari:', conn.peer);
-                connections[conn.peer] = conn;
-                setupConnection(conn);
-            });
-
-            peer.on('error', (err) => {
-                console.error('❌ Peer error:', err);
-                clearTimeout(connectTimeout);
-                if (err.type === 'unavailable-id') {
-                    showStatus('❌ ID tidak tersedia, coba refresh', 'error');
-                } else if (err.type === 'disconnected') {
-                    showStatus('⚠️ Koneksi terputus, refresh halaman', 'error');
-                } else if (err.type === 'peer-unavailable') {
-                    showStatus('❌ Peer tidak ditemukan, cek ID lobby', 'error');
-                } else {
-                    showStatus('⚠️ Error: ' + (err.message || err.type), 'error');
-                }
-                loadingSpinner.style.display = 'none';
-                isPeerReady = false;
-            });
-
-            peer.on('disconnected', () => {
-                showStatus('⚠️ Koneksi terputus', 'error');
-                isPeerReady = false;
-                loadingSpinner.style.display = 'none';
-            });
-        }
-
-        function reconnectPeer() {
-            if (peer) {
-                try { peer.destroy(); } catch (e) {}
-                peer = null;
+                return true;
+            } catch (e) {
+                console.error('❌ BroadcastChannel error:', e);
+                showStatus('⚠️ Browser tidak support multiplayer', 'error');
+                return false;
             }
-            isPeerReady = false;
-            peerInitialized = false;
-            initPeer();
-        }
-
-        function setupConnection(conn) {
-            conn.on('open', () => {
-                console.log('✅ Connection open dengan:', conn.peer);
-                if (isHost && roomId) {
-                    const hostInfo = {
-                        type: 'HOST_INFO',
-                        hostId: playerId,
-                        roomId: roomId,
-                        players: players
-                    };
-                    conn.send(JSON.stringify(hostInfo));
-                    console.log('📤 Host info dikirim ke:', conn.peer);
-                }
-            });
-
-            conn.on('data', (data) => {
-                try {
-                    const parsed = typeof data === 'string' ? JSON.parse(data) : data;
-                    if (parsed.sender === playerId) return;
-                    if (parsed.roomId && parsed.roomId !== roomId) return;
-                    handleMessage(parsed, conn.peer);
-                } catch (e) { console.warn('Invalid data:', data); }
-            });
-
-            conn.on('close', () => {
-                console.log('🔌 Connection closed:', conn.peer);
-                delete connections[conn.peer];
-                if (players[conn.peer]) {
-                    const name = players[conn.peer]?.name || 'Pemain';
-                    delete players[conn.peer];
-                    addLog(`👋 ${name} keluar`, false);
-                    updatePlayersStatus();
-                    drawBoard();
-                    if (Object.keys(players).length < 2 && !isBotMode) {
-                        gameStarted = false;
-                        updateButtons();
-                        addLog(`⏳ Menunggu 1 pemain lagi (min 2)...`, false);
-                    }
-                }
-            });
         }
 
         function broadcast(data) {
-            const message = JSON.stringify({ ...data, sender: playerId, roomId: roomId });
-            for (const id in connections) {
-                try {
-                    connections[id].send(message);
-                    console.log('📤 Broadcast ke:', id, data.type);
-                } catch (e) { console.warn('Broadcast error:', e); }
+            if (!channel) return;
+            try {
+                channel.postMessage({ ...data, sender: playerId, roomId: roomId });
+                console.log('📤 Broadcast:', data.type);
+            } catch (e) {
+                console.warn('Broadcast error:', e);
             }
         }
 
         // ============================================================
         // HANDLE MESSAGE
         // ============================================================
-        function handleMessage(data, fromId) {
-            console.log('📨 Pesan:', data.type, 'dari:', fromId, data);
+        function handleMessage(data) {
+            console.log('📨 Pesan:', data.type, data);
 
             switch (data.type) {
-                case 'HOST_INFO':
-                    console.log('📥 Menerima HOST_INFO:', data);
-                    hostPeerId = data.hostId;
-                    isConnectedToHost = true;
-                    if (data.players) {
-                        players = data.players;
-                        if (playerId && !players[playerId]) {
-                            players[playerId] = { id: playerId, name: playerName, position: 1 };
-                        }
-                        updatePlayersStatus();
-                        drawBoard();
-                        addLog(`✅ Terhubung ke lobby! (${Object.keys(players).length} pemain)`, true);
-                        showStatus(`✅ Bergabung! (${Object.keys(players).length}/${MAX_PLAYERS} pemain)`, 'success');
-                        loadingSpinner.style.display = 'none';
-                    }
-                    break;
-
                 case 'PLAYER_JOIN':
                     if (Object.keys(players).length >= MAX_PLAYERS) {
                         broadcast({ type: 'LOBBY_FULL', to: data.playerId });
@@ -1701,7 +1285,6 @@
                     break;
 
                 case 'SYNC_REQUEST':
-                    console.log('📥 SYNC_REQUEST dari:', fromId);
                     broadcast({
                         type: 'SYNC',
                         players: players,
@@ -1913,7 +1496,6 @@
                 btnRoll.disabled = false;
                 btnEndTurn.disabled = true;
                 updateButtons();
-                // Jika bot, lanjutkan bot turn
                 if (isBotMode && p.isBot) {
                     setTimeout(() => {
                         if (gameStarted && !isGameOver) {
@@ -1922,7 +1504,6 @@
                     }, 600);
                 }
             } else {
-                // Jika bukan dadu 6, lanjutkan ke pemain berikutnya
                 endTurn();
             }
         }
@@ -2183,31 +1764,27 @@
         function createLobby() {
             if (gameMode === 'bot') { startBotGame(); return; }
 
-            if (!isPeerReady) {
+            if (!isChannelReady) {
                 showStatus('⏳ Menghubungkan ke server...', 'info');
                 loadingSpinner.style.display = 'inline-block';
-                if (!peerInitialized) {
-                    initPeer();
-                } else {
-                    reconnectPeer();
-                }
+                initChannel();
                 setTimeout(() => {
-                    if (isPeerReady) {
+                    if (isChannelReady) {
                         createLobby();
                     } else {
-                        showStatus('❌ Gagal terhubung ke server, coba refresh', 'error');
+                        showStatus('❌ Gagal terhubung, coba refresh', 'error');
                         loadingSpinner.style.display = 'none';
                     }
-                }, 2000);
+                }, 1000);
                 return;
             }
 
             const name = playerNameCreate.value.trim() || 'Host';
             playerName = name;
+            playerId = 'host_' + Date.now();
             roomId = generateRoomId();
             isHost = true;
             isBotMode = false;
-            hostPeerId = playerId;
             players = {};
             players[playerId] = { id: playerId, name: playerName, position: 1 };
 
@@ -2226,27 +1803,22 @@
         }
 
         function joinLobby() {
-            console.log('🔘 JOIN LOBY - Player mencoba gabung');
+            console.log('🔘 JOIN LOBBY - Player mencoba gabung');
 
             if (gameMode === 'bot') { startBotGame(); return; }
 
-            if (!isPeerReady) {
-                console.log('⚠️ Peer belum siap, coba init ulang');
-                showStatus('⏳ Menghubungkan ke server...', 'info');
+            if (!isChannelReady) {
+                showStatus('⏳ Menghubungkan...', 'info');
                 loadingSpinner.style.display = 'inline-block';
-                if (!peerInitialized) {
-                    initPeer();
-                } else {
-                    reconnectPeer();
-                }
+                initChannel();
                 setTimeout(() => {
-                    if (isPeerReady) {
+                    if (isChannelReady) {
                         joinLobby();
                     } else {
-                        showStatus('❌ Gagal terhubung ke server, coba refresh', 'error');
+                        showStatus('❌ Gagal terhubung, coba refresh', 'error');
                         loadingSpinner.style.display = 'none';
                     }
-                }, 2000);
+                }, 1000);
                 return;
             }
 
@@ -2265,6 +1837,7 @@
 
             const name = playerNameJoin.value.trim() || 'Player';
             playerName = name;
+            playerId = 'player_' + Date.now();
             roomId = id;
             isHost = false;
             isBotMode = false;
@@ -2324,7 +1897,7 @@
         }
 
         // ============================================================
-        // BOT MODE - FIXED! BOT BERJALAN DENGAN BENAR
+        // BOT MODE
         // ============================================================
         function startBotGame() {
             const name = playerNameBot.value.trim() || 'Player';
@@ -2374,12 +1947,11 @@
         }
 
         function doBotTurn() {
-            // Cegah doBotTurn berjalan bersamaan
             if (isProcessingBot) {
                 console.log('⚠️ Bot sedang diproses, skip');
                 return;
             }
-            
+
             if (!gameStarted || isAnimating || isRolling || isGameOver) {
                 if (botTimeout) clearTimeout(botTimeout);
                 botTimeout = setTimeout(() => doBotTurn(), 500);
@@ -2389,11 +1961,9 @@
             const keys = Object.keys(players);
             let botTurn = null;
 
-            // Cek apakah currentTurn adalah bot
             if (players[currentTurn] && players[currentTurn].isBot) {
                 botTurn = currentTurn;
             } else {
-                // Cari bot berikutnya
                 const currentIdx = keys.indexOf(currentTurn);
                 for (let i = 1; i <= keys.length; i++) {
                     const idx = (currentIdx + i) % keys.length;
@@ -2405,12 +1975,10 @@
             }
 
             if (!botTurn) {
-                // Tidak ada bot yang tersisa
                 updateButtons();
                 return;
             }
 
-            // Set currentTurn ke bot
             currentTurn = botTurn;
             isMyTurn = false;
             hasRolled = false;
@@ -2421,16 +1989,15 @@
             drawBoard();
             updateButtons();
 
-            // Proses giliran bot
             isProcessingBot = true;
-            
+
             if (botTimeout) clearTimeout(botTimeout);
             botTimeout = setTimeout(() => {
                 if (!gameStarted || isGameOver) {
                     isProcessingBot = false;
                     return;
                 }
-                
+
                 const bot = players[botTurn];
                 if (!bot) {
                     isProcessingBot = false;
@@ -2441,7 +2008,6 @@
                 const emojis = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
                 diceResult.textContent = emojis[val - 1];
 
-                // Proses dadu bot
                 rollCount = val;
                 let newPos = bot.position + val;
 
@@ -2476,18 +2042,15 @@
                 drawBoard();
                 updateButtons();
 
-                // Jika dadu 6, bot mendapat giliran tambahan
                 if (val === 6) {
                     addLog(`🎯 ${bot.name} mendapat giliran tambahan karena dadu 6!`, true);
                     isProcessingBot = false;
-                    // Lanjutkan turn bot
                     setTimeout(() => {
                         if (gameStarted && !isGameOver) {
                             doBotTurn();
                         }
                     }, 600);
                 } else {
-                    // Lanjut ke pemain berikutnya
                     const keys2 = Object.keys(players);
                     const currentIdx2 = keys2.indexOf(currentTurn);
                     const nextIdx2 = (currentIdx2 + 1) % keys2.length;
@@ -2508,7 +2071,6 @@
                         btnEndTurn.disabled = true;
                         addLog(`🎯 Giliranmu!`, true);
                     } else {
-                        // Jika giliran bot berikutnya, lanjutkan
                         if (players[currentTurn] && players[currentTurn].isBot) {
                             if (botTimeout) clearTimeout(botTimeout);
                             botTimeout = setTimeout(() => doBotTurn(), 600);
@@ -2552,16 +2114,14 @@
 
             btnCreateLobby.disabled = false;
             btnJoinLobby.disabled = false;
-            hostPeerId = null;
-            isConnectedToHost = false;
 
             congratsOverlay.classList.remove('show');
             document.querySelectorAll('.confetti').forEach(el => el.remove());
 
-            if (peer) {
-                try {
-                    for (const id in connections) { connections[id].close(); }
-                } catch (e) {}
+            if (channel) {
+                try { channel.close(); } catch (e) {}
+                channel = null;
+                isChannelReady = false;
             }
         }
 
@@ -2627,7 +2187,7 @@
         btnCreateLobby.disabled = false;
         btnJoinLobby.disabled = false;
 
-        console.log('🎲 Ular Tangga - BOT FIXED!');
+        console.log('🎲 Ular Tangga - BROADCAST CHANNEL MULTIPLAYER');
 
         window.addEventListener('beforeunload', () => {
             if (roomId && !isBotMode) {
