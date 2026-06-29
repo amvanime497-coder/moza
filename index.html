@@ -905,7 +905,7 @@
 
     <script>
         // ============================================================
-        // ULAR TANGGA - DADU 6 + CONGRATULATIONS + BROADCAST CHANNEL
+        // ULAR TANGGA - BOT FIXED + DADU 6 + BROADCAST CHANNEL
         // ============================================================
 
         const BOARD_SIZE = 10;
@@ -938,6 +938,7 @@
         let isGameOver = false;
         let rollCount = 0;
         let isProcessingBot = false;
+        let isBotTurnRunning = false;
 
         // BROADCAST CHANNEL
         let channel = null;
@@ -1059,6 +1060,7 @@
             isGameOver = false;
             rollCount = 0;
             isProcessingBot = false;
+            isBotTurnRunning = false;
             renderLog();
             updateButtons();
             if (joinTimeout) { clearTimeout(joinTimeout);
@@ -1897,7 +1899,7 @@
         }
 
         // ============================================================
-        // BOT MODE
+        // BOT MODE - FIXED!
         // ============================================================
         function startBotGame() {
             const name = playerNameBot.value.trim() || 'Player';
@@ -1906,6 +1908,7 @@
             isBotMode = true;
             isHost = true;
             isProcessingBot = false;
+            isBotTurnRunning = false;
 
             players = {};
             players[playerId] = { id: playerId, name: playerName, position: 1, isBot: false };
@@ -1947,8 +1950,9 @@
         }
 
         function doBotTurn() {
-            if (isProcessingBot) {
-                console.log('⚠️ Bot sedang diproses, skip');
+            // Cegah doBotTurn berjalan bersamaan
+            if (isBotTurnRunning) {
+                console.log('⚠️ Bot sedang berjalan, skip');
                 return;
             }
 
@@ -1958,12 +1962,12 @@
                 return;
             }
 
-            const keys = Object.keys(players);
+            // Cari bot yang sedang giliran
             let botTurn = null;
-
             if (players[currentTurn] && players[currentTurn].isBot) {
                 botTurn = currentTurn;
             } else {
+                const keys = Object.keys(players);
                 const currentIdx = keys.indexOf(currentTurn);
                 for (let i = 1; i <= keys.length; i++) {
                     const idx = (currentIdx + i) % keys.length;
@@ -1975,39 +1979,42 @@
             }
 
             if (!botTurn) {
+                // Tidak ada bot yang tersisa
                 updateButtons();
                 return;
             }
 
+            // Set currentTurn ke bot
             currentTurn = botTurn;
             isMyTurn = false;
             hasRolled = false;
             rollCount = 0;
+            isBotTurnRunning = true;
 
             updatePlayersStatus();
             turnDisplay.textContent = players[currentTurn]?.name;
             drawBoard();
             updateButtons();
 
-            isProcessingBot = true;
-
             if (botTimeout) clearTimeout(botTimeout);
             botTimeout = setTimeout(() => {
                 if (!gameStarted || isGameOver) {
-                    isProcessingBot = false;
+                    isBotTurnRunning = false;
                     return;
                 }
 
                 const bot = players[botTurn];
                 if (!bot) {
-                    isProcessingBot = false;
+                    isBotTurnRunning = false;
                     return;
                 }
 
+                // Lempar dadu bot
                 const val = Math.floor(Math.random() * 6) + 1;
                 const emojis = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
                 diceResult.textContent = emojis[val - 1];
 
+                // Proses dadu bot
                 rollCount = val;
                 let newPos = bot.position + val;
 
@@ -2028,12 +2035,13 @@
                 bot.position = newPos;
                 addLog(`🤖 ${bot.name} melempar ${val} → posisi ${newPos}`, false);
 
+                // Cek apakah bot menang
                 if (newPos === TOTAL_CELLS) {
                     addLog(`🤖 ${bot.name} MENANG! 🏆`, true);
                     gameStarted = false;
+                    isBotTurnRunning = false;
                     updateButtons();
                     updatePlayersStatus();
-                    isProcessingBot = false;
                     showCongratulations(bot.name);
                     return;
                 }
@@ -2042,15 +2050,17 @@
                 drawBoard();
                 updateButtons();
 
+                // Jika dadu 6, bot mendapat giliran tambahan
                 if (val === 6) {
                     addLog(`🎯 ${bot.name} mendapat giliran tambahan karena dadu 6!`, true);
-                    isProcessingBot = false;
+                    isBotTurnRunning = false;
                     setTimeout(() => {
                         if (gameStarted && !isGameOver) {
                             doBotTurn();
                         }
                     }, 600);
                 } else {
+                    // Lanjut ke pemain berikutnya
                     const keys2 = Object.keys(players);
                     const currentIdx2 = keys2.indexOf(currentTurn);
                     const nextIdx2 = (currentIdx2 + 1) % keys2.length;
@@ -2059,18 +2069,19 @@
                     hasRolled = false;
                     rollCount = 0;
 
+                    isBotTurnRunning = false;
+
                     updatePlayersStatus();
                     turnDisplay.textContent = players[currentTurn]?.name;
                     drawBoard();
                     updateButtons();
-
-                    isProcessingBot = false;
 
                     if (isMyTurn) {
                         btnRoll.disabled = false;
                         btnEndTurn.disabled = true;
                         addLog(`🎯 Giliranmu!`, true);
                     } else {
+                        // Jika giliran bot berikutnya, lanjutkan
                         if (players[currentTurn] && players[currentTurn].isBot) {
                             if (botTimeout) clearTimeout(botTimeout);
                             botTimeout = setTimeout(() => doBotTurn(), 600);
@@ -2098,6 +2109,7 @@
             if (joinTimeout) clearTimeout(joinTimeout);
             isConnecting = false;
             isProcessingBot = false;
+            isBotTurnRunning = false;
             btnJoinLobby.disabled = false;
             btnJoinLobby.textContent = '🔗 Gabung';
 
@@ -2187,7 +2199,7 @@
         btnCreateLobby.disabled = false;
         btnJoinLobby.disabled = false;
 
-        console.log('🎲 Ular Tangga - BROADCAST CHANNEL MULTIPLAYER');
+        console.log('🎲 Ular Tangga - BOT FIXED + BROADCAST CHANNEL');
 
         window.addEventListener('beforeunload', () => {
             if (roomId && !isBotMode) {
