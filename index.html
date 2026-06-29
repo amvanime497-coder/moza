@@ -7,106 +7,1080 @@
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js">
     </script>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{background:#0a0a1a;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Segoe UI',Arial,sans-serif;padding:6px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;overflow:hidden}
-        #app{width:100%;max-width:700px;position:relative;z-index:1}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0a0a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            padding: 6px;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            overflow: hidden;
+        }
+        #app {
+            width: 100%;
+            max-width: 700px;
+            position: relative;
+            z-index: 1;
+        }
 
         /* SPACE BACKGROUND */
-        #space-bg{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;overflow:hidden;background:#0a0a1a}
-        .star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--duration) ease-in-out infinite}
-        @keyframes twinkle{0%,100%{opacity:0.2;transform:scale(0.8)}50%{opacity:1;transform:scale(1.3)}}
-        .moon-bg{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f5f5dc,#ddd8c4);box-shadow:0 0 80px rgba(255,255,200,0.1),0 0 200px rgba(255,255,200,0.03);animation:moonFloat 10s ease-in-out infinite}
-        @keyframes moonFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-25px) rotate(5deg)}}
-        .ufo-bg{position:absolute;font-size:40px;animation:ufoFly linear infinite;filter:drop-shadow(0 0 30px rgba(0,255,200,0.1));opacity:0.6}
-        @keyframes ufoFly{0%{transform:translateX(-100px) translateY(0) scale(1)}25%{transform:translateX(25vw) translateY(-20px) scale(1.05)}50%{transform:translateX(55vw) translateY(15px) scale(0.95)}75%{transform:translateX(85vw) translateY(-10px) scale(1.04)}100%{transform:translateX(110vw) translateY(0) scale(1)}}
-        .rocket-bg{position:absolute;font-size:30px;animation:rocketFly linear infinite;filter:drop-shadow(0 0 30px rgba(255,200,50,0.1));opacity:0.5}
-        @keyframes rocketFly{0%{transform:translateX(-80px) translateY(0) rotate(-5deg)}30%{transform:translateX(30vw) translateY(-30px) rotate(8deg)}60%{transform:translateX(65vw) translateY(20px) rotate(-3deg)}100%{transform:translateX(120vw) translateY(0) rotate(-5deg)}}
-        .space-snake{position:absolute;font-size:35px;animation:spaceSnakeFly linear infinite;filter:drop-shadow(0 0 30px rgba(50,255,50,0.15));opacity:0.4}
-        @keyframes spaceSnakeFly{0%{transform:translateX(-120px) translateY(0) rotate(0deg)}20%{transform:translateX(20vw) translateY(-40px) rotate(10deg)}40%{transform:translateX(45vw) translateY(30px) rotate(-15deg)}60%{transform:translateX(70vw) translateY(-20px) rotate(8deg)}80%{transform:translateX(95vw) translateY(25px) rotate(-5deg)}100%{transform:translateX(130vw) translateY(0) rotate(0deg)}}
-        .shooting-star-bg{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:shootingStar linear infinite;box-shadow:0 0 15px rgba(255,255,255,0.3)}
-        .shooting-star-bg::after{content:'';position:absolute;top:0;right:0;width:60px;height:1px;background:linear-gradient(to left,rgba(255,255,255,0.3),transparent);transform:rotate(-45deg);transform-origin:right center}
-        @keyframes shootingStar{0%{transform:translate(0,0) rotate(-45deg);opacity:0}10%{opacity:1}30%{opacity:1}50%{transform:translate(-300px,300px) rotate(-45deg);opacity:0}100%{opacity:0}}
+        #space-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            overflow: hidden;
+            background: #0a0a1a;
+        }
+        .star {
+            position: absolute;
+            border-radius: 50%;
+            background: #fff;
+            animation: twinkle var(--duration) ease-in-out infinite;
+        }
+        @keyframes twinkle {
+            0%,
+            100% {
+                opacity: 0.2;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.3);
+            }
+        }
+        .moon-bg {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #f5f5dc, #ddd8c4);
+            box-shadow: 0 0 80px rgba(255, 255, 200, 0.1), 0 0 200px rgba(255, 255, 200, 0.03);
+            animation: moonFloat 10s ease-in-out infinite;
+        }
+        @keyframes moonFloat {
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-25px) rotate(5deg);
+            }
+        }
+        .ufo-bg {
+            position: absolute;
+            font-size: 40px;
+            animation: ufoFly linear infinite;
+            filter: drop-shadow(0 0 30px rgba(0, 255, 200, 0.1));
+            opacity: 0.6;
+        }
+        @keyframes ufoFly {
+            0% {
+                transform: translateX(-100px) translateY(0) scale(1);
+            }
+            25% {
+                transform: translateX(25vw) translateY(-20px) scale(1.05);
+            }
+            50% {
+                transform: translateX(55vw) translateY(15px) scale(0.95);
+            }
+            75% {
+                transform: translateX(85vw) translateY(-10px) scale(1.04);
+            }
+            100% {
+                transform: translateX(110vw) translateY(0) scale(1);
+            }
+        }
+        .rocket-bg {
+            position: absolute;
+            font-size: 30px;
+            animation: rocketFly linear infinite;
+            filter: drop-shadow(0 0 30px rgba(255, 200, 50, 0.1));
+            opacity: 0.5;
+        }
+        @keyframes rocketFly {
+            0% {
+                transform: translateX(-80px) translateY(0) rotate(-5deg);
+            }
+            30% {
+                transform: translateX(30vw) translateY(-30px) rotate(8deg);
+            }
+            60% {
+                transform: translateX(65vw) translateY(20px) rotate(-3deg);
+            }
+            100% {
+                transform: translateX(120vw) translateY(0) rotate(-5deg);
+            }
+        }
+        .space-snake {
+            position: absolute;
+            font-size: 35px;
+            animation: spaceSnakeFly linear infinite;
+            filter: drop-shadow(0 0 30px rgba(50, 255, 50, 0.15));
+            opacity: 0.4;
+        }
+        @keyframes spaceSnakeFly {
+            0% {
+                transform: translateX(-120px) translateY(0) rotate(0deg);
+            }
+            20% {
+                transform: translateX(20vw) translateY(-40px) rotate(10deg);
+            }
+            40% {
+                transform: translateX(45vw) translateY(30px) rotate(-15deg);
+            }
+            60% {
+                transform: translateX(70vw) translateY(-20px) rotate(8deg);
+            }
+            80% {
+                transform: translateX(95vw) translateY(25px) rotate(-5deg);
+            }
+            100% {
+                transform: translateX(130vw) translateY(0) rotate(0deg);
+            }
+        }
+        .shooting-star-bg {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            animation: shootingStar linear infinite;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+        .shooting-star-bg::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(to left, rgba(255, 255, 255, 0.3), transparent);
+            transform: rotate(-45deg);
+            transform-origin: right center;
+        }
+        @keyframes shootingStar {
+            0% {
+                transform: translate(0, 0) rotate(-45deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            30% {
+                opacity: 1;
+            }
+            50% {
+                transform: translate(-300px, 300px) rotate(-45deg);
+                opacity: 0;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
 
-        /* LANDING */
-        #landing-page{background:rgba(10,10,30,0.75);backdrop-filter:blur(15px);border-radius:24px;padding:35px 25px;border:2px solid rgba(255,215,0,0.12);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.6);min-height:75vh;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative;z-index:2}
-        #landing-page .logo{font-size:65px;margin-bottom:8px;animation:bounce 2s infinite;filter:drop-shadow(0 0 40px rgba(255,215,0,0.15))}
-        @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
-        #landing-page h1{color:#ffd700;font-size:34px;text-shadow:0 0 40px rgba(255,215,0,0.15);margin-bottom:8px;letter-spacing:2px}
-        #landing-page .desc{color:rgba(255,255,255,0.5);font-size:13px;line-height:1.9;max-width:400px;margin:0 auto 25px}
-        #landing-page .desc span{color:#ffd700}
-        .btn-landing{background:linear-gradient(135deg,#ffd700,#f0a500);border:none;color:#0a0a1a;padding:15px 55px;border-radius:16px;font-size:18px;font-weight:700;cursor:pointer;transition:all .3s ease;box-shadow:0 8px 35px rgba(255,215,0,0.15);width:100%;max-width:300px;touch-action:manipulation}
-        .btn-landing:active{transform:scale(0.95)}
-        #landing-page .footer-text{color:rgba(255,255,255,0.1);font-size:10px;margin-top:25px;letter-spacing:2px}
+        /* LANDING PAGE */
+        #landing-page {
+            background: rgba(10, 10, 30, 0.75);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            padding: 35px 25px;
+            border: 2px solid rgba(255, 215, 0, 0.12);
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            min-height: 75vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        #landing-page .logo {
+            font-size: 65px;
+            margin-bottom: 8px;
+            animation: bounce 2s infinite;
+            filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.15));
+        }
+        @keyframes bounce {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+        #landing-page h1 {
+            color: #ffd700;
+            font-size: 34px;
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+        #landing-page .desc {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            line-height: 1.9;
+            max-width: 400px;
+            margin: 0 auto 25px;
+        }
+        #landing-page .desc span {
+            color: #ffd700;
+        }
+        .btn-landing {
+            background: linear-gradient(135deg, #ffd700, #f0a500);
+            border: none;
+            color: #0a0a1a;
+            padding: 15px 55px;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .3s ease;
+            box-shadow: 0 8px 35px rgba(255, 215, 0, 0.15);
+            width: 100%;
+            max-width: 300px;
+            touch-action: manipulation;
+        }
+        .btn-landing:active {
+            transform: scale(0.95);
+        }
+        #landing-page .footer-text {
+            color: rgba(255, 255, 255, 0.1);
+            font-size: 10px;
+            margin-top: 25px;
+            letter-spacing: 2px;
+        }
 
         /* LOBBY */
-        #lobby-screen{display:none;background:rgba(10,10,30,0.75);backdrop-filter:blur(15px);border-radius:20px;padding:20px 15px;border:2px solid rgba(255,215,0,0.1);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.5);position:relative;z-index:2}
-        #lobby-screen .back-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.25);padding:6px 16px;border-radius:8px;font-size:11px;cursor:pointer;transition:all .3s ease;margin-top:12px;touch-action:manipulation}
-        #lobby-screen .back-btn:active{transform:scale(0.95)}
-        #lobby-screen h2{color:#ffd700;font-size:24px;margin-bottom:4px}
-        #lobby-screen .subtitle2{color:rgba(255,255,255,0.2);font-size:10px;letter-spacing:3px;margin-bottom:15px}
-        .mode-selector{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px}
-        .mode-btn{padding:12px 8px;border-radius:12px;border:2px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5);font-size:13px;font-weight:700;cursor:pointer;transition:all .3s ease;touch-action:manipulation}
-        .mode-btn:active{transform:scale(0.95)}
-        .mode-btn.active{border-color:#ffd700;background:rgba(255,215,0,0.08);color:#ffd700}
-        .mode-btn .icon{font-size:20px;display:block;margin-bottom:2px}
-        .mode-btn .desc{font-size:9px;font-weight:400;color:rgba(255,255,255,0.25)}
-        .lobby-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-        .lobby-box{background:rgba(255,255,255,0.04);border-radius:12px;padding:12px 10px;border:1px solid rgba(255,255,255,0.05)}
-        .lobby-box h3{color:rgba(255,255,255,0.35);font-size:10px;letter-spacing:2px;margin-bottom:6px}
-        .lobby-box input{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.3);color:#fff;font-size:13px;text-align:center;outline:none;transition:border-color .3s}
-        .lobby-box input:focus{border-color:#ffd700}
-        .lobby-box .btn{width:100%;padding:9px;margin-top:6px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer;color:#fff;transition:all .3s ease;touch-action:manipulation}
-        .lobby-box .btn:active{transform:scale(0.95)}
-        .lobby-box .btn:disabled{opacity:0.5;cursor:not-allowed}
-        .btn-create{background:linear-gradient(135deg,#7a5af0,#5a3ad0)}
-        .btn-join{background:linear-gradient(135deg,#44ddff,#22bbdd);color:#000}
-        .btn-bot{background:linear-gradient(135deg,#ff6b6b,#ee5a24);width:100%;padding:12px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;color:#fff;transition:all .3s ease;margin-top:8px;touch-action:manipulation}
-        .btn-bot:active{transform:scale(0.95)}
-        #lobbyStatus{color:rgba(255,255,255,0.3);font-size:11px;margin-top:10px;padding:6px;border-radius:8px;background:rgba(0,0,0,0.2);min-height:30px;transition:all .3s ease}
-        #lobbyStatus.error{color:#ff4444;background:rgba(255,68,68,0.08);border:1px solid rgba(255,68,68,0.15)}
-        #lobbyStatus.success{color:#44ff88;background:rgba(68,255,136,0.05);border:1px solid rgba(68,255,136,0.1)}
-        #lobbyStatus.info{color:#44ddff;background:rgba(68,221,255,0.05);border:1px solid rgba(68,221,255,0.1)}
-        #lobbyStatus.warning{color:#ffaa44;background:rgba(255,170,68,0.05);border:1px solid rgba(255,170,68,0.1)}
-        #loadingSpinner{display:none;width:20px;height:20px;border:2px solid rgba(255,255,255,0.1);border-top:2px solid #ffd700;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 8px}
-        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        #lobby-screen {
+            display: none;
+            background: rgba(10, 10, 30, 0.75);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 20px 15px;
+            border: 2px solid rgba(255, 215, 0, 0.1);
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 2;
+        }
+        #lobby-screen .back-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.25);
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all .3s ease;
+            margin-top: 12px;
+            touch-action: manipulation;
+        }
+        #lobby-screen .back-btn:active {
+            transform: scale(0.95);
+        }
+        #lobby-screen h2 {
+            color: #ffd700;
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        #lobby-screen .subtitle2 {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 10px;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+        }
+        .mode-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .mode-btn {
+            padding: 12px 8px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .3s ease;
+            touch-action: manipulation;
+        }
+        .mode-btn:active {
+            transform: scale(0.95);
+        }
+        .mode-btn.active {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.08);
+            color: #ffd700;
+        }
+        .mode-btn .icon {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 2px;
+        }
+        .mode-btn .desc {
+            font-size: 9px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.25);
+        }
+        .lobby-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .lobby-box {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 12px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .lobby-box h3 {
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 10px;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+        .lobby-box input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 13px;
+            text-align: center;
+            outline: none;
+            transition: border-color .3s;
+        }
+        .lobby-box input:focus {
+            border-color: #ffd700;
+        }
+        .lobby-box .btn {
+            width: 100%;
+            padding: 9px;
+            margin-top: 6px;
+            border-radius: 8px;
+            border: none;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #fff;
+            transition: all .3s ease;
+            touch-action: manipulation;
+        }
+        .lobby-box .btn:active {
+            transform: scale(0.95);
+        }
+        .lobby-box .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-create {
+            background: linear-gradient(135deg, #7a5af0, #5a3ad0);
+        }
+        .btn-join {
+            background: linear-gradient(135deg, #44ddff, #22bbdd);
+            color: #000;
+        }
+        .btn-bot {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #fff;
+            transition: all .3s ease;
+            margin-top: 8px;
+            touch-action: manipulation;
+        }
+        .btn-bot:active {
+            transform: scale(0.95);
+        }
+        #lobbyStatus {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 11px;
+            margin-top: 10px;
+            padding: 6px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            min-height: 30px;
+            transition: all .3s ease;
+        }
+        #lobbyStatus.error {
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.08);
+            border: 1px solid rgba(255, 68, 68, 0.15);
+        }
+        #lobbyStatus.success {
+            color: #44ff88;
+            background: rgba(68, 255, 136, 0.05);
+            border: 1px solid rgba(68, 255, 136, 0.1);
+        }
+        #lobbyStatus.info {
+            color: #44ddff;
+            background: rgba(68, 221, 255, 0.05);
+            border: 1px solid rgba(68, 221, 255, 0.1);
+        }
+        #lobbyStatus.warning {
+            color: #ffaa44;
+            background: rgba(255, 170, 68, 0.05);
+            border: 1px solid rgba(255, 170, 68, 0.1);
+        }
+        #loadingSpinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top: 2px solid #ffd700;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 8px;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 
         /* GAME */
-        #game-screen{display:none;background:rgba(10,10,30,0.75);backdrop-filter:blur(15px);border-radius:20px;padding:8px;border:2px solid rgba(255,215,0,0.08);box-shadow:0 20px 60px rgba(0,0,0,0.5);position:relative;z-index:2}
-        #game-screen.active{display:block}
-        .game-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.04);flex-wrap:wrap;gap:4px}
-        .game-header .room-id{color:rgba(255,255,255,0.15);font-size:9px;letter-spacing:1px}
-        .game-header .turn-indicator{color:#ffd700;font-size:11px;font-weight:700}
-        .game-header .turn-indicator span{color:#44ff88}
-        .game-header .btn{padding:4px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.05);background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.25);font-size:10px;cursor:pointer;touch-action:manipulation}
-        .game-header .btn:active{transform:scale(0.95)}
-        .players-status{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;padding:4px 0}
-        .player-status{background:rgba(255,255,255,0.04);padding:2px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);font-size:8px;color:rgba(255,255,255,0.3);display:flex;align-items:center;gap:4px}
-        .player-status .color-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
-        .player-status .pos{color:rgba(255,255,255,0.15);font-size:6px}
-        .player-status.active{border-color:#ffd700;background:rgba(255,215,0,0.06);color:#fff}
-        .player-status.bot{border-color:rgba(255,107,107,0.2);background:rgba(255,107,107,0.04)}
-        .board-wrapper{position:relative;width:100%;max-width:560px;margin:4px auto;aspect-ratio:1;background:rgba(0,0,0,0.3);border-radius:10px;padding:2px;border:2px solid rgba(255,215,0,0.05);box-shadow:0 0 30px rgba(0,0,0,0.3);overflow:hidden;touch-action:none}
-        canvas#board{width:100%;height:100%;border-radius:8px;display:block;touch-action:none}
-        .bottom-controls{display:flex;align-items:center;gap:5px;justify-content:center;flex-wrap:wrap;margin-top:5px;padding:5px 8px;background:rgba(0,0,0,0.25);border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
-        .dice-area{display:flex;align-items:center;gap:5px}
-        .dice-result{font-size:28px;min-width:38px;text-align:center;color:#ffd700;background:rgba(255,255,255,0.03);padding:2px 6px;border-radius:8px;border:1px solid rgba(255,215,0,0.06)}
-        .btn-roll{background:linear-gradient(135deg,#ff6b6b,#ee5a24);border:none;color:#fff;padding:6px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;transition:all .3s ease;min-height:36px;touch-action:manipulation}
-        .btn-roll:active:not(:disabled){transform:scale(0.95)}
-        .btn-roll:disabled{opacity:0.3;cursor:not-allowed}
-        .btn-end-turn{background:linear-gradient(135deg,#44ff88,#00d45a);border:none;color:#000;padding:6px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;transition:all .3s ease;min-height:36px;touch-action:manipulation}
-        .btn-end-turn:active:not(:disabled){transform:scale(0.95)}
-        .btn-end-turn:disabled{opacity:0.3;cursor:not-allowed}
-        .log-area{background:rgba(0,0,0,0.25);border-radius:8px;padding:3px 8px;max-height:32px;overflow-y:auto;margin-top:4px;font-size:8px;color:rgba(255,255,255,0.2);font-family:'Courier New',monospace;border:1px solid rgba(255,255,255,0.02)}
-        .log-area .log-entry{padding:1px 0;border-bottom:1px solid rgba(255,255,255,0.02)}
-        .log-area .log-entry .highlight{color:#ffd700}
-        .log-area::-webkit-scrollbar{width:2px}
-        .log-area::-webkit-scrollbar-track{background:transparent}
-        .log-area::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.06);border-radius:4px}
+        #game-screen {
+            display: none;
+            background: rgba(10, 10, 30, 0.75);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 8px;
+            border: 2px solid rgba(255, 215, 0, 0.08);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 2;
+        }
+        #game-screen.active {
+            display: block;
+        }
 
-        @media(max-width:420px){body{padding:4px}#landing-page{padding:20px 15px;min-height:70vh;border-radius:18px}#landing-page .logo{font-size:48px}#landing-page h1{font-size:26px}#landing-page .desc{font-size:12px}.btn-landing{padding:12px 30px;font-size:16px;max-width:260px}#lobby-screen{padding:15px 10px;border-radius:16px}#lobby-screen h2{font-size:20px}.lobby-options{grid-template-columns:1fr;gap:8px}.mode-selector{grid-template-columns:1fr;gap:6px}#game-screen{padding:5px;border-radius:16px}.game-header .turn-indicator{font-size:10px}.dice-result{font-size:24px;min-width:34px;padding:2px 4px}.btn-roll,.btn-end-turn{padding:5px 10px;font-size:10px;min-height:30px}.bottom-controls{gap:4px;padding:4px 6px;border-radius:10px}.player-status{font-size:7px;padding:2px 5px}.log-area{font-size:7px;max-height:28px;padding:3px 6px}.lobby-box{padding:10px 8px}.lobby-box input{padding:6px;font-size:12px}.lobby-box .btn{padding:7px;font-size:11px}.btn-bot{padding:10px;font-size:12px}.board-wrapper{border-radius:8px}.moon-bg{width:50px!important;height:50px!important}.ufo-bg{font-size:28px!important}.rocket-bg{font-size:22px!important}.space-snake{font-size:24px!important}.shooting-star-bg::after{width:35px!important}#loadingSpinner{width:16px;height:16px}}
-        @media(max-width:360px){#landing-page .logo{font-size:40px}#landing-page h1{font-size:22px}.btn-landing{padding:10px 20px;font-size:14px}.dice-result{font-size:20px;min-width:28px}.btn-roll,.btn-end-turn{padding:4px 8px;font-size:9px;min-height:26px}.game-header .turn-indicator{font-size:9px}.board-wrapper{border-radius:6px}.moon-bg{width:40px!important;height:40px!important}.ufo-bg{font-size:20px!important}.rocket-bg{font-size:16px!important}.space-snake{font-size:18px!important}}
-        @media(min-width:500px){#landing-page{min-height:60vh}#landing-page .logo{font-size:80px}#landing-page h1{font-size:42px}.btn-landing{padding:16px 60px;font-size:20px;max-width:350px}#lobby-screen h2{font-size:28px}.mode-btn{padding:16px 12px;font-size:15px}.mode-btn .icon{font-size:28px}.dice-result{font-size:40px;min-width:56px}.btn-roll,.btn-end-turn{padding:10px 24px;font-size:14px;min-height:44px}.player-status{font-size:10px;padding:4px 12px}.lobby-box input{padding:12px;font-size:15px}.lobby-box .btn{padding:12px;font-size:14px}.moon-bg{width:90px!important;height:90px!important}.ufo-bg{font-size:50px!important}.rocket-bg{font-size:40px!important}.space-snake{font-size:45px!important}}
-        @media(max-height:500px) and (orientation:landscape){#landing-page{min-height:90vh;padding:15px 20px}#landing-page .logo{font-size:36px}#landing-page h1{font-size:20px}#landing-page .desc{font-size:10px;margin-bottom:12px}.btn-landing{padding:8px 25px;font-size:14px;max-width:200px}#game-screen{padding:4px}.board-wrapper{max-width:40vh}.bottom-controls{padding:3px 6px;gap:3px}.dice-result{font-size:18px;min-width:28px}.btn-roll,.btn-end-turn{padding:3px 8px;font-size:9px;min-height:24px}.player-status{font-size:6px;padding:1px 4px}.log-area{max-height:22px;font-size:6px}.game-header .turn-indicator{font-size:8px}.game-header .room-id{font-size:7px}.moon-bg{width:30px!important;height:30px!important}.ufo-bg{font-size:16px!important}.rocket-bg{font-size:14px!important}.space-snake{font-size:16px!important}#loadingSpinner{width:14px;height:14px}}
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .game-header .room-id {
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 9px;
+            letter-spacing: 1px;
+        }
+        .game-header .turn-indicator {
+            color: #ffd700;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .game-header .turn-indicator span {
+            color: #44ff88;
+        }
+        .game-header .btn {
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 10px;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+        .game-header .btn:active {
+            transform: scale(0.95);
+        }
+
+        .players-status {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 4px 0;
+        }
+        .player-status {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 2px 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 8px;
+            color: rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .player-status .color-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .player-status .pos {
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 6px;
+        }
+        .player-status.active {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.06);
+            color: #fff;
+        }
+        .player-status.bot {
+            border-color: rgba(255, 107, 107, 0.2);
+            background: rgba(255, 107, 107, 0.04);
+        }
+
+        .board-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 560px;
+            margin: 4px auto;
+            aspect-ratio: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 2px;
+            border: 2px solid rgba(255, 215, 0, 0.05);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            touch-action: none;
+        }
+        canvas#board {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            display: block;
+            touch-action: none;
+        }
+
+        .bottom-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 5px;
+            padding: 5px 8px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        .dice-area {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .dice-result {
+            font-size: 28px;
+            min-width: 38px;
+            text-align: center;
+            color: #ffd700;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 2px 6px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 215, 0, 0.06);
+        }
+        .btn-roll {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            border: none;
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .3s ease;
+            min-height: 36px;
+            touch-action: manipulation;
+        }
+        .btn-roll:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+        .btn-roll:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .btn-end-turn {
+            background: linear-gradient(135deg, #44ff88, #00d45a);
+            border: none;
+            color: #000;
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .3s ease;
+            min-height: 36px;
+            touch-action: manipulation;
+        }
+        .btn-end-turn:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+        .btn-end-turn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .log-area {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 8px;
+            padding: 3px 8px;
+            max-height: 32px;
+            overflow-y: auto;
+            margin-top: 4px;
+            font-size: 8px;
+            color: rgba(255, 255, 255, 0.2);
+            font-family: 'Courier New', monospace;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+        .log-area .log-entry {
+            padding: 1px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+        }
+        .log-area .log-entry .highlight {
+            color: #ffd700;
+        }
+        .log-area::-webkit-scrollbar {
+            width: 2px;
+        }
+        .log-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .log-area::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 4px;
+        }
+
+        /* ============================================
+           CONGRATULATIONS OVERLAY
+           ============================================ */
+        #congrats-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            animation: fadeIn 0.5s ease;
+        }
+        #congrats-overlay.show {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        #congrats-overlay .trophy {
+            font-size: 80px;
+            animation: bounce 1s infinite;
+        }
+        #congrats-overlay .title {
+            color: #ffd700;
+            font-size: 36px;
+            font-weight: 900;
+            margin-top: 10px;
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+            text-align: center;
+        }
+        #congrats-overlay .winner {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 5px;
+            text-align: center;
+        }
+        #congrats-overlay .winner span {
+            color: #44ff88;
+        }
+        #congrats-overlay .sub {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 12px;
+            margin-top: 15px;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+        #congrats-overlay .btn-ok {
+            margin-top: 20px;
+            background: linear-gradient(135deg, #ffd700, #f0a500);
+            border: none;
+            color: #0a0a1a;
+            padding: 12px 40px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .3s ease;
+            touch-action: manipulation;
+        }
+        #congrats-overlay .btn-ok:active {
+            transform: scale(0.95);
+        }
+
+        /* CONFETTI */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            z-index: 101;
+            border-radius: 2px;
+            animation: confettiFall linear forwards;
+            pointer-events: none;
+        }
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        @media(max-width:420px) {
+            body {
+                padding: 4px;
+            }
+            #landing-page {
+                padding: 20px 15px;
+                min-height: 70vh;
+                border-radius: 18px;
+            }
+            #landing-page .logo {
+                font-size: 48px;
+            }
+            #landing-page h1 {
+                font-size: 26px;
+            }
+            #landing-page .desc {
+                font-size: 12px;
+            }
+            .btn-landing {
+                padding: 12px 30px;
+                font-size: 16px;
+                max-width: 260px;
+            }
+            #lobby-screen {
+                padding: 15px 10px;
+                border-radius: 16px;
+            }
+            #lobby-screen h2 {
+                font-size: 20px;
+            }
+            .lobby-options {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .mode-selector {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+            #game-screen {
+                padding: 5px;
+                border-radius: 16px;
+            }
+            .game-header .turn-indicator {
+                font-size: 10px;
+            }
+            .dice-result {
+                font-size: 24px;
+                min-width: 34px;
+                padding: 2px 4px;
+            }
+            .btn-roll,
+            .btn-end-turn {
+                padding: 5px 10px;
+                font-size: 10px;
+                min-height: 30px;
+            }
+            .bottom-controls {
+                gap: 4px;
+                padding: 4px 6px;
+                border-radius: 10px;
+            }
+            .player-status {
+                font-size: 7px;
+                padding: 2px 5px;
+            }
+            .log-area {
+                font-size: 7px;
+                max-height: 28px;
+                padding: 3px 6px;
+            }
+            .lobby-box {
+                padding: 10px 8px;
+            }
+            .lobby-box input {
+                padding: 6px;
+                font-size: 12px;
+            }
+            .lobby-box .btn {
+                padding: 7px;
+                font-size: 11px;
+            }
+            .btn-bot {
+                padding: 10px;
+                font-size: 12px;
+            }
+            .board-wrapper {
+                border-radius: 8px;
+            }
+            .moon-bg {
+                width: 50px !important;
+                height: 50px !important;
+            }
+            .ufo-bg {
+                font-size: 28px !important;
+            }
+            .rocket-bg {
+                font-size: 22px !important;
+            }
+            .space-snake {
+                font-size: 24px !important;
+            }
+            .shooting-star-bg::after {
+                width: 35px !important;
+            }
+            #loadingSpinner {
+                width: 16px;
+                height: 16px;
+            }
+            #congrats-overlay .title {
+                font-size: 24px;
+            }
+            #congrats-overlay .winner {
+                font-size: 18px;
+            }
+            #congrats-overlay .trophy {
+                font-size: 50px;
+            }
+        }
+
+        @media(max-width:360px) {
+            #landing-page .logo {
+                font-size: 40px;
+            }
+            #landing-page h1 {
+                font-size: 22px;
+            }
+            .btn-landing {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+            .dice-result {
+                font-size: 20px;
+                min-width: 28px;
+            }
+            .btn-roll,
+            .btn-end-turn {
+                padding: 4px 8px;
+                font-size: 9px;
+                min-height: 26px;
+            }
+            .game-header .turn-indicator {
+                font-size: 9px;
+            }
+            .board-wrapper {
+                border-radius: 6px;
+            }
+            .moon-bg {
+                width: 40px !important;
+                height: 40px !important;
+            }
+            .ufo-bg {
+                font-size: 20px !important;
+            }
+            .rocket-bg {
+                font-size: 16px !important;
+            }
+            .space-snake {
+                font-size: 18px !important;
+            }
+        }
+
+        @media(min-width:500px) {
+            #landing-page {
+                min-height: 60vh;
+            }
+            #landing-page .logo {
+                font-size: 80px;
+            }
+            #landing-page h1 {
+                font-size: 42px;
+            }
+            .btn-landing {
+                padding: 16px 60px;
+                font-size: 20px;
+                max-width: 350px;
+            }
+            #lobby-screen h2 {
+                font-size: 28px;
+            }
+            .mode-btn {
+                padding: 16px 12px;
+                font-size: 15px;
+            }
+            .mode-btn .icon {
+                font-size: 28px;
+            }
+            .dice-result {
+                font-size: 40px;
+                min-width: 56px;
+            }
+            .btn-roll,
+            .btn-end-turn {
+                padding: 10px 24px;
+                font-size: 14px;
+                min-height: 44px;
+            }
+            .player-status {
+                font-size: 10px;
+                padding: 4px 12px;
+            }
+            .lobby-box input {
+                padding: 12px;
+                font-size: 15px;
+            }
+            .lobby-box .btn {
+                padding: 12px;
+                font-size: 14px;
+            }
+            .moon-bg {
+                width: 90px !important;
+                height: 90px !important;
+            }
+            .ufo-bg {
+                font-size: 50px !important;
+            }
+            .rocket-bg {
+                font-size: 40px !important;
+            }
+            .space-snake {
+                font-size: 45px !important;
+            }
+            #congrats-overlay .title {
+                font-size: 48px;
+            }
+            #congrats-overlay .winner {
+                font-size: 30px;
+            }
+            #congrats-overlay .trophy {
+                font-size: 100px;
+            }
+        }
+
+        @media(max-height:500px) and (orientation:landscape) {
+            #landing-page {
+                min-height: 90vh;
+                padding: 15px 20px;
+            }
+            #landing-page .logo {
+                font-size: 36px;
+            }
+            #landing-page h1 {
+                font-size: 20px;
+            }
+            #landing-page .desc {
+                font-size: 10px;
+                margin-bottom: 12px;
+            }
+            .btn-landing {
+                padding: 8px 25px;
+                font-size: 14px;
+                max-width: 200px;
+            }
+            #game-screen {
+                padding: 4px;
+            }
+            .board-wrapper {
+                max-width: 40vh;
+            }
+            .bottom-controls {
+                padding: 3px 6px;
+                gap: 3px;
+            }
+            .dice-result {
+                font-size: 18px;
+                min-width: 28px;
+            }
+            .btn-roll,
+            .btn-end-turn {
+                padding: 3px 8px;
+                font-size: 9px;
+                min-height: 24px;
+            }
+            .player-status {
+                font-size: 6px;
+                padding: 1px 4px;
+            }
+            .log-area {
+                max-height: 22px;
+                font-size: 6px;
+            }
+            .game-header .turn-indicator {
+                font-size: 8px;
+            }
+            .game-header .room-id {
+                font-size: 7px;
+            }
+            .moon-bg {
+                width: 30px !important;
+                height: 30px !important;
+            }
+            .ufo-bg {
+                font-size: 16px !important;
+            }
+            .rocket-bg {
+                font-size: 14px !important;
+            }
+            .space-snake {
+                font-size: 16px !important;
+            }
+            #loadingSpinner {
+                width: 14px;
+                height: 14px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -218,9 +1192,18 @@
 
     </div>
 
+    <!-- CONGRATULATIONS OVERLAY -->
+    <div id="congrats-overlay">
+        <div class="trophy">🏆</div>
+        <div class="title">🎉 CONGRATULATIONS! 🎉</div>
+        <div class="winner"><span id="winnerName">Pemain</span> MENANG!</div>
+        <div class="sub">👆 Tap untuk kembali ke menu</div>
+        <button class="btn-ok" id="btnCongratsOk">OK</button>
+    </div>
+
     <script>
         // ============================================================
-        // ULAR TANGGA - FIXED PEER CONNECTION
+        // ULAR TANGGA - DADU 6 + CONGRATULATIONS
         // ============================================================
 
         const BOARD_SIZE = 10;
@@ -254,6 +1237,9 @@
         let peerInitialized = false;
         let hostPeerId = null;
         let isConnectedToHost = false;
+        let isGameOver = false;
+        let gameWinner = null;
+        let rollCount = 0;
 
         // PEERJS
         let peer = null;
@@ -296,6 +1282,55 @@
         const botOptions = document.getElementById('botOptions');
         const modeOnline = document.getElementById('modeOnline');
         const modeBot = document.getElementById('modeBot');
+        const congratsOverlay = document.getElementById('congrats-overlay');
+        const winnerName = document.getElementById('winnerName');
+        const btnCongratsOk = document.getElementById('btnCongratsOk');
+
+        // ============================================================
+        // CONGRATULATIONS
+        // ============================================================
+        function showCongratulations(name) {
+            isGameOver = true;
+            winnerName.textContent = name;
+            congratsOverlay.classList.add('show');
+            createConfetti();
+        }
+
+        function hideCongratulations() {
+            congratsOverlay.classList.remove('show');
+            isGameOver = false;
+            // Reset game
+            resetAll();
+            gameScreen.classList.remove('active');
+            lobbyScreen.style.display = 'block';
+            showStatus('👋 Game selesai', '');
+            setMode('online');
+        }
+
+        btnCongratsOk.addEventListener('click', hideCongratulations);
+
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#ffd700', '#44ddff', '#ff66aa', '#44ff88', '#ff8844'];
+            for (let i = 0; i < 80; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.className = 'confetti';
+                    const size = Math.random() * 8 + 4;
+                    const isCircle = Math.random() > 0.5;
+                    el.style.width = isCircle ? size + 'px' : size * 0.5 + 'px';
+                    el.style.height = isCircle ? size + 'px' : size * 1.5 + 'px';
+                    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    el.style.borderRadius = isCircle ? '50%' : '2px';
+                    el.style.left = Math.random() * 100 + '%';
+                    el.style.top = '-10px';
+                    el.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+                    el.style.animationDelay = (Math.random() * 0.5) + 's';
+                    el.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    document.body.appendChild(el);
+                    setTimeout(() => el.remove(), 4000);
+                }, i * 30);
+            }
+        }
 
         // ============================================================
         // LANDING PAGE
@@ -330,6 +1365,9 @@
             hostPeerId = null;
             isConnectedToHost = false;
             logEntries = [];
+            isGameOver = false;
+            gameWinner = null;
+            rollCount = 0;
             renderLog();
             updateButtons();
             connections = {};
@@ -337,6 +1375,9 @@
                 joinTimeout = null; }
             isConnecting = false;
             loadingSpinner.style.display = 'none';
+            congratsOverlay.classList.remove('show');
+            // Hapus confetti
+            document.querySelectorAll('.confetti').forEach(el => el.remove());
         }
 
         function setMode(mode) {
@@ -455,8 +1496,6 @@
         function setupConnection(conn) {
             conn.on('open', () => {
                 console.log('✅ Connection open dengan:', conn.peer);
-                
-                // Jika host, kirim info host ke player yang baru connect
                 if (isHost && roomId) {
                     const hostInfo = {
                         type: 'HOST_INFO',
@@ -487,7 +1526,7 @@
                     addLog(`👋 ${name} keluar`, false);
                     updatePlayersStatus();
                     drawBoard();
-                    if (Object.keys(players).length < 2) {
+                    if (Object.keys(players).length < 2 && !isBotMode) {
                         gameStarted = false;
                         updateButtons();
                         addLog(`⏳ Menunggu 1 pemain lagi (min 2)...`, false);
@@ -499,7 +1538,7 @@
         function broadcast(data) {
             const message = JSON.stringify({ ...data, sender: playerId, roomId: roomId });
             for (const id in connections) {
-                try { 
+                try {
                     connections[id].send(message);
                     console.log('📤 Broadcast ke:', id, data.type);
                 } catch (e) { console.warn('Broadcast error:', e); }
@@ -514,12 +1553,9 @@
 
             switch (data.type) {
                 case 'HOST_INFO':
-                    // Player menerima info dari host
                     console.log('📥 Menerima HOST_INFO:', data);
                     hostPeerId = data.hostId;
                     isConnectedToHost = true;
-                    
-                    // Update players dari host
                     if (data.players) {
                         players = data.players;
                         if (playerId && !players[playerId]) {
@@ -567,7 +1603,8 @@
                 case 'DICE_ROLL':
                     if (data.playerId !== playerId) {
                         addLog(`🎲 ${players[data.playerId]?.name} melempar ${data.value}`, false);
-                        animatePlayerMove(data.playerId, data.value);
+                        // Proses dadu untuk player lain
+                        processDiceRoll(data.playerId, data.value);
                     }
                     break;
 
@@ -619,7 +1656,11 @@
                 case 'GAME_OVER':
                     gameStarted = false;
                     updateButtons();
-                    addLog(`🏆 ${players[data.winner]?.name} MENANG! 🏆`, true);
+                    const winner = players[data.winner];
+                    addLog(`🏆 ${winner?.name} MENANG! 🏆`, true);
+                    if (!isBotMode) {
+                        showCongratulations(winner?.name || 'Pemain');
+                    }
                     break;
 
                 case 'SYNC':
@@ -651,7 +1692,7 @@
                         updatePlayersStatus();
                         drawBoard();
                         broadcast({ type: 'PLAYER_LIST', players: players });
-                        if (Object.keys(players).length < 2) {
+                        if (Object.keys(players).length < 2 && !isBotMode) {
                             gameStarted = false;
                             updateButtons();
                             addLog(`⏳ Menunggu 1 pemain lagi (min 2)...`, false);
@@ -661,7 +1702,6 @@
 
                 case 'SYNC_REQUEST':
                     console.log('📥 SYNC_REQUEST dari:', fromId);
-                    // Kirim sync ke yang minta
                     broadcast({
                         type: 'SYNC',
                         players: players,
@@ -779,11 +1819,15 @@
                     if (finalPos === TOTAL_CELLS) {
                         addLog(`🏆 ${p.name} MENANG! 🏆`, true);
                         gameStarted = false;
-                        if (!isBotMode) broadcast({ type: 'GAME_OVER', winner: pid });
+                        if (!isBotMode) {
+                            broadcast({ type: 'GAME_OVER', winner: pid });
+                        }
                         updatePlayersStatus();
                         drawBoard();
                         updateButtons();
                         isAnimating = false;
+                        // TAMPILKAN CONGRATULATIONS
+                        showCongratulations(p.name);
                         if (callback) callback();
                         return;
                     }
@@ -794,16 +1838,92 @@
                         isRolling = false;
                         btnEndTurn.disabled = false;
                         updateButtons();
+                        // CEK APAKAH DADU 6 (DAPAT GILIRAN TAMBAHAN)
+                        if (rollCount === 6) {
+                            addLog(`🎯 ${p.name} mendapat giliran tambahan karena dadu 6!`, true);
+                            // Jangan end turn, lanjutkan giliran
+                            setTimeout(() => {
+                                if (pid === playerId || isBotMode) {
+                                    btnRoll.disabled = false;
+                                    btnEndTurn.disabled = true;
+                                    hasRolled = false;
+                                    updateButtons();
+                                }
+                            }, 500);
+                        }
                     }
                     isAnimating = false;
                     if (callback) callback();
                     return;
                 }
+
                 currentPos = startPos + step;
                 p.position = currentPos;
                 drawBoard();
                 step++;
             }, 120);
+        }
+
+        // ============================================================
+        // PROSES DADU - DENGAN ATURAN 99+1
+        // ============================================================
+        function processDiceRoll(pid, value) {
+            const p = players[pid];
+            if (!p) return;
+
+            rollCount = value;
+
+            let newPos = p.position + value;
+
+            // ATURAN: Jika melewati 100, mundur ke belakang
+            if (newPos > TOTAL_CELLS) {
+                const over = newPos - TOTAL_CELLS;
+                newPos = TOTAL_CELLS - over;
+                addLog(`↩️ ${p.name} melewati 100! Mundur ke ${newPos}`, true);
+            }
+
+            // CEK ULAR
+            if (SNAKES[newPos]) {
+                addLog(`🐍 ${p.name} terkena ular! ${newPos} → ${SNAKES[newPos]}`, true);
+                newPos = SNAKES[newPos];
+            }
+            // CEK TANGGA
+            else if (LADDERS[newPos]) {
+                addLog(`🪜 ${p.name} naik tangga! ${newPos} → ${LADDERS[newPos]}`, true);
+                newPos = LADDERS[newPos];
+            }
+
+            p.position = newPos;
+            addLog(`🎲 ${p.name} melempar ${value} → posisi ${newPos}`, false);
+
+            if (newPos === TOTAL_CELLS) {
+                addLog(`🏆 ${p.name} MENANG! 🏆`, true);
+                gameStarted = false;
+                if (!isBotMode) {
+                    broadcast({ type: 'GAME_OVER', winner: pid });
+                }
+                updatePlayersStatus();
+                drawBoard();
+                updateButtons();
+                showCongratulations(p.name);
+                return;
+            }
+
+            updatePlayersStatus();
+            drawBoard();
+            updateButtons();
+
+            // Jika dadu 6, dapat giliran tambahan (tidak end turn)
+            if (value === 6) {
+                addLog(`🎯 ${p.name} mendapat giliran tambahan karena dadu 6!`, true);
+                hasRolled = false;
+                btnRoll.disabled = false;
+                btnEndTurn.disabled = true;
+                updateButtons();
+            } else {
+                // Jika bukan dadu 6, lanjutkan ke pemain berikutnya
+                endTurn();
+            }
         }
 
         // ============================================================
@@ -842,14 +1962,20 @@
 
         function updateButtons() {
             const playerCount = Object.keys(players).length;
-            if (isAnimating) { btnRoll.disabled = true;
-                btnEndTurn.disabled = true; return; }
+            if (isAnimating || isGameOver) {
+                btnRoll.disabled = true;
+                btnEndTurn.disabled = true;
+                return;
+            }
 
             if (isBotMode) {
-                if (!gameStarted) { btnRoll.disabled = false;
+                if (!gameStarted) {
+                    btnRoll.disabled = false;
                     btnRoll.textContent = '🎮 Mulai';
                     btnRoll.onclick = startBotGame;
-                    btnEndTurn.disabled = true; return; }
+                    btnEndTurn.disabled = true;
+                    return;
+                }
                 const isActive = gameStarted && isMyTurn && !isRolling && !isAnimating;
                 btnRoll.textContent = '🎲 Lempar';
                 btnRoll.onclick = rollDice;
@@ -871,9 +1997,12 @@
                 btnEndTurn.disabled = true;
                 return;
             }
-            if (!gameStarted) { btnRoll.disabled = true;
+            if (!gameStarted) {
+                btnRoll.disabled = true;
                 btnRoll.textContent = '⏳ Menunggu...';
-                btnEndTurn.disabled = true; return; }
+                btnEndTurn.disabled = true;
+                return;
+            }
 
             const isActive = gameStarted && isMyTurn && !isRolling && !isAnimating;
             btnRoll.textContent = '🎲 Lempar';
@@ -888,13 +2017,24 @@
         }
 
         // ============================================================
-        // DICE & TURN
+        // DICE & TURN - DENGAN ATURAN DADU 6
         // ============================================================
         function rollDice() {
             if (isAnimating) { addLog('⏳ Tunggu animasi...', false); return; }
             if (isRolling) { addLog('⏳ Tunggu dadu...', false); return; }
             if (!gameStarted) { addLog('⏳ Game belum mulai!', false); return; }
-            if (hasRolled) { addLog('⚠️ Kamu sudah lempar! Klik End Turn', true); return; }
+            if (hasRolled) {
+                // Jika sudah rolling dan dadu 6, bisa lempar lagi
+                if (rollCount === 6) {
+                    // Reset status untuk lempar lagi
+                    hasRolled = false;
+                    btnEndTurn.disabled = true;
+                    updateButtons();
+                } else {
+                    addLog('⚠️ Kamu sudah lempar! Klik End Turn', true);
+                    return;
+                }
+            }
             if (!isBotMode && !isMyTurn) { addLog('❌ Bukan giliranmu!', true); return; }
             if (Object.keys(players).length < 2 && !isBotMode) { addLog('⏳ Butuh 2 pemain!', false); return; }
 
@@ -903,14 +2043,12 @@
             btnEndTurn.disabled = true;
 
             animateDice((finalVal) => {
-                if (!isBotMode) broadcast({ type: 'DICE_ROLL', playerId: playerId, value: finalVal });
-                addLog(`🎲 ${players[playerId]?.name} → ${finalVal}`, false);
-                animatePlayerMove(playerId, finalVal, () => {
-                    if (players[playerId]?.position < TOTAL_CELLS) btnEndTurn.disabled = false;
-                    if (isBotMode && gameStarted && players[playerId]?.position < TOTAL_CELLS) {
-                        setTimeout(() => doBotTurn(), 600);
-                    }
-                });
+                if (!isBotMode) {
+                    broadcast({ type: 'DICE_ROLL', playerId: playerId, value: finalVal });
+                }
+                // Proses dadu
+                processDiceRoll(playerId, finalVal);
+                isRolling = false;
             });
         }
 
@@ -934,15 +2072,23 @@
 
         function endTurn(nextTurn) {
             const keys = Object.keys(players);
-            if (keys.length < 2 && !isBotMode) { addLog('⏳ Butuh 2 pemain!', false);
-                btnRoll.disabled = true; return; }
+            if (keys.length < 2 && !isBotMode) {
+                addLog('⏳ Butuh 2 pemain!', false);
+                btnRoll.disabled = true;
+                return;
+            }
 
-            if (nextTurn) { currentTurn = nextTurn; } else { const currentIdx = keys.indexOf(currentTurn);
+            if (nextTurn) {
+                currentTurn = nextTurn;
+            } else {
+                const currentIdx = keys.indexOf(currentTurn);
                 const nextIdx = (currentIdx + 1) % keys.length;
-                currentTurn = keys[nextIdx]; }
+                currentTurn = keys[nextIdx];
+            }
 
             isMyTurn = (currentTurn === playerId);
             hasRolled = false;
+            rollCount = 0;
             diceResult.textContent = '🎲';
             updateButtons();
 
@@ -955,13 +2101,31 @@
             if (!isBotMode) {
                 broadcast({ type: 'TURN_UPDATE', currentTurn: currentTurn });
             }
+
+            // Jika giliran bot di online mode
+            if (!isBotMode && currentTurn && players[currentTurn] && players[currentTurn].isBot) {
+                btnRoll.disabled = true;
+                btnEndTurn.disabled = true;
+            }
         }
 
         function handleEndTurn() {
             if (isAnimating) { addLog('⏳ Tunggu animasi...', false); return; }
             if (!isBotMode && !isMyTurn) { addLog('❌ Bukan giliranmu!', true); return; }
             if (!gameStarted) { addLog('⏳ Game belum mulai!', false); return; }
-            if (!hasRolled) { addLog('⚠️ Lempar dadu dulu!', true); return; }
+            if (!hasRolled) {
+                // Jika belum rolling tapi dadu 6, tetap bisa rolling
+                if (rollCount === 6) {
+                    addLog('🎯 Kamu dapat giliran tambahan! Lempar dadu lagi.', true);
+                    hasRolled = false;
+                    btnEndTurn.disabled = true;
+                    btnRoll.disabled = false;
+                    updateButtons();
+                    return;
+                }
+                addLog('⚠️ Lempar dadu dulu!', true);
+                return;
+            }
             if (!isBotMode && currentTurn && players[currentTurn] && players[currentTurn].isBot) {
                 addLog('🤖 Giliran bot...', false);
                 return;
@@ -991,6 +2155,7 @@
             currentTurn = keys[0];
             isMyTurn = (currentTurn === playerId);
             hasRolled = false;
+            rollCount = 0;
 
             btnRoll.textContent = '🎲 Lempar';
             btnRoll.onclick = rollDice;
@@ -1017,7 +2182,7 @@
         }
 
         // ============================================================
-        // LOBBY - FIXED CONNECTION
+        // LOBBY
         // ============================================================
         function createLobby() {
             if (gameMode === 'bot') { startBotGame(); return; }
@@ -1059,9 +2224,8 @@
             addLog(`🎮 Lobby "${roomId}" dibuat`, true);
             updateButtons();
 
-            // Broadcast lobby info ke semua
             broadcast({ type: 'SYNC', players: players, roomId: roomId });
-            
+
             console.log('🏠 Host ID:', playerId, 'Room:', roomId);
         }
 
@@ -1070,7 +2234,6 @@
 
             if (gameMode === 'bot') { startBotGame(); return; }
 
-            // CEK KONEKSI PEER
             if (!isPeerReady) {
                 console.log('⚠️ Peer belum siap, coba init ulang');
                 showStatus('⏳ Menghubungkan ke server...', 'info');
@@ -1117,9 +2280,6 @@
             btnJoinLobby.disabled = true;
             btnJoinLobby.textContent = '⏳ Menghubungkan...';
 
-            // CEK: Connect ke host (host ID = roomId? TIDAK! Host ID adalah Peer ID)
-            // Kita akan broadcast join request, dan host akan merespon dengan HOST_INFO
-            // Kirim join request ke semua (host akan menerima)
             broadcast({
                 type: 'PLAYER_JOIN',
                 playerId: playerId,
@@ -1127,7 +2287,6 @@
                 roomId: roomId
             });
 
-            // Minta sync dari host
             setTimeout(() => {
                 broadcast({ type: 'SYNC_REQUEST', roomId: roomId });
             }, 500);
@@ -1136,7 +2295,6 @@
             showGame();
             addLog(`👋 ${playerName} bergabung!`, false);
 
-            // Timeout jika join terlalu lama (8 detik)
             if (joinTimeout) clearTimeout(joinTimeout);
             joinTimeout = setTimeout(() => {
                 isConnecting = false;
@@ -1147,7 +2305,6 @@
                 console.log('⚠️ Join timeout!');
             }, 8000);
 
-            // Proses setelah join
             setTimeout(() => {
                 if (joinTimeout) clearTimeout(joinTimeout);
                 isConnecting = false;
@@ -1155,14 +2312,11 @@
                 btnJoinLobby.textContent = '🔗 Gabung';
                 loadingSpinner.style.display = 'none';
 
-                // Cek apakah player sudah terdaftar
                 if (Object.keys(players).length > 1) {
                     showStatus(`✅ Bergabung! (${Object.keys(players).length}/${MAX_PLAYERS} pemain)`, 'success');
                 } else {
                     showStatus(`⏳ Menunggu host merespon...`, 'info');
                     loadingSpinner.style.display = 'inline-block';
-                    
-                    // Coba minta sync lagi
                     setTimeout(() => {
                         broadcast({ type: 'SYNC_REQUEST', roomId: roomId });
                     }, 2000);
@@ -1174,7 +2328,7 @@
         }
 
         // ============================================================
-        // BOT MODE
+        // BOT MODE - DENGAN CONGRATULATIONS
         // ============================================================
         function startBotGame() {
             const name = playerNameBot.value.trim() || 'Player';
@@ -1208,6 +2362,7 @@
             currentTurn = keys[0];
             isMyTurn = true;
             hasRolled = false;
+            rollCount = 0;
 
             btnRoll.textContent = '🎲 Lempar';
             btnRoll.onclick = rollDice;
@@ -1222,7 +2377,7 @@
         }
 
         function doBotTurn() {
-            if (!gameStarted || isAnimating || isRolling) {
+            if (!gameStarted || isAnimating || isRolling || isGameOver) {
                 if (botTimeout) clearTimeout(botTimeout);
                 botTimeout = setTimeout(() => doBotTurn(), 500);
                 return;
@@ -1245,6 +2400,7 @@
             currentTurn = botTurn;
             isMyTurn = false;
             hasRolled = false;
+            rollCount = 0;
 
             updatePlayersStatus();
             turnDisplay.textContent = players[currentTurn]?.name;
@@ -1253,35 +2409,69 @@
 
             if (botTimeout) clearTimeout(botTimeout);
             botTimeout = setTimeout(() => {
-                if (!gameStarted) return;
+                if (!gameStarted || isGameOver) return;
                 const bot = players[botTurn];
                 if (!bot) return;
+
                 const val = Math.floor(Math.random() * 6) + 1;
                 const emojis = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
                 diceResult.textContent = emojis[val - 1];
-                addLog(`🤖 ${bot.name} → ${val}`, false);
-                animatePlayerMove(botTurn, val, () => {
-                    if (bot.position === TOTAL_CELLS) {
-                        addLog(`🤖 ${bot.name} MENANG! 🏆`, true);
-                        gameStarted = false;
-                        updateButtons();
-                        updatePlayersStatus();
-                        return;
-                    }
-                    const playerAlive = players[playerId] && players[playerId].position < TOTAL_CELLS;
-                    if (!playerAlive) { addLog(`💀 Kamu kalah!`, true);
-                        gameStarted = false;
-                        updateButtons(); return; }
+
+                // Proses dadu bot
+                rollCount = val;
+                let newPos = bot.position + val;
+
+                if (newPos > TOTAL_CELLS) {
+                    const over = newPos - TOTAL_CELLS;
+                    newPos = TOTAL_CELLS - over;
+                    addLog(`↩️ ${bot.name} melewati 100! Mundur ke ${newPos}`, true);
+                }
+
+                if (SNAKES[newPos]) {
+                    addLog(`🐍 ${bot.name} terkena ular! ${newPos} → ${SNAKES[newPos]}`, true);
+                    newPos = SNAKES[newPos];
+                } else if (LADDERS[newPos]) {
+                    addLog(`🪜 ${bot.name} naik tangga! ${newPos} → ${LADDERS[newPos]}`, true);
+                    newPos = LADDERS[newPos];
+                }
+
+                bot.position = newPos;
+                addLog(`🤖 ${bot.name} melempar ${val} → posisi ${newPos}`, false);
+
+                if (newPos === TOTAL_CELLS) {
+                    addLog(`🤖 ${bot.name} MENANG! 🏆`, true);
+                    gameStarted = false;
+                    updateButtons();
+                    updatePlayersStatus();
+                    showCongratulations(bot.name);
+                    return;
+                }
+
+                updatePlayersStatus();
+                drawBoard();
+                updateButtons();
+
+                // Jika dadu 6, bot dapat giliran tambahan
+                if (val === 6) {
+                    addLog(`🎯 ${bot.name} mendapat giliran tambahan karena dadu 6!`, true);
+                    hasRolled = false;
+                    rollCount = 0;
+                    setTimeout(() => doBotTurn(), 600);
+                } else {
+                    // Lanjut ke pemain berikutnya
                     const keys2 = Object.keys(players);
                     const currentIdx2 = keys2.indexOf(currentTurn);
                     const nextIdx2 = (currentIdx2 + 1) % keys2.length;
                     currentTurn = keys2[nextIdx2];
                     isMyTurn = (currentTurn === playerId);
                     hasRolled = false;
+                    rollCount = 0;
+
                     updatePlayersStatus();
                     turnDisplay.textContent = players[currentTurn]?.name;
                     drawBoard();
                     updateButtons();
+
                     if (isMyTurn) {
                         btnRoll.disabled = false;
                         btnEndTurn.disabled = true;
@@ -1290,7 +2480,7 @@
                         if (botTimeout) clearTimeout(botTimeout);
                         botTimeout = setTimeout(() => doBotTurn(), 600);
                     }
-                });
+                }
             }, 500);
         }
 
@@ -1329,6 +2519,9 @@
             btnJoinLobby.disabled = false;
             hostPeerId = null;
             isConnectedToHost = false;
+
+            congratsOverlay.classList.remove('show');
+            document.querySelectorAll('.confetti').forEach(el => el.remove());
 
             if (peer) {
                 try {
@@ -1399,8 +2592,7 @@
         btnCreateLobby.disabled = false;
         btnJoinLobby.disabled = false;
 
-        console.log('🎲 Ular Tangga - FIXED CONNECTION!');
-        console.log('📌 Host dan Player akan terhubung otomatis');
+        console.log('🎲 Ular Tangga - DADU 6 + CONGRATULATIONS!');
 
         window.addEventListener('beforeunload', () => {
             if (roomId && !isBotMode) {
